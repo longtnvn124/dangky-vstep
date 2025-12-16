@@ -1,0 +1,29 @@
+.btn_upload_excel{
+  width: 200px;
+  height: 100%;
+  background: none;
+  border: 2px dashed #ccc;
+}
+
+.text_in_line{
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.upload-foot {
+  height: 60px;
+  background: #fff;
+  box-shadow: 0 0 3px 1px #CCC;
+  display: flex;
+  justify-content: space-between;
+  z-index: 1;
+}
+.upload-foot_title{
+  height: 100%;
+  padding: 10px;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+}

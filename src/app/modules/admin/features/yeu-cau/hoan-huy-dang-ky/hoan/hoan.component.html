@@ -1,0 +1,196 @@
+<div class="d-block h-100 ovic-ui-table site-thpt" [class.ovic-is-loading]="isLoading">
+  <div class="p-datatable-header" style="height:65px; border-bottom:1px solid #CCC;">
+    <h3 class="tbl-title ">DANH SÁCH ĐỔI ĐỢT THI</h3>
+    <div class="search-block ui-table-globalfilter-container ">
+      <div class="d-flex align-items-center">
+        <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+          <div class="d-flex" style="gap:10px;">
+            <div class="">
+              <p-dropdown [options]="dsCapdo" placeholder="Chọn cấp HSK" optionValue="id" optionLabel="title"
+                          [showClear]="true"
+                          (onChange)="loadDropdowCapHSK($event.value)">
+
+              </p-dropdown>
+            </div>
+            <div class="">
+              <p-dropdown [options]="dsKehoachthi" placeholder="Chọn đợt thi" optionValue="id" optionLabel="dotthi"
+                          [showClear]="true"
+                          (onChange)="loadDropdow($event.value)">
+
+              </p-dropdown>
+            </div>
+            <div class="search-block__elm ">
+                <span class="p-input-icon-right">
+                  <i class="pi pi-search"></i>
+                  <input type="text" pInputText style="height:42px" placeholder="Nhập họ tên thí sinh"
+                         (input)="onInputChange($event.target['value'])"/>
+                </span>
+            </div>
+            <div class="">
+              <button pButton pRipple icon="pi pi-bars" style="height:42px;width: 41px;"
+                      [matMenuTriggerFor]="menu"></button>
+              <mat-menu #menu="matMenu" class="d-flex flex-column w-100 h-100">
+                <button class="btn-menu-material excel" (click)="btnExportExcelHskHuyDk()">
+                  <i class="pi pi-file-excel"></i>
+                  <span>Xuất dữ liệu thí sinh</span>
+                </button>
+<!--                <button class="btn-menu-material acsses" (click)="btnDuyetdoidotthi()">-->
+<!--                  <i class="pi pi-check-circle"></i>-->
+<!--                  <span>Duyệt đổi đợt thi</span>-->
+<!--                </button>-->
+<!--                <button class="btn-menu-material delete" (click)="btnHuyDuyetdoidotthi()">-->
+<!--                  <i class="pi pi-times"></i>-->
+<!--                  <span>Hủy duyệt đổi đợt thi</span>-->
+<!--                </button>-->
+                <!--                              <button class="btn-menu-material delete" (click)="btnDelete_ids()">-->
+                <!--                                <i class="pi pi-trash"></i>-->
+                <!--                                <span>Xóa đăng ký</span>-->
+                <!--                              </button>-->
+              </mat-menu>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ovic-wrap-table-rps ovic-scroll-style" style="height:calc(100% - 65px - 60px);background: #dedede;">
+    <div class="ovic-wrap-table-rps__inner">
+      <p-table styleClass="p-datatable-gridlines" [value]="listData" [(selection)]="dataSelct" [rowHover]="true"
+               [rows]="rows" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="isLoading">
+        <ng-template pTemplate="header" class="d-bock">
+          <tr>
+            <th class="ovic-w-50px text-center">
+              <p-checkbox [binary]="true" (onChange)="selectDataByCheckbox($event)"></p-checkbox>
+            </th>
+            <th class="ovic-w-40px text-center ">STT</th>
+            <th class="text-center">Trạng thái</th>
+            <th class="text-center">Email</th>
+            <th class="ovic-w-250px text-center ">Họ tên</th>
+            <th class="ovic-w-180px text-center">Ngày sinh</th>
+            <th class="ovic-w-150px text-center">Số giấy tờ tùy thân</th>
+            <th class="ovic-w-120px text-center">Số điện thoại</th>
+            <th class=" text-center">Cấp HSK</th>
+            <th class="text-center">Đợt đăng ký</th>
+            <th class="text-center">Đơn vị</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item let-i="rowIndex">
+          <tr>
+            <td *ngIf="item.state !== 1,else haveTT" class="text-center">
+              <p-tableCheckbox [value]="item" [disabled]="item['state'] ==1"></p-tableCheckbox>
+            </td>
+            <ng-template #haveTT>
+              <td class="text-center">
+                <p-checkbox [disabled]="true"></p-checkbox>
+              </td>
+            </ng-template>
+            <td class="text-center">{{ item['_indexTable'] }}</td>
+            <td class=" text-center">
+              <ng-container [ngSwitch]="item['_status']">
+                <ng-container *ngSwitchCase="-1">
+                  <div style="background: #f91919; color:#fff">Hủy duyệt</div>
+                </ng-container>
+                <ng-container *ngSwitchCase="0">
+                  <div style="background: #e87600; color:#fff">Chờ duyệt</div>
+                </ng-container>
+                <ng-container *ngSwitchCase="1">
+                  <div style="background: #0B9419; color:#fff">Đã duyệt</div>
+                </ng-container>
+              </ng-container>
+            </td>
+            <td class="text-left">{{ item['_email'] }}</td>
+            <td class="text-left" (click)="btnViewInfoHuyOrder(item)">
+              <div class="d-flex align-items-center justify-content-between"><span>{{ item['_hoten'] }}</span> <i style="color: #0b69e3" class="pi pi-info"></i></div>
+            </td>
+
+            <td class="text-center">{{ item['_ngaysinh'] }}</td>
+            <td class="text-right">{{ item['_cccd_so'] }}</td>
+            <td class="ovic-w-80px text-right">{{ item['_phone'] }}</td>
+            <td class=" text-center">{{ item['_capdohsk'] }}</td>
+            <td class=" text-center">{{ item['_dotthi'] }}</td>
+            <td class=" text-center">{{ item['_ghichu'] }}</td>
+
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="10">
+              Không có dữ liệu thí sinh!
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+  <p-paginator class="duthi_panigator" [showCurrentPageReport]="true" [rows]="rows" [totalRecords]="recordsTotal"
+               [pageLinkSize]="5"
+               (onPageChange)="paginate($event)"></p-paginator>
+</div>
+
+<ng-template #templateWaiting let-c="close" let-d="dismiss">
+  <div class="waiting-container">
+    <label>Vui lòng chờ...</label>
+    <div class="waiting-content">
+      <mat-progress-bar mode="buffer"></mat-progress-bar>
+    </div>
+  </div>
+</ng-template>
+
+
+<p-dialog header="THÔNG TIN CHI TIẾT" class="dal-thanhtoan" [(visible)]="viewInfoHuyOrder" [modal]="true"
+          [maximizable]="true"
+          [draggable]="false" [resizable]="false">
+
+  <div *ngIf="hskHuyOrderSelect">
+    <div class="info-select-div">
+      <div><strong>I. THÔNG TIN THÍ SINH</strong></div>
+      <div> <strong>Họ và tên:</strong>{{hskHuyOrderSelect['_hoten']}}</div>
+      <div><strong>Ngày sinh:</strong>{{hskHuyOrderSelect['_ngaysinh']}}</div>
+      <div><strong>Email:</strong> {{hskHuyOrderSelect['_email']}}</div>
+      <div><strong>Số CCCD(hoặc hộ chiếu):</strong> {{hskHuyOrderSelect['_cccd_so']}}</div>
+      <div><strong>Số điện thoại:</strong> {{hskHuyOrderSelect['_phone']}}</div>
+    </div>
+    <div>
+      <div  class="info-select-div">
+        <strong>II. THÔNG TIN HỦY DỰ THI</strong>
+
+        <div> <strong>Cấp HSK dự thi:</strong> {{hskHuyOrderSelect['_capdohsk']}}</div>
+        <div> <strong>Đợt dự thi:</strong> {{hskHuyOrderSelect['_dotthi']}}</div>
+        <div> <strong>lý do hủy dự thi:</strong> {{hskHuyOrderSelect['mota']}}</div>
+
+          <div class="ovic-ui-table mt-2">
+
+            <table class="w-100 site-hsk "  >
+
+                <tr>
+                  <th class="text-center">STT</th>
+                  <th class="text-center">Đợt thi cũ</th>
+                  <th class="text-center">Đợt thi mới</th>
+                  <th class="text-center">Thời gian đổi</th>
+                </tr>
+                <tr>
+                  <td class="text-center">1</td>
+                  <td class="text-center">{{reNameKehoachByid(hskHuyOrderSelect.content['kehoanh_thi_cu'])}}</td>
+                  <td class="text-center">{{reNameKehoachByid(hskHuyOrderSelect.content['kehoanh_thi_moi'])}}</td>
+                  <td class="text-center">{{hskHuyOrderSelect.content['thoigian_sua']}}</td>
+                </tr>
+            </table>
+          </div>
+        <div> <strong>Trạng thái xét duyệt:</strong>
+          <ng-container [ngSwitch]="hskHuyOrderSelect['_status']">
+            <ng-container *ngSwitchCase="-1">
+              <div class="d-inline" style="background: #f91919; color:#fff;padding:5px;">Hủy duyệt</div>
+            </ng-container>
+            <ng-container *ngSwitchCase="0">
+              <div class="d-inline" style="background: #e87600; color:#fff;padding:5px;">Chờ duyệt</div>
+            </ng-container>
+            <ng-container *ngSwitchCase="1">
+              <div class="d-inline" style="background: #0B9419; color:#fff;padding:5px;">Đã duyệt</div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</p-dialog>

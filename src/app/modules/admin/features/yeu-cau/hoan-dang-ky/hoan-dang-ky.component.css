@@ -1,0 +1,7 @@
+.view-info{
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-direction: column;
+  font-size: 15px;
+}

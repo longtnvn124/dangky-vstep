@@ -1,0 +1,6 @@
+@media(max-width: 1024px){
+  .ovic-ui-table .p-datatable-header .tbl-title {
+    font-size:15px;
+  }
+
+}

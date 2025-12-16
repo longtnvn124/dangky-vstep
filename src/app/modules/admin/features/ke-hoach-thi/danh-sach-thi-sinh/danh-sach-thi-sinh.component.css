@@ -1,0 +1,18 @@
+.status-pay{
+
+  padding: 5px 10px;
+  /*width: 100px;*/
+  text-align: center;
+}
+.status-pay.pay-1{
+  color: #0B9419;
+  background: #daebd8;
+}
+.status-pay.pay-0{
+  color: red;
+  background: #ebc0c0;
+}
+.status-pay.pay-2{
+  color: #ffffff;
+  background: #ffa500;
+}

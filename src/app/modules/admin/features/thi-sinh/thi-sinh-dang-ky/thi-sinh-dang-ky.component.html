@@ -1,0 +1,538 @@
+<ng-container
+  *ngIf="userInfo && userInfo.cccd_img_truoc && userInfo.anh_chandung  && userInfo.status === 0,else notStatus">
+
+  <ng-container [ngSwitch]="ngType">
+    <ng-container *ngSwitchCase="-1">
+      <div class="w-100 d-flex flex-column justify-content-center align-items-center" style="height:calc(100vh - 90px)">
+        <!--      <div class="w-100 d-flex flex-column justify-content-center align-items-center" style="height:100%">-->
+        <div>
+          <i class="pi pi-spin pi-spinner" style="font-size: 4rem"></i>
+        </div>
+        <div style="padding:12px;font-size: 16px;"> Đang chờ thanh toán</div>
+
+        <button pRipple pButton icon="pi pi-sign-out" class="p-button-raised p-button-warning"
+                label="Truy cập kết quả đăng ký" (click)="btnchecksite()"></button>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="1">
+      <!--      <div class="w-100 d-flex flex-column justify-content-center align-items-center" style="height:calc(100vh - 90px)">-->
+      <div class="w-100 d-flex flex-column justify-content-center align-items-center" style="height:calc(100vh - 90px)">
+        <div>
+          <i class="pi pi-check-circle p-button-success" style="font-size: 4rem;color:#1baf08;"></i>
+        </div>
+        <div style="padding:12px;font-size: 16px;"> Thanh toán thành công</div>
+
+        <button pRipple pButton icon="pi pi-sign-out" class="p-button-raised p-button-success"
+                label="Truy cập kết quả đăng ký" (click)="btnchecksite()"></button>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="0">
+      <div class="ovic-container overflow-hidden overflow-x-auto overflow-y-auto "
+           style="height:calc(100vh - 60px - 30px)">
+        <div class="ovic-container " style="height:100%">
+          <div class="thpt-form-data ovic-side-navigation-content --no-footer overflow-hidden overflow-y-auto">
+            <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+              <form [formGroup]="formSave" autocomplete="off">
+                <div class="row row-cols-1">
+                  <div class="col col-md-12 col-xl-12">
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-row">
+                          <label>Đợt thi <span class="ovic-mark">*</span></label>
+                          <div class="dotthi-container">
+                            <button pRipple pButton *ngFor="let item of keHoachThi_dangky" (click)="selectDothi(item)"
+                                    [ngClass]="dotthi_id_select === item.id ? 'p-button-primary' : 'ovic-button-none-selected'"
+                                    [label]="item['_name_convertd']" [icon]="'pi pi-circle'">
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="dotthi_id_select >0" class="row">
+                      <div *ngIf="dataCapdoSelect.length >0,else notMonSelect" class="col">
+                        <div class="form-row">
+                          <label>Chọn cấp độ HSK<span class="ovic-mark">*</span></label>
+                          <div class="dotthi-container">
+                            <!--                            <button pButton pRipple *ngFor="let item of dataCapdoSelect" (click)="selectMonOfDmMon(item)"-->
+                            <button pButton pRipple *ngFor="let item of dataCapdoSelect"
+                                    (click)="selectCapdoOfDmCapDo(item)"
+                                    [ngClass]="capdo_id_select === item.caphsk_id  ? 'p-button-primary' : 'ovic-button-none-selected'"
+                                    [label]="item['__tenmon_coverted']" [icon]="'pi pi-book'"
+                            ></button>
+
+                          </div>
+                        </div>
+                      </div>
+                      <ng-template #notMonSelect>
+                        <div class="col">
+                          <div class="form-row">
+                            <label>Chọn cấp độ<span class="ovic-mark">*</span></label>
+                            <div class="dotthi-container">
+                              Đợt thi đã đăng ký đủ .
+                            </div>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="row row-cols-1 p-2">
+              <div class="col-12 col-xl-8 col-lg-8">
+                <div class="thpt-note">
+                  <div class="thpt-note-header" style="color:red;">Lưu ý:</div>
+                  <div class="thpt-note-body">
+                    <!--                <p>- Bạn có thể chọn nhiều môn thi trong một lần đăng ký của từng đợt thi.</p>-->
+                    <!--                    <p>- Lệ phí thi với mỗi cấp độ là-->
+                    <!--                      <strong>{{ (lephithiData ? lephithiData['value'] : 0) | numberToVndCurrencuy }}</strong> / 1 cấp độ .</p>-->
+                    <p>- Sau khi thí sinh hoàn tất thao tác đăng ký, cần thực hiện thanh toán lệ phí thi ngay để giữ
+                      chỗ. </p>
+                    <p>- Sau khi kết thúc đợt đăng ký thí sinh không thanh toán lệ phí thi, hệ thống sẽ hủy kết quả đăng
+                      ký. </p>
+                    <p>- Để thực hiện đăng ký nhiều cấp độ vui lòng đăng ký từng cấp độ và thực hiện thanh toán. </p>
+                    <p>- Vui lòng thực hiện thêm thông tin cá nhân sau khi thanh toán thành công. </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-xl-4 col-lg-4">
+                <div class="ovic-ui-table site-thpt">
+                  <p-table styleClass="p-datatable-gridlines" [value]="dmCapdos" [rowHover]="true"
+                           [loading]="isLoading">
+                    <ng-template pTemplate="header" class="d-bock">
+                      <tr>
+                        <th class="text-center">STT</th>
+                        <th class="text-center">Cấp độ</th>
+                        <th class="text-center">Giá</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item let-i="rowIndex">
+                      <tr>
+                        <td class="text-center">{{ item['__index'] }}</td>
+                        <td class="text-left">{{ item.title }}</td>
+                        <td class="text-center">{{ item.gia| numberToVndCurrencuy }}</td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+
+            </div>
+
+            <div style="padding: 15px 0 ;display: flex;justify-content: center;gap: 10px;">
+              <ng-container *ngIf="capdo_id_select !== 0, else notSelect">
+                <button pButton pRipple class="p-button-success" icon="pi pi-check-square" label="Đăng ký dự thi"
+                        [loading]="isLoading"
+                        (click)="SaveForm()"></button>
+              </ng-container>
+              <ng-template #notSelect>
+                <button pButton pRipple class="p-button-success disable" icon="pi pi-check-square"
+                        label="Đăng ký dự thi"></button>
+              </ng-template>
+
+              <button pButton pRipple icon="pi pi-user-edit" label="Cập nhật thông tin" (click)="btnRouInfo()"></button>
+            </div>
+            <div class="row">
+              <div class="col-12 ovic-ui-table" [class.ovic-is-loading]="isLoading">
+                <div class="ovic-load-init-fail alert alert-danger --fs-14" *ngIf="loadInitFail; else tableData">
+                  Đã có lỗi trong quá trình tải dữ liệu
+                  <button class="btn btn-primary border-circle --fs-13 ml-2" (click)="loadInit()">Reload</button>
+                </div>
+                <ng-template #tableData>
+                  <div class="p-datatable-header" style="border-bottom:1px solid #CCC;">
+                    <h3 class="tbl-title "> Danh sách đăng ký thi </h3>
+                  </div>
+                  <p-table [value]="dataOrders" [showCurrentPageReport]="false" [rowHover]="true"
+                           [tableStyle]="{ 'min-width': '100px' }">
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th class="ovic-w-50px text-center">TT</th>
+                        <th class="ovic-w-100px text-center">Mã đăng ký</th>
+                        <th class="text-left">Đợt thi</th>
+                        <th class=" text-left text-center">Cấp độ</th>
+                        <th class="ovic-w-180px text-center">Lệ phí thi</th>
+                        <th class="ovic-w-110px text-center">Trạng thái</th>
+                        <th class="ovic-w-180px text-center">Thao tác</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="7">Không có dữ liệu</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item>
+                      <tr>
+                        <td class="ovic-w-50px text-center" [innerHTML]="item['_indexTable']"></td>
+                        <td class="ovic-w-50px text-center" [innerHTML]="item['id']"></td>
+                        <td>
+                          <div class="d-block --fs-14 font-weight-bold" [innerHTML]="item['__kehoach_thi']"></div>
+                        </td>
+                        <td class="ovic-w-260px">
+                          <div class="d-block --fs-14 font-weight-bold" [innerHTML]="item['__capdo_covered']"></div>
+
+                        </td>
+                        <td class="ovic-w-100px">
+                          <div class="d-block --fs-14 text-right"
+                               [innerHTML]="item['__lephithi_covered' ] |numberToVndCurrencuy"></div>
+                        </td>
+                        <td class="ovic-w-150px">
+                          <div class="d-block --fs-14" [innerHTML]="item['__status_converted'] | htmlDecode"></div>
+                        </td>
+                        <td class="ovic-w-180px text-center">
+
+
+                          <ng-container *ngIf="item['__have_parent'] else notParent">
+                            <div class="d-flex flex-column " style="gap:6px;">
+
+                              <div class="view-chuy">
+                                {{ item['__ghichu'] }}
+                              </div>
+                              <ng-container *ngIf="item['__kehoach_thi']['__kehoach_thi_status'] !==0">
+                                <button *ngIf="item['trangthai_thanhtoan'] == 1  && !item['huy']" pButton pRipple
+                                        label="Đổi đợt thi"
+                                        (click)="btnChangeDotthi(item)"></button>
+                                <button *ngIf="item['trangthai_thanhtoan'] == 1 && !item['huy']" pButton pRipple label="Hủy đăng ký thi"
+                                        class="p-button-warning" (click)="btnHuyOrderthi(item)"></button>
+                                <div class="is_huy" *ngIf=" item['huy']">
+                                  Bạn đã hủy dự thi
+                                </div>
+                              </ng-container>
+
+                            </div>
+                          </ng-container>
+                          <ng-template #notParent>
+                            <ng-container *ngIf="item['__trangthai_thanhtoan'] === 1 else notParentNotPay">
+                              <div class="d-flex flex-column " style="gap:6px;">
+
+                                <ng-container *ngIf="item['__kehoach_thi']['__kehoach_thi_status'] !==0">
+                                  <!--                                  <button *ngIf="item['trangthai_thanhtoan'] == 1  && !item['huy']" pButton pRipple label="Đổi đợt thi"-->
+                                  <!--                                          (click)="btnChangeDotthi(item)"></button>-->
+                                  <!--                                  <button *ngIf="item['trangthai_thanhtoan'] == 1" pButton pRipple label="Hủy đăng ký thi"-->
+                                  <!--                                          class="p-button-warning" (click)="btnHuyOrderthi(item)"></button>-->
+
+                                  <button *ngIf="!item['__have_parent'] && !item['huy']" pButton pRipple
+                                          label="Đổi đợt thi"
+                                          (click)="btnChangeDotthi(item)"></button>
+                                  <button *ngIf="!item['__have_parent'] && !item['huy']" pButton pRipple label="Hủy đăng ký thi"
+                                          class="p-button-warning" (click)="btnHuyOrderthi(item)"></button>
+                                  <div class="is_huy" *ngIf=" item['huy']">
+                                    Bạn đã hủy dự thi
+                                  </div>
+                                </ng-container>
+
+                              </div>
+                            </ng-container>
+                            <ng-template #notParentNotPay>
+                              <div class="d-flex flex-wrap justify-content-center" style=" gap: 10px;">
+                                <button pButton pRipple class="p-button-warning mx-1" [pTooltip]="'Thanh toán'" label="Thanh toán"
+                                        [tooltipPosition]="'top'" icon="pi pi-credit-card" [loading]="isLoading"
+                                        (click)="getPayment(item)"></button>
+                                <button pButton pRipple class="p-button-danger mx-1"
+                                        [pTooltip]="'Xoá'" [tooltipPosition]="'top'" icon="pi pi-trash"
+                                        (click)="deleteRow(item)"></button>
+                              </div>
+                            </ng-template>
+                          </ng-template>
+
+                          <!--              </div>-->
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </ng-container>
+  </ng-container>
+</ng-container>
+
+<ng-template #notStatus>
+  <div class="w-100 d-flex justify-content-center align-items-center flex-column" style="height:calc(100vh - 90px)">
+    <div>
+      <i class="pi pi-exclamation-circle py-3" style="font-size: 8rem;color:#f59e0b"></i>
+    </div>
+    <div class="p-3" style="font-size: 17px;">Bạn chưa hoàn thành cập nhật thông tin!</div>
+    <div>
+      <button pButton pRipple class="p-button-warning p-button-text" label="Cập nhật thông tin cá nhân"
+              style="font-size:16px;"
+              (click)="returnInfo()"></button>
+    </div>
+
+  </div>
+</ng-template>
+
+<p-dialog class="dal-dk-custome" [header]="'ĐỔI ĐỢT THI'" [(visible)]="displayModal" [modal]="true"
+          [style]="{width: '50vw', height:'80vh'}" [draggable]="false" [resizable]="false">
+  <div class="ctn-notifi">
+    <div class="ctn-notifi_header">
+      Lưu ý:
+    </div>
+    <div class="ctn-notifi_body">
+      <p>- Thí sinh được chỉ được phép đổi những đợt thi đang có.</p>
+      <p>- Với nhưng đợt thi muốn đổi hệ thống sẽ kiểm tra số đã đăng ký, nếu đã đủ thí sinh thì dự thi thì không được
+        phép đăng ký đợt thi đấy nữa .</p>
+      <p>- Thí sinh chỉ được phép đổi đợt thi tối đa 3 lần.</p>
+<!--      <p>- Yêu cầu đổi của thí sinh sẽ xét duyệt,trường hợp thí sinh đổi đợt thi phải có lí do chính đáng nếu không sẽ-->
+<!--        không được xét duyệt.</p>-->
+    </div>
+  </div>
+
+
+  <div>
+    <div><p style="font-size: 15px;margin-top: 10px;"><strong>I. Danh sách Yêu cầu đổi đợt thi</strong></p></div>
+    <div class="ovic-ui-table site-thpt">
+      <p-table styleClass="p-datatable-gridlines" [value]="listOrderHuyChange" [rowHover]="true"
+               [loading]="isLoading">
+        <ng-template pTemplate="header" class="d-bock">
+          <tr>
+            <th class="text-center">STT</th>
+            <th class="text-center">Đợt thi cũ</th>
+            <th class="text-center">Đợt thi mới</th>
+            <th class="text-center">Trạng thái</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
+          <tr>
+            <td class="text-center">{{ rowIndex + 1 }}</td>
+            <td class="text-center">{{ conventNameDotthi(item.content['kehoanh_thi_cu']) }}</td>
+            <td class="text-center">{{ conventNameDotthi(item.content['kehoanh_thi_moi']) }}</td>
+            <td class="text-center">
+              <ng-container [ngSwitch]="item.state">
+                <ng-container *ngSwitchCase="0">
+                  <div style="background: #ffd612;color: #564809;">Chờ duyệt</div>
+                </ng-container>
+                <ng-container *ngSwitchCase="1">
+                  <div style="background: #0B9419;">Đã duyệt</div>
+                </ng-container>
+                <ng-container *ngSwitchCase="-1">
+                  <div style="background: #ff1212;color: #fff;">Hủy duyệt</div>
+                </ng-container>
+              </ng-container>
+
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7">Không có dữ liệu</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <ng-container *ngIf="orderSelect && orderSelect.params !== null && orderSelect.params.length === 3 else checkFall">
+    <div class="mes-3item">
+      <strong>Thông báo:</strong><span> Bạn đã sử dụng hết lượt đổi đợt thi.</span>
+    </div>
+  </ng-container>
+  <ng-template #checkFall>
+    <div><p style="font-size: 15px;margin-top: 10px;"><strong>II. Nội dung đổi đợt thi</strong></p></div>
+    <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+      <form [formGroup]="formHuyOrder" autocomplete="off">
+        <div class="row">
+          <div class="col-12">
+            <div class="form-row">
+              <label>Lý do<span class="ovic-mark">*</span></label>
+              <textarea pInputTextarea placeholder="Nhập lý do đổi đợt thi" formControlName="mota"
+                        class="w-100"></textarea>
+            </div>
+          </div>
+        </div>
+      </form>
+
+    </div>
+    <div class="bd-drop">
+      <p-dropdown [options]="data_Kehoachthi_change" [(ngModel)]="change_kehoachthi_id"
+                  (onChange)="onchangeSelectDothi($event)" placeholder="Chọn đợt thi cần đổi" optionLabel="dotthi"
+                  optionValue="id"></p-dropdown>
+
+      <ng-container [ngSwitch]="check_change_dothi">
+        <ng-container *ngSwitchCase="1">
+          <div class="text-check true">
+            <i class="pi pi-check-circle"></i>
+            <span>được phép đăng ký</span>
+          </div>
+<!--          <div class="text-nitifi">-->
+<!--            <p><strong>Lưu ý:</strong></p>-->
+
+<!--            <p class="m-0">1. Hệ thống sẽ xác nhận lý do và thông báo trong thời gian sớm nhất</p>-->
+<!--            <p class="m-0">2. Hệ thống sẽ xét duyệt lí do, với lý do hợp lệ thí sinh có thế đổi sang đợt thi mong-->
+<!--              muốn.</p>-->
+<!--            <p class="m-0">2. Trường hợp thí sinh không được xét duyệt sẽ phải tiếp túc dự thi đợt thi hiện tại.</p>-->
+<!--          </div>-->
+          <div class="btn_accept">
+            <button pRipple pButton label="xác nhận" class="p-button-secondary" (click)="btnAccept()"></button>
+          </div>
+        </ng-container>
+        <ng-container *ngSwitchCase="0">
+          <div class="text-check wait">
+            <i class="pi pi-spin pi-spinner"></i>
+            <span>Vui lòng chờ, hệ thống đang kiểm tra số lượng thí sinh đăng ký. </span>
+          </div>
+        </ng-container>
+        <ng-container *ngSwitchCase="2">
+          <div class="text-check false ">
+            <i class="pi pi-ban"></i>
+            <span>Số lượng thí sinh đăng ký đã đủ vui lòng chọn đợt thi khác.</span>
+          </div>
+        </ng-container>
+        <ng-container *ngSwitchCase="3">
+          <div class="text-check false ">
+            <i class="pi pi-ban"></i>
+            <span>Bạn đã đăng ký từng đổi đợt thi này, vui lòng chọn đợt thi khác.</span>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+    <div class="bd-acpect">
+
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!--<p-dialog class="dal-dk-custome" [header]="'THÔNG BÁO'" [(visible)]="viewThongbaoUpdate" [modal]="true" [style]="{width: '50vw'}" [draggable]="false" [resizable]="false">-->
+<!--  <div class="ctn-notifi">-->
+<!--    <div class="ctn-notifi_header">-->
+<!--      Lưu ý:-->
+<!--    </div>-->
+<!--    <div class="ctn-notifi_body">-->
+<!--      <p>Sau khi thực hiện thanh toán, thí sinh thực hiện cập nhật thông tin.</p>-->
+<!--    </div>-->
+<!--  </div>-->
+
+
+<!--</p-dialog>-->
+<p-dialog class="dal-dk-custome" [header]="'HỦY ĐĂNG KÝ DỰ THI'" [(visible)]="displayModalHuyOrder" [modal]="true"
+          [style]="{width: '50vw',height: '90vh'}" [draggable]="false" [resizable]="false">
+  <ng-container [ngSwitch]="loading_huyorder">
+    <ng-container *ngSwitchCase="'-1'">
+      <div class="d-flex justify-content-center align-items-center flex-column h-100 w-100"
+           style="gap:10px;color:#f59e0b">
+        <i class="pi pi-exclamation-circle" style="font-size: 80px;"></i>
+        <div style="font-size:20px;">Mật kết nối máy chủ</div>
+        <button pButton pRipple label="Tải lại" (click)="btnHuyOrderthi(orderSelect)"></button>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'0'">
+      <div class="d-flex justify-content-center align-items-center flex-column h-100 w-100"
+           style="gap:10px;color:#f59e0b">
+        <i class="pi pi-spin pi-sync" style="font-size: 80px;"></i>
+        <div style="font-size:20px;">Vui lòng chờ</div>
+
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'1'">
+      <div *ngIf="huyHskByCancel.state == 1" class="d-flex justify-content-center align-items-center flex-column h-100 w-100"
+           style="gap:10px;color:#0ba50b">
+        <i class="pi pi-check-circle pi-sync" style="font-size: 80px;"></i>
+        <div style="font-size:20px;">Bạn đã yêu cầu hủy dự thi thành công</div>
+      </div>
+
+      <div *ngIf="huyHskByCancel.state == 0" class="d-flex justify-content-center align-items-center flex-column h-100 w-100"
+           style="gap:10px;color:#e87600">
+        <i class="pi pi-spin pi-sync" style="font-size: 80px;"></i>
+        <div style="font-size:20px;">Yêu cầu của thí sinh đang chờ xét duyệt</div>
+      </div>
+
+      <div *ngIf="huyHskByCancel.state == -1" class="d-flex justify-content-center align-items-center flex-column h-100 w-100"
+           style="gap:10px;color:rgb(252 41 37)">
+        <i class="pi pi-times" style="font-size: 80px;"></i>
+        <div  class="text-center" style="font-size: 17px;">
+          <p>Yêu cầu của bạn đã bị hủy</p>
+          <p>Mọi thắc mắc liên hệ đt: <strong>Điện thoại:</strong> 0345409227, <strong>Email:</strong> hsk@tnu.edu.vn</p>
+        </div>
+      </div>
+
+    </ng-container>
+    <ng-container *ngSwitchCase="'2'">
+      <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+        <div class="canner-hsk_note">
+          <div><strong style="font-size:20px;">Lưu ý:</strong></div>
+
+          <div>
+            <div>
+              1. Khi thực hiện "Hủy đăng ký", cán bộ phụ trách sẽ tiến hành xét duyệt đơn.
+            </div>
+            <div>
+              2. Trường hợp yêu cầu không được duyệt, thí sinh sẽ phải tiếp tục dự thi.
+            </div>
+            <div>
+              3. Trường hợp yêu cầu được duyệt, thí sinh không còn trong danh sách dự thi của đợt thi.
+            </div>
+            <div>
+              4. Hoàn lệ phí thi tại <strong>"Trung tâm Khảo thí và Quản lý chất lượng giáo dục - ĐHTN"</strong>
+            </div>
+            <div>
+              <strong>Điện thoại:</strong> 0925388988, <strong>Email:</strong>  hsk@tnu.edu.vn, <strong>Địa chỉ:</strong> Nhà T1 - ĐHTN, Tân Thịnh, TP. Thái Nguyên
+            </div>
+          </div>
+        </div>
+
+        <div class="cannel-hsk">
+          <div>Đợt thi : <span>{{ orderSelect['__kehoach_thi'] }}</span></div>
+          <div>Cấp HSK đăng ký: <span>{{ orderSelect['__capdo_covered'] }}</span></div>
+        </div>
+
+        <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+          <form [formGroup]="formHuyOrder" autocomplete="off">
+
+
+            <div class="row">
+              <div class="col-12">
+                <div><strong>1.lý do huỷ dự thi</strong> </div>
+                <div class="form-row">
+                  <label>Lý do<span class="ovic-mark">*</span></label>
+                  <textarea pInputTextarea placeholder="Nhập lý do đổi đợt thi" formControlName="mota"
+                            class="w-100"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div>
+                <p><strong>2.Đơn xin hoàn lại lệ phi và minh chứng chuyển khoản</strong></p>
+                <p class="text-center " style="color:red;">Để hoàn lại lệ phí dự thi, thi sinh thực hiện tải đơn này và điền thông tin, sau đó thí sinh scan hoặc chụp ảnh phần đơn đã hoàn thiện kèm theo bill đã nộp phí thi và tải lên hệ thống </p>
+                <div class="text-center">
+                  <button pRipple pButton label="Đơn hoàn lệ phí" icon="pi pi-download" (click)="btnDowloadDon()"></button>
+                </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="row row-cols-1">
+              <div class="col col-lg-6">
+                <div class="form-row">
+                    <label>Đơn hoàn lệ phí<span class="ovic-mark">*</span></label>
+                    <app-file-list-local class="w-100 ovic-vertical__file-list" [permission]="filePermission" [accept]="['.jpg', '.png', '.jpeg']"
+                                         [formField]="formHuy['files']" [multiple]="false"
+                                         [state]="1"></app-file-list-local>
+                </div>
+              </div>
+              <div class="col col-lg-6">
+                <div class="form-row">
+                  <label>Minh chứng chuyển khoản <span class="ovic-mark">*</span></label>
+                  <app-file-list-local class="w-100 ovic-vertical__file-list" [permission]="filePermission" [accept]="['.jpg', '.png', '.jpeg']"
+                                       [formField]="formHuy['minhchung']" [multiple]="false"
+                                       [state]="1"></app-file-list-local>
+                </div>
+              </div>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-center align-items-center" style="margin-top:10px">
+        <button pRipple pButton icon="pi pi-send" label="Gửi yêu cầu hủy đăng ký"
+                (click)="btnAcceptHuyOrder()"></button>
+      </div>
+
+    </ng-container>
+  </ng-container>
+</p-dialog>

@@ -1,0 +1,17 @@
+.imgchecksize {
+    max-height: 100%;
+    width: auto;
+}
+
+@media(max-width:1024px) {
+    .imgchecksize {
+        max-height: unset;
+        width: 100%;
+    }
+
+    .imgchecksize.vertical {
+      width: unset;
+      height: 100%;
+    }
+
+}

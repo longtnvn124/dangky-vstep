@@ -1,0 +1,155 @@
+<div class="row">
+  <div class="col-12" [class.ovic-is-loading]="isLoading">
+    <div class="ovic-load-init-fail alert alert-danger --fs-14" *ngIf="loadInitFail; else tableData">
+      Đã có lỗi trong quá trình tải dữ liệu
+      <button class="btn btn-primary border-circle --fs-13 ml-2" (click)="loadInit()">Reload</button>
+    </div>
+    <ng-template #tableData>
+      <ovic-table emptyMessage="Danh sách trống" [index]="index" [data]="listData"
+                  styleClass="tbl-danh-sach-tap-the head-input-size--normal head-input-size--250px" dataKey="id"
+                  rowHover="true"
+                  [rows]="15" tableName="Danh sách đợt thi" [tblStructure]="tblStructure"
+                  (onButtonClick)="handleClickOnTable($event)" [enableSearch]="true" [enableSearchLocal]="false"
+                  (onSearch)="onSearch($event)" [searchDebounceTime]="800" [headerButtons]="headButtons"></ovic-table>
+      <p-paginator class="p-paginator--custom" [showCurrentPageReport]="true" [rows]="rows"
+                   [totalRecords]="recordsTotal" [pageLinkSize]="5" (onPageChange)="paginate($event)"></p-paginator>
+    </ng-template>
+  </div>
+</div>
+
+
+<!--<input type="file" #fileChooser hidden="true" (change)="onInputAvatar($event , fileChooser)">-->
+<ng-template #fromUpdate>
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head">
+      <h4 class="ovic-side-navigation-content__head__title">{{formActive ? formActive.title : ''}}</h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
+    </div>
+    <div class="ovic-side-navigation-content__body ovic-scroll-style">
+      <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+        <form [formGroup]="formSave" autocomplete="off">
+          <div class="d-block w-100" style="height: calc(100vh - 60px - 60px - 20px);">
+            <p-splitter [style]="{'height': '100%'}" [panelSizes]="[35,65]">
+              <ng-template pTemplate>
+                <div class="w-100 d-block ovic-scroll-style overflow-hidden overflow-y-auto">
+                  <div class="row m-0">
+                    <div class="col-12">
+                      <p class="form-row">
+                        <label>Tên đợt thi <span class="ovic-mark">*</span></label>
+                        <input type="text" placeholder="Tên đợt thi..." formControlName="dotthi" autocomplete="off">
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row m-0">
+                    <div class="col-12">
+                      <p class="form-row">
+                        <label >Trạng thái <span class="ovic-mark">*</span></label>
+                        <p-dropdown placeholder="Chọn..." class="w-100" [options]="statusList" optionLabel="label"
+                                    optionValue="value" [showClear]="true"
+                                    formControlName='status'></p-dropdown>
+                      </p>
+                    </div>
+                  </div>
+<!--                  <div class="row m-0">-->
+<!--                    <div class="col-12">-->
+<!--                      <p class="form-row">-->
+<!--                        <label >Số lượng thí sinh thi đăng ký/ mỗi môn</label>-->
+<!--                        <input type="number" placeholder="Vd: 0, 10,20" formControlName="soluong_toida" autocomplete="off">-->
+<!--                      </p>-->
+<!--                    </div>-->
+<!--                  </div>-->
+                  <div class="row m-0">
+                    <div class="col-12">
+                      <p class="form-row">
+                        <label >Ngày thi</label>
+                        <input type="text" placeholder="Vd: Ngày 16, 17/05/2024 " formControlName="ngaythi" autocomplete="off">
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="row m-0">
+                    <div class="col">
+                      <div class="form-row">
+                        <label>Thời gian bắt đầu <span class="ovic-mark">*</span></label>
+                        <p-calendar placeholder="chọn..." class="w-100" dateFormat="dd/mm/yy"
+                                    formControlName="ngaybatdau"
+                                    [showTime]="false" [showIcon]="true" [showSeconds]="false"></p-calendar>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row m-0">
+                    <div class="col-12">
+                      <div class="form-row">
+                        <label>Thời gian kết thúc<span class="ovic-mark">*</span></label>
+                        <p-calendar placeholder="chọn..." class="w-100" dateFormat="dd/mm/yy" formControlName="ngayketthuc"
+                                    [showTime]="false" [showIcon]="true" [showSeconds]="false"></p-calendar>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row m-0">
+                    <div class="col-12">
+                      <div class="form-row">
+                        <label>Năm tổ chức thi<span class="ovic-mark">*</span></label>
+                        <input type="number" placeholder="Vd:2025 " formControlName="nam" autocomplete="off">
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+              <ng-template pTemplate>
+                <div class="row m-0">
+                  <div class="col-12">
+                    <p class="form-row">
+                      <label>Mô tả </label>
+                      <ovic-editor [formField]="f['mota']" class="w-100"></ovic-editor>
+                    </p>
+                  </div>
+                </div>
+              </ng-template>
+            </p-splitter>
+          </div>
+
+
+
+
+        </form>
+      </div>
+    </div>
+    <div class="ovic-side-navigation-content__foot">
+      <span class="ovic-side-navigation-content__foot__notice mr-auto"><mark>(*)</mark> bắt buộc phải nhập</span>
+      <button pButton pRipple type="button" [label]="btn_checkAdd" icon="pi pi-save" (click)="saveForm()"
+              class="p-button-success"></button>
+      <button pButton pRipple type="button" label="Đóng" class="p-button-secondary ml-3" icon="pi pi-times"
+              (click)="closeForm()"></button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #formMembers>
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head">
+      <h4 class="ovic-side-navigation-content__head__title">{{ kehoach_select ? kehoach_select.dotthi:'Danh sách thí sinh theo đợt ' }} </h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
+    </div>
+    <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style">
+        <app-danh-sach-thi-sinh [kehoachthi]="kehoach_select"></app-danh-sach-thi-sinh>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #formCapdo>
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head">
+      <h4 class="ovic-side-navigation-content__head__title">{{ kehoach_select ? kehoach_select.dotthi:'Danh sách thí sinh theo đợt ' }} </h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
+    </div>
+    <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style">
+<!--      <app-danh-sach-thi-sinh [kehoachthi]="kehoach_select"></app-danh-sach-thi-sinh>-->
+      <app-capdo-theo-dotthi [kehoachthi]="kehoach_select"></app-capdo-theo-dotthi>
+    </div>
+  </div>
+</ng-template>

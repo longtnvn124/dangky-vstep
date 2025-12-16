@@ -1,0 +1,128 @@
+<ng-container [ngSwitch]="ngchangeType">
+  <ng-container *ngSwitchCase="'0'">
+    <div class="d-flex flex-column justify-content-center align-items-center">
+      <div>
+        <i class="pi pi-spin pi-spinner"></i>
+      </div>
+      <div>Đang load dữ liệu vui lòng chờ</div>
+    </div>
+
+  </ng-container>
+  <ng-container *ngSwitchCase="'1'">
+    <div class="container h-100">
+
+      <div *ngIf="userInfo else notInfo" class="info-container">
+        <div class=" info-item">
+          <div class="w-25">
+            <div class="info-image">
+              <img
+                [src]=" userInfo['__anh_chandung_covented'] ? userInfo['__anh_chandung_covented'] : 'assets/images/avatar-size-4x6.png'"
+                alt="">
+
+            </div>
+          </div>
+          <div class=" w-75">
+            <div class="d-flex flex-row">
+              <div class="info-imlement">
+                <span class="font-weight-bold">Họ và tên: </span>
+                <span>{{ userInfo.hoten }}</span>
+              </div>
+              <div class="info-imlement">
+                <span class="font-weight-bold">Điện thoại: </span>
+                <span>{{ userInfo.phone }}</span>
+              </div>
+            </div>
+            <div class="d-flex flex-row">
+              <div class="info-imlement">
+                <span class="font-weight-bold">Ngày sinh: </span>
+                <span>{{ userInfo.ngaysinh }}</span>
+              </div>
+              <div class="info-imlement">
+                <span class="font-weight-bold">Giới tính: </span>
+                <span>{{ userInfo.gioitinh === 'nam' ? "Nam" : "Nữ" }}</span>
+              </div>
+            </div>
+            <div class="d-flex flex-row">
+              <div class="info-imlement">
+                <span class="font-weight-bold">Nơi sinh: </span>
+                <span>{{ userInfo.noisinh }}</span>
+              </div>
+              <div class="info-imlement">
+                <span class="font-weight-bold">Nơi sinh khác: </span>
+                <span>{{ userInfo.noisinhkhac }}</span>
+              </div>
+            </div>
+            <div class="d-flex flex-row">
+              <div class="info-imlement">
+                <span class="font-weight-bold">Dân tộc: </span>
+                <span>{{ userInfo.dantoc ? userInfo.dantoc : '' }}</span>
+              </div>
+              <div class="info-imlement">
+                <span class="font-weight-bold">Tôn giáo: </span>
+                <span>{{ userInfo.tongiao ? userInfo.tongiao : 'Không' }}</span>
+              </div>
+            </div>
+            <div class="info-imlement">
+              <span class="font-weight-bold">Quê quán : </span>
+              <span>{{ userInfo.quequan ? userInfo.quequan['fullAddress'] : 'Không' }}</span>
+            </div>
+
+            <div class="info-imlement">
+              <span class="font-weight-bold">Thông tin CCCD: </span>
+
+            </div>
+            <div class="row m-0 " style="padding:0 10px">
+
+              <div class="col-12 col-xl-6">
+                <div class="cccd-text">CCCD mặt trước</div>
+                <div class="info-image border-0">
+
+                  <img
+                    [src]=" userInfo['__cccd_mattruoc_covented'] ? userInfo['__cccd_mattruoc_covented'] : 'assets/images/avatar-size-6x4.png'"
+                    alt="">
+
+                </div>
+              </div>
+              <div class="col-12 col-xl-6 border-left">
+                <div class="cccd-text">CCCD mặt sau</div>
+                <div class="info-image border-0">
+                  <img
+                    [src]=" userInfo['__cccd_matsau_covented'] ? userInfo['__cccd_matsau_covented'] : 'assets/images/avatar-size-6x4.png'"
+                    alt="">
+
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-row">
+              <div class="info-imlement">
+                <span class="font-weight-bold">Số CCCD: </span>
+                <span>{{ userInfo.cccd_so }}</span>
+              </div>
+              <div class="info-imlement">
+                <span class="font-weight-bold">Ngày cấp: </span>
+                <span>{{ userInfo.cccd_ngaycap }}</span>
+              </div>
+              <div class="info-imlement">
+                <span class="font-weight-bold">Nơi cấp: </span>
+                <span>{{ userInfo.cccd_noicap }}</span>
+              </div>
+            </div>
+
+            <div class="info-imlement">
+              <span class="font-weight-bold">Địa chỉ thường trú: </span>
+              <span>{{ userInfo.thuongtru_diachi ? userInfo.thuongtru_diachi['fullAddress'] : 'Không' }}</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <ng-template #notInfo>
+        <div class="d-flex justify-content-center align-items-center h-100 w-100">
+          <div>Chưa có thông tin thí sinh</div>
+        </div>
+      </ng-template>
+    </div>
+
+  </ng-container>
+</ng-container>

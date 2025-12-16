@@ -1,0 +1,280 @@
+<div class="row">
+  <div class="col-12 ovic-ui-table site-thpt" style="height:calc(100vh - 90px)" [class.ovic-is-loading]="isLoading">
+    <div class="p-datatable-header" style="height:65px; border-bottom:1px solid #CCC;">
+      <h3 class="tbl-title ">KẾT QUẢ ĐĂNG KÝ PHIẾU CHUYỂN PHÁT</h3>
+      <div class="search-block ui-table-globalfilter-container ">
+        <div class="d-flex align-items-center">
+          <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+            <div class="d-flex" style="gap:10px;">
+              <div class="">
+                <p-dropdown [options]="statusTT" placeholder="Trạng thái thanh toán" optionValue="value"
+                            optionLabel="title" [showClear]="true"
+                            (onChange)="loadDropdowStatusTT($event.value)">
+
+                </p-dropdown>
+              </div>
+              <div class="">
+                <p-dropdown [options]="dsKehoachthi" placeholder="Chọn đợt thi" optionValue="id" optionLabel="dotthi"
+                            [showClear]="true"
+                            (onChange)="loadDropdow($event.value)">
+
+                </p-dropdown>
+              </div>
+              <div class="search-block__elm ">
+                <span class="p-input-icon-right">
+                  <i class="pi pi-search"></i>
+                  <input type="text" pInputText style="height:42px" placeholder="Nhập ..."
+                         (input)="onInputChange($event.target['value'])"/>
+                </span>
+              </div>
+              <div class="">
+                <button pButton pRipple icon="pi pi-bars" style="height:42px;width: 41px;"
+                        [matMenuTriggerFor]="menu"></button>
+                <mat-menu #menu="matMenu" class="d-flex flex-column w-100 h-100">
+                  <button class="btn-menu-material excel" (click)="btnExportExcel()">
+                    <i class="pi pi-file-excel"></i>
+                    <span>Xuất dữ liệu thí sinh</span>
+                  </button>
+
+                  <button class="btn-menu-material acsses" (click)="btnExportWord()">
+                    <i class="pi pi-file-word"></i>
+                    <span>Xuất dữ liệu</span>
+                  </button>
+                  <button class="btn-menu-material acsses" (click)="btnCheckTT()">
+                    <i class="pi pi-check-circle"></i>
+                    <span>Xác nhận thanh toán</span>
+                  </button>
+                  <button class="btn-menu-material delete" (click)="BtnHuyChoThanhToan()">
+                    <i class="pi pi-times"></i>
+                    <span>Xác nhận hủy duyệt</span>
+                  </button>
+                  <!--                  <button class="btn-menu-material delete" (click)="btnDelete_ids()">-->
+                  <!--                    <i class="pi pi-trash"></i>-->
+                  <!--                    <span>Xóa đăng ký</span>-->
+                  <!--                  </button>-->
+                </mat-menu>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ovic-wrap-table-rps ovic-scroll-style" style="height:calc(100% - 65px - 60px);background: #dedede;">
+      <div class="ovic-wrap-table-rps__inner">
+        <p-table styleClass="p-datatable-gridlines" [(selection)]="dataSelct" [value]="listData" [rowHover]="true"
+                 [rows]="rows" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="isLoading">
+          <ng-template pTemplate="header" class="d-bock">
+            <tr>
+              <th class="ovic-w-50px text-center">
+                <p-checkbox [binary]="true" (onChange)="selectDataByCheckbox($event)"></p-checkbox>
+              </th>
+              <th class="ovic-w-40px text-center ">STT</th>
+              <th class="ovic-w-40px text-center ">$$</th>
+              <th class="ovic-w-100px text-center ">Mã đăng ký</th>
+              <th class="text-center">Họ tên thí sinh</th>
+              <th class="ovic-w-80px text-center">Ngày sinh</th>
+              <th class="ovic-w-120px text-center">Số điện thoại</th>
+              <th class="ovic-w-150px">Lệ phí thi</th>
+              <!--              <th class="text-center">Môn đăng ký</th>-->
+              <th class="ovic-w-150px text-center">Đợt thi</th>
+              <th class="ovic-w-150px text-center">Thời gian TT</th>
+              <th class="ovic-w-150px text-center">Vận đơn</th>
+              <th class="ovic-w-250px text-center">Thao tác</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-item let-i="rowIndex">
+            <tr>
+              <td *ngIf="item.trangthai_thanhtoan !== 1,else haveTT" class="text-center">
+                <p-tableCheckbox [value]="item" [disabled]="item.trangthai_thanhtoan ===1"></p-tableCheckbox>
+              </td>
+              <ng-template #haveTT>
+                <td class="text-center">
+                  <p-checkbox [disabled]="true"></p-checkbox>
+                </td>
+              </ng-template>
+              <td class="text-center">{{ item['_indexTable'] }}</td>
+              <td class="text-center">
+
+                <ng-container [ngSwitch]="item['__status_converted']">
+                  <div *ngSwitchCase="2" class="thanh-toan check text-center" pTooltip="Đã thanh toán chờ duyệt"
+                       tooltipPosition="right">
+                    <i class="pi pi-history"></i></div>
+                  <div *ngSwitchCase="1" class="thanh-toan true text-center" pTooltip="Thanh toán thành công"
+                       tooltipPosition="right">
+                    <i class="pi pi-check-circle"></i></div>
+                  <div *ngSwitchCase="-1" class="thanh-toan false text-center" pTooltip="Hủy duyệt"
+                       tooltipPosition="right">
+                    <i class="pi pi-ban"></i></div>
+                  <div *ngSwitchCase="0" class="thanh-toan wait text-center" pTooltip="Chưa thanh toán"
+                       tooltipPosition="right">
+                    <i class="pi pi-exclamation-triangle"></i>
+                  </div>
+                </ng-container>
+
+              </td>
+              <td class="text-center">{{ 'hsk-' + item['__order_id_coverted'] }}</td>
+              <td>
+                <!--                <span class="tt-hover" (click)="btnViewTT(item)"> {{ item['__thisinh_hoten'] }}</span>-->
+                <div class="d-flex justify-content-between align-items-center btn" (click)="viewOrderShip(item)">
+                  <span>{{ item['__thisinh_hoten'] }}</span>
+                  <button pButton pRipple class="p-button-rounded p-button-text" pTooltip="Thông tin chi tiết"
+                          icon="pi pi-info-circle"></button>
+                </div>
+              </td>
+              <td class="text-center">{{ item['__thisinh_ngaysinh'] }}</td>
+              <td class="ovic-w-80px text-right">{{ item['__thisinh_phone'] }}</td>
+              <td class="text-right">{{ item['lephithi'] | numberToVndCurrencuy }}</td>
+
+              <!--              <td>-->
+              <!--                <div class="d-flex flex-wrap " style="gap:6px;">-->
+              <!--                  <div *ngFor=" let mon of item['__monthi_covered']"-->
+              <!--                       [ngClass]=" 'mon-thi mon-' + mon['kyhieu'] ">{{ mon['tenmon'] }}-->
+              <!--                  </div>-->
+              <!--                </div>-->
+              <!--              </td>-->
+              <td class="text-left">{{ item['__dotthi_coverted'] }}</td>
+              <td class="text-right">{{ item['__time_thanhtoan'] }}</td>
+              <td class="text-center">{{ item['__vandon'] }}</td>
+              <td class="text-center">
+                <div class="d-flex justify-content-center" style=" gap:10px;">
+                  <button *ngIf="item.trangthai_thanhtoan !== 1 " icon="pi pi-check" pRipple pButton label="Duyệt"
+                          (click)="duyetThanhtoanItemByphieu(item)"></button>
+<!--                  <button pRipple pButton label="gửi thông tin" class="p-button-success" icon="pi pi-send"-->
+<!--                          (click)="sendChuyenphat(item)"></button>-->
+                </div>
+              </td>
+
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="12">
+                Không có dữ liệu thí sinh!
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    <div style="height:60px;">
+      <p-paginator class="duthi_panigator" [showCurrentPageReport]="true" [rows]="rows" [totalRecords]="recordsTotal"
+                   [pageLinkSize]="5"
+                   (onPageChange)="paginate($event)"></p-paginator>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #templateWaiting let-c="close" let-d="dismiss">
+  <div class="waiting-container">
+    <label>Vui lòng chờ...</label>
+    <div class="waiting-content">
+      <mat-progress-bar mode="buffer"></mat-progress-bar>
+    </div>
+  </div>
+</ng-template>
+
+<p-dialog class="phieuchuyenphatView" header="CHI TIẾT PHIẾU CHUYỂN PHÁT" [(visible)]="viewOrderShipSelect"
+          [style]="{width:'60vw',height:'80vh' }"
+          [modal]="true" [maximizable]="true" [draggable]="false" [resizable]="false">
+  <div *ngIf="orderShipSelect">
+    <div>
+      <p><strong>I. THÔNG TIN CÁ NHÂN</strong></p>
+      <p><strong>Họ tên:</strong> {{ orderShipSelect['__thisinh_hoten'] }}</p>
+      <p><strong>Số cccd:</strong> {{ orderShipSelect['__thisinh_cccd'] }}</p>
+      <p><strong>Email:</strong> {{ orderShipSelect['__thisinh_email'] }}</p>
+      <p><strong>Số điện thoại:</strong> {{ orderShipSelect['__thisinh_phone'] }}</p>
+      <p><strong>Đợt thi:</strong> {{ orderShipSelect['__dotthi_coverted'] }}</p>
+      <p><strong>Số báo danh: </strong> {{ orderShipSelect['sobaodanh'] }}</p>
+      <p><strong>Cấp HSK: </strong> {{ orderShipSelect['__capHsk'] }}</p>
+
+    </div>
+
+    <div>
+      <p><strong>II. THÔNG TIN CHUYỂN PHÁT</strong></p>
+      <p><strong>Họ tên người nhận:</strong> {{ orderShipSelect.nguoinhan_hoten }}</p>
+      <p><strong>Số điện thoại người nhận:</strong> {{ orderShipSelect.nguoinhan_phone }}</p>
+      <p><strong>Địa chỉ người nhận:</strong> {{ orderShipSelect.nguoinhan_diachi }}</p>
+      <p><strong>Đợt thi:</strong> {{ orderShipSelect['__dotthi_coverted'] }}</p>
+    </div>
+
+    <div>
+      <p><strong>III. CHI TIẾT THANH TOÁN</strong></p>
+      <table class="w-100 table-chitiet">
+        <tr>
+          <th>Nội dung</th>
+          <th class="text-center">Số lượng</th>
+          <th class="text-center">Thành tiền</th>
+        </tr>
+        <tr *ngFor="let item of orderShipSelect['params']">
+          <td>{{ item['title'] }}</td>
+          <td class="text-center">{{ item['soluong'] }}</td>
+          <td class="text-right">{{ viewDongiaItem(item) | numberToVndCurrencuy }}</td>
+        </tr>
+        <tr>
+          <td colspan="2"><strong>Tổng tiền</strong></td>
+          <td class="text-right"><strong>{{ viewDongiaAll(orderShipSelect['params']) | numberToVndCurrencuy }}</strong>
+          </td>
+        </tr>
+
+      </table>
+    </div>
+    <div class="m-2" *ngIf="orderShipSelect['__minhchung'] else notFile">
+      <p><strong>IV. MINH CHỨNG CHUYỂN KHOẢN</strong></p>
+      <!--      <div class="text-center">-->
+      <!--        <img style="width: 210px;" [src]="orderShipSelect['__minhchung']" alt="">-->
+      <!--      </div>-->
+
+      <div class="text-center">
+        <p-image
+          [src]="orderShipSelect['__minhchung']"
+          alt="Image"
+          width="250"
+          [preview]="true" appendTo="body"></p-image>
+      </div>
+    </div>
+    <ng-template #notFile>
+      <p><strong>IV. MINH CHỨNG CHUYỂN KHOẢN</strong></p>
+      <div class="text-center">
+        <span style="color:red;"><strong>Thí sinh chưa cập nhật ảnh minh chứng thanh toán</strong></span>
+      </div>
+    </ng-template>
+  </div>
+</p-dialog>
+
+
+<p-dialog class="chuyenphat_content" header="CẬP NHẬT THONG TIN CHUYỂN PHÁT" [(visible)]="viewOrderShipVandon"
+          [style]="{width:'60vw',height:'80vh' }"
+          [modal]="true" [maximizable]="true" [draggable]="false" [resizable]="false">
+  <div class="body-info">
+    <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+      <form [formGroup]="formVandon" autocomplete="off">
+        <div class="row row-cols-1">
+          <div class="col-12 ">
+            <div class="form-row">
+              <label>Mã vận đợt: <span class="ovic-mark">*</span></label>
+              <input pInputText type="text" placeholder="Vd: 00000000..." formControlName="ma_vandon">
+            </div>
+          </div>
+
+
+        </div>
+        <div class="row ">
+          <div class="col-12">
+            <div class="form-row">
+              <label>Nội dung: <span class="ovic-mark">*</span></label>
+              <textarea pInputText type="text" class="w-100" rows="4" placeholder="Vd: ..."
+                        formControlName="vandon_content"></textarea>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div style=" margin: 10px; text-align: center;">
+      <button pButton pRipple label="Gửi Email cho thí sinh" (click)="btnAcceptVandon()"></button>
+    </div>
+
+  </div>
+</p-dialog>

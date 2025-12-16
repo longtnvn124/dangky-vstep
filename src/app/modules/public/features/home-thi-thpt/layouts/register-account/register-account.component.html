@@ -1,0 +1,174 @@
+<div class="home-thpt-register" >
+  <div class="home-bg" style=" background-image: url(./assets/images/home-thpt/bg-1.jpg);"></div>
+  <div class="register-cotainer m-auto ">
+    <ng-container [ngSwitch]="active_regiter">
+      <ng-container *ngSwitchCase="'0'">
+        <div class="h-100" style="padding:20px;">
+          <div class="register-head">
+            <div class="register-head-div-2">Đăng ký tài khoản</div>
+          </div>
+          <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+            <form [formGroup]="formSave" autocomplete="off">
+
+              <div class="row row-cols-1">
+                <div class="mb-3  col-12 col-lg-12">
+                  <fieldset class="register-form-row" [class.fieldset--error]="f['username'].touched && f['username'].invalid"
+                            [class.fieldset--invalid]="f['username'].touched && f['username'].valid">
+                    <label>Số căn cước công dân <span class="ovic-mark">*</span></label>
+                    <input type="text" placeholder="Ví dụ:09127920011" formControlName="username" autocomplete="off">
+                  </fieldset>
+                  <span class="test-member__from__col__span"
+                        *ngIf="f['username'].touched && f['username'].invalid">Vui lòng nhập đúng định dạng số.</span>
+                </div>
+
+              </div>
+              <div class="row row-cols-1">
+                <div class="mb-3  col-12 col-lg-12">
+                  <fieldset class="register-form-row" [class.fieldset--error]="f['phone'].touched && f['phone'].invalid"
+                            [class.fieldset--invalid]="f['phone'].touched && f['phone'].valid">
+                    <label>Số điện thoại <span class="ovic-mark">*</span></label>
+                    <input type="text" placeholder="Ví dụ: 09123456..." formControlName="phone" autocomplete="off">
+                  </fieldset>
+                </div>
+
+              </div>
+
+              <div class="row row-cols-1">
+                <div class="mb-3 col-12 col-lg-12">
+                  <fieldset class="register-form-row"
+                            [class.fieldset--error]="f['display_name'].touched && f['display_name'].invalid"
+                            [class.fieldset--invalid]="f['display_name'].touched && f['display_name'].valid">
+                    <label>Họ và tên <span class="ovic-mark">*</span></label>
+                    <input type="text" placeholder="Ví dụ: Nguyễn Văn A" formControlName="display_name" autocomplete="off">
+                  </fieldset>
+
+                </div>
+              </div>
+              <div class="row mb-3 ">
+                <div class="col">
+                  <fieldset class="register-form-row" [class.fieldset--error]="f['email'].touched && f['email'].invalid"
+                            [class.fieldset--invalid]="f['email'].touched && f['email'].valid">
+                    <label>Email <span class="ovic-mark">*</span></label>
+                    <input type="text" placeholder="Ví dụ: emailcuaban@gmail.com" formControlName="email" autocomplete="off">
+                  </fieldset>
+                </div>
+              </div>
+              <div class="row mb-3 ">
+                <div class="col">
+                  <fieldset class="register-form-row position-relative"
+                            [class.fieldset--error]="f['password'].touched && f['password'].invalid"
+                            [class.fieldset--invalid]="f['password'].touched && f['password'].valid">
+                    <label>Mật khẩu <span class="ovic-mark">*</span></label>
+                    <input type="{{type_password}}" placeholder="Nhập mật khẩu" formControlName="password"
+                           [attr.disabled]=" !changPassState == true ? true : null" autocomplete="off" >
+                    <div
+                      style="position: absolute;right: 12px;top: 0;height: 100%;text-align: center;display: flex;align-items: center;">
+                      <i [pTooltip]="'Hiển thị mật khẩu'" [tooltipPosition]="'left'" class="mr-2 btn-check"
+                         [ngClass]="[type_password==='password' ? 'pi pi-eye': 'pi pi-eye-slash', changPassState === true ?'':'p-disabled']"
+                         (click)="btnShowPassWord()"></i>
+                    </div>
+                  </fieldset>
+                  <div *ngIf="f['password'].errors" class="div-err">
+                    <div class="error-password-checker"><strong>Yêu cầu mật khẩu:</strong> </div>
+                    <div class="error-password-checker" *ngIf="f['password'].hasError('noAlphaNumeric')">
+                      - Chứa chữ số và chữ cái.
+                    </div>
+                    <div class="error-password-checker" *ngIf="f['password'].hasError('minLength')">
+                      - Độ dài tối thiểu 8 ký tự.
+                    </div>
+                    <div class="error-password-checker" *ngIf="f['password'].hasError('noUpperCase')">
+                      - Có ít nhất một ký tự viết hoa.
+                    </div>
+                    <div class="error-password-checker" *ngIf="f['password'].hasError('noSpecialCharacter')">
+                      - Có ít nhất một ký hiệu đặc biệt (vd: !, @, #,...).
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div clas="d-flex" style="font-size:14px;padding:0 8px">Lưu ý:
+            <span class="toast-Err-Email">
+              Nhập email chính xác, nhập sai email sẽ không kích hoạt được tài khoản.
+            </span>
+          </div>
+          <div class="login-video__content__foot d-flex justify-content-end align-items-center flex-row"
+               style="margin-bottom: 10px;">
+            <span style="font-size: 14px;">Bạn đã có tài khoản? </span>
+            <button type="button" class="btn-forgot-password m-0 ml-1" style="color: var(--primary);"
+                    (click)="btnLogin()">Đăng Nhập</button>
+          </div>
+          <div class="register-footer">
+            <div *ngIf="type_check_valid === 1"
+                 class="test-member__from__col test-member-size--max pb-0 justify-content-center">
+              <button *ngIf="!formSave.valid" disabled class="p-button-success test-member__from__btn-submit" pButton
+                      pRipple icon="pi pi-file-edit" label="Đăng ký"></button>
+              <button *ngIf="formSave.valid" (click)="btnRegisterForm()"
+                      class="p-button-success test-member__from__btn-submit" pButton pRipple icon="pi pi-file-edit"
+                      label="Đăng ký"></button>
+
+            </div>
+            <div *ngIf="type_check_valid === 2"
+                 class="test-member__from__col test-member-size--max pb-0 justify-content-center">
+              <button disabled class="p-button-success test-member__from__btn-submit ovic-button--disabled" pButton pRipple
+                      icon="pi pi-spin pi-spinner" label="Hệ thống đang gửi yêu cầu đăng ký"></button>
+            </div>
+            <div *ngIf="type_check_valid === 3">
+              <div class="w-100 d-flex test-member__from__col test-member-size--max pb-0 justify-content-center">
+                <button disabled class="p-button-success test-member__from__btn-submit ovic-button--disabled" pButton
+                        pRipple icon="pi pi-file-edit" label="Đăng ký thành công"></button>
+              </div>
+              <div class="test-submit-form">
+                <div class="intro-y">
+                  <i class="pi pi-check"></i>
+                  <label>Hệ thống đã gửi thông tin xác thực về Email của bạn, vui lòng kiểm tra email và làm theo hướng dẫn để kích hoạt tài khoản. Trường hợp không thấy
+                    email, vui lòng kiểm tra hòm <b>"Thư rác"</b> hoặc <b>"Spam"</b>. </label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="'1'">
+        <div class="regiter-true">
+          <i class="pi pi-check-circle" ></i>
+          <div class="regiter-true__title" > Đăng ký thành công</div>
+          <div class="test-submit-form">
+            <div>
+              <label>Hệ thống đã gửi thông tin xác thực về Email của bạn, vui lòng kiểm tra email và làm theo hướng dẫn để kích hoạt tài khoản. Trường hợp không thấy
+                email, vui lòng kiểm tra hòm <b>"Thư rác"</b> hoặc <b>"Spam"</b>.
+              </label>
+            </div>
+          </div>
+          <div class="d-flex w-100 justify-content-center align-items-center" style="padding-top:10px; gap:10px;">
+            <button pButton pRipple type="button" label="Đăng ký" class="p-button-raised p-button-secondary" (click)="exitForm()"></button>
+            <button pButton pRipple type="button" label="Đăng nhập" class="p-button-raised p-button-success" (click)="btnLogin()"></button>
+          </div>
+
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="'2'">
+        <div class="regiter-true">
+          <i class="pi pi-check-circle" ></i>
+<!--          <div class="regiter-true__title" > Đăng ký thành công</div>-->
+          <div class="test-submit-form">
+            <div class="d-flex flex-column">
+              <label class="text-justify">Hệ thống ghi nhận bạn đã sự dụng tài khoản có <b>số CCCD (hoặc email)</b> để đăng ký tài khoản <b>VSAT-TNU</b>, vui lòng sự dụng tài khoản này để thực hiện đăng nhập vào <b>hệ thống Đăng ký HSK</b> (do Đại học Thái Nguyên phát hành ).
+              </label>
+              <label class="text-justify"><b class="text-uppercase">lưu ý:</b> Trường hợp quên mật khẩu vui lòng sử dụng chức năng quên mật khẩu ở trang <b>Đăng nhập</b></label>
+            </div>
+          </div>
+          <div class="d-flex w-100 justify-content-center align-items-center" style="padding-top:10px; gap:10px;">
+            <button pButton pRipple type="button" label="Đăng ký" class="p-button-raised p-button-secondary" (click)="exitForm()"></button>
+            <button pButton pRipple type="button" label="Đăng nhập" class="p-button-raised p-button-success" (click)="btnLogin()"></button>
+          </div>
+
+        </div>
+      </ng-container>
+
+    </ng-container>
+
+  </div>
+</div>

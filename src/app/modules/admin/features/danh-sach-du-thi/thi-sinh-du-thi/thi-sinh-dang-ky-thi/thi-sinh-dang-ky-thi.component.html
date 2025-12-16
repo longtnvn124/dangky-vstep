@@ -1,0 +1,53 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12 ovic-ui-table" [class.ovic-is-loading]="isLoading">
+      <div class="ovic-load-init-fail alert alert-danger --fs-14" *ngIf="loadInitFail; else tableData">
+        Đã có lỗi trong quá trình tải dữ liệu
+        <button class="btn btn-primary border-circle --fs-13 ml-2" (click)="loadInit()">Reload</button>
+      </div>
+      <ng-template #tableData>
+        <div class="p-datatable-header" style="border-bottom:1px solid #CCC;">
+          <h3 class="tbl-title ">Kết quả đăng ký</h3>
+        </div>
+        <p-table [value]="listdata" [showCurrentPageReport]="false" [tableStyle]="{ 'min-width': '100px' }">
+          <ng-template pTemplate="header">
+            <tr>
+              <th class="ovic-w-50px text-center">TT</th>
+              <th class="ovic-w-100px text-center">Mã đăng ký</th>
+              <th class="text-left">Đợt thi</th>
+              <th class=" text-left text-center">Môn thi</th>
+              <th class="ovic-w-180px text-center">Lệ phí thi</th>
+              <th class="ovic-w-110px text-center">Trạng thái</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7">Không có dữ liệu</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td class="ovic-w-50px text-center" [innerHTML]="item['_indexTable']"></td>
+              <td class="ovic-w-50px text-center" [innerHTML]="'VSAT' + item['id']"></td>
+              <td>
+                <div class="d-block --fs-14 font-weight-bold" [innerHTML]="item['_kehoachthi_covented']"></div>
+              </td>
+              <td class="ovic-w-260px">
+                <div class="d-flex flex-wrap --fs-14" style="gap:10px;">
+                  <div class="monthi_item" *ngFor="let a of item['_mon_ids_covertd']">{{a}}</div>
+                </div>
+              </td>
+              <td class="ovic-w-100px">
+                <div class="d-block --fs-14 text-right" [innerHTML]="item['__lephithi_covered' ] |numberToVndCurrencuy"></div>
+              </td>
+              <td class="ovic-w-150px">
+                <div class="d-block --fs-14" [innerHTML]="item['__status_converted'] | htmlDecode"></div>
+              </td>
+
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-template>
+    </div>
+  </div>
+</div>

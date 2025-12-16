@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="col-12" [class.ovic-is-loading]="isLoading">
+    <div class="ovic-load-init-fail alert alert-danger --fs-14" *ngIf="loadInitFail; else tableData">
+      Đã có lỗi trong quá trình tải dữ liệu
+      <button class="btn btn-primary border-circle --fs-13 ml-2" (click)="loadInit()">Reload</button>
+    </div>
+    <ng-template #tableData>
+      <ovic-table emptyMessage="Danh sách trống" [index]="index" [data]="listData"
+                  styleClass="tbl-danh-sach-tap-the head-input-size--normal head-input-size--250px" dataKey="id" rowHover="true"
+                  [rows]="15" tableName="Mail track" [tblStructure]="tblStructure"
+                  [enableSearch]="true" [enableSearchLocal]="false" (onSearch)="onSearch($event)" [searchDebounceTime]="800"
+                  ></ovic-table>
+      <p-paginator class="p-paginator--custom" [showCurrentPageReport]="true" [rows]="rows"
+                   [totalRecords]="recordsTotal" [pageLinkSize]="5" (onPageChange)="paginate($event)"></p-paginator>
+    </ng-template>
+  </div>
+</div>
+

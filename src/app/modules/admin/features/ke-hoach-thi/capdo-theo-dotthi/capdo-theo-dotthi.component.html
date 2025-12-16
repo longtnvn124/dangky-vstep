@@ -1,0 +1,48 @@
+<div class="w-100 h-100">
+  <ng-container [ngSwitch]="ngType">
+    <ng-container *ngSwitchCase=" 0">
+      <div class="h-100 d-flex flex-column justify-content-center align-items-center"
+           style="gap:4px;background:#c1ccd8">
+        <div style="font-size:16px;">Chưa thiết lập số lượng thí sinh theo cấp độ HSK</div>
+        <div style="font-size:16px;">Bấm vào nút đồng bộ để thực hiện thiết lập</div>
+        <button pButton pRipple label="Đồng bộ" (click)="btnCreated()"></button>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase=" 1">
+      <div class="ovic-container ovic-ui-table">
+        <div class="ovic-ui-table">
+          <div class="d-flex justify-content-between align-items-center " style="height:60px;padding:10px;background:#efebeb;">
+            <div class="text-uppercase" style="font-size:17px;font-weight:500">danh sách cấp độ</div>
+            <div >
+              <button pRipple pButton label="tải lại" icon="pi pi-refresh" (click)="loadInit()"></button>
+            </div>
+          </div>
+          <p-table styleClass="p-datatable-gridlines" [value]="dataKehohoachCapdo" [rowHover]="true"
+                   [showCurrentPageReport]="true">
+            <ng-template pTemplate="header" class="d-bock">
+              <tr>
+                <th class="text-center ovic-w-50px">STT</th>
+                <th >Cấp độ</th>
+                <th class="text-center ovic-w-250px"> Số lượng được phép đăng ký</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item class="d-bock">
+              <tr>
+                <td class="text-center">{{item['_index']}}</td>
+                <td>{{item['_ten_capdo']}}</td>
+                <td><input class="in_table" type="number" [(ngModel)]="item.soluong" (keyup.enter)="inputChange($event,item)"></td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        <div class="mes-3item" >
+          <strong>Lưu ý:</strong><span> Sau khi nhập số lượng bấm nút Enter để lưu </span>
+        </div>
+      </div>
+
+    </ng-container>
+  </ng-container>
+
+
+</div>

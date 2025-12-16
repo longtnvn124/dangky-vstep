@@ -1,0 +1,132 @@
+<div class="row">
+  <div class="col-12 ovic-ui-table site-thpt" style="height:calc(100vh - 90px)" [class.ovic-is-loading]="isLoading">
+    <div class="p-datatable-header" style="height:65px; border-bottom:1px solid #CCC;">
+      <h3 class="tbl-title ">Danh sách thí sinh</h3>
+      <div class="search-block ui-table-globalfilter-container ">
+        <div class="d-flex align-items-center">
+          <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+            <div class="d-flex" style="gap:10px;">
+              <div class="search-block__elm ">
+<!--                <span class="p-input-icon-right">-->
+<!--                  <i class="pi pi-search"></i>-->
+<!--                  <input type="text" pInputText style="height:42px" placeholder="Vd: Trần Văn A..."-->
+<!--                         (input)="onInputChange($event.target['value'])"/>-->
+<!--                </span>-->
+              </div>
+              <div>
+                <p-dropdown [options]="listCapdo" placeholder="Chọn cấp hsk" optionValue="id" [showClear]="true" optionLabel="title" (onChange)="changeCapdo($event)"></p-dropdown>
+              </div>
+              <div>
+                <p-dropdown [options]="listKehoachthi" placeholder="Chọn đợt thi" optionValue="id" [showClear]="true" optionLabel="dotthi" (onChange)="changedotthi($event)"></p-dropdown>
+              </div>
+<!--              <div class="">-->
+<!--                <button pButton pRipple icon="pi pi-bars" style="height:42px;width: 41px;"-->
+<!--                        [matMenuTriggerFor]="menu"></button>-->
+<!--                <mat-menu #menu="matMenu" class="d-flex flex-column w-100 h-100">-->
+<!--                  <button class="btn-menu-material excel" (click)="btnExportExcelHskHuyDk()">-->
+<!--                    <i class="pi pi-file-excel"></i>-->
+<!--                    <span>Xuất dữ liệu thí sinh</span>-->
+<!--                  </button>-->
+
+<!--                </mat-menu>-->
+<!--              </div>-->
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ovic-wrap-table-rps ovic-scroll-style overflow-hidden overflow-y-auto" style="height:calc(100% - 65px - 60px);background: #dedede;">
+      <!--    <div class="ovic-wrap-table-rps ovic-scroll-style overflow-hidden overflow-y-auto" style="height:calc(100% - 65px - 60px);background: #dedede;">-->
+      <div class="ovic-wrap-table-rps__inner">
+        <p-table class="w-100"  [(selection)]="listData" styleClass="p-datatable-gridlines" [value]="listData" [rowHover]="true"
+                 [rows]="rows" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="isLoading">
+          <ng-template pTemplate="header" class="d-bock">
+            <tr>
+
+              <th class="ovic-w-40px text-center ">STT</th>
+              <th class="text-center">Email</th>
+              <th class="ovic-w-250px text-center ">Họ tên</th>
+              <th class="ovic-w-120px text-center">Số điện thoại</th>
+              <th class=" text-center">Cấp HSK</th>
+              <th class="text-center">Đợt đăng ký hiện tại</th>
+              <th class="text-center">Đơn vị</th>
+              <th class="text-center">Thao tác</th>
+
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-item let-i="rowIndex">
+            <tr>
+              <td class="text-center">{{ item['_indexTable'] }}</td>
+              <td class="text-left">{{ item['_email'] }}</td>
+              <td class="text-left">{{ item['_hoten'] }}</td>
+              <td class="ovic-w-80px text-right">{{ item['_phone'] }}</td>
+              <td class=" text-center">{{ item['_capdohsk'] }}</td>
+              <td class=" text-center">{{ item['_dotthi'] }}</td>
+              <td class=" text-center">{{ item['_ghichu'] }}</td>
+              <td class=" text-center">
+                <div>
+                  <button pButton pRipple class="p-button-warning" label="Chi tiết" (click)="viewDetail(item)"> </button>
+                </div>
+              </td>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="10">
+                Không có dữ liệu thí sinh!
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    <p-paginator class="duthi_panigator" [showCurrentPageReport]="true" [rows]="rows" [totalRecords]="recordsTotal"
+                 [pageLinkSize]="5"
+                 (onPageChange)="paginate($event)"></p-paginator>
+  </div>
+</div>
+
+<p-dialog class="dal-dk-custome" [header]="'THÔNG TIN CHI TIẾT'" [(visible)]="view" [modal]="true"
+          [style]="{width: '50vw',height: '90vh'}" [draggable]="false" [resizable]="false">
+  <div *ngIf="orderSelect" class="w-100 h-100 overflow-y-auto overflow-hidden">
+    <div class="view-info">
+      <div><strong>Họ và tên : </strong> {{orderSelect['_hoten']}}</div>
+      <div><strong>Email: </strong> {{orderSelect['_email']}}</div>
+      <div><strong>Số điện thoại : </strong> {{orderSelect['_phone']}}</div>
+      <div><strong>Cấp hsk đăng ký : </strong> {{orderSelect['_capdohsk']}}</div>
+      <div><strong>Đợt thi hiện tại : </strong> {{orderSelect['_dotthi']}}</div>
+    </div>
+
+    <div class="ovic-ui-table mt-2">
+
+      <p-table class="w-100 site-thpt " [value]="orderSelectParam" [rowHover]="true">
+        <ng-template pTemplate="header" class="d-bock">
+          <tr>
+            <th class="text-center">STT</th>
+            <th class="text-center">Đợt thi cũ</th>
+            <th class="text-center">Đợt thi mới</th>
+            <th class="text-center">Thời gian đổi</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-item let-i="rowIndex">
+          <td class="text-center">{{item['_index']}}</td>
+          <td class="text-center">{{item['_cu']}}</td>
+          <td class="text-center">{{item['_moi']}}</td>
+          <td class="text-center">{{item['_time']}}</td>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="10">
+              Không có dữ liệu thí sinh!
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+    </div>
+  </div>
+</p-dialog>

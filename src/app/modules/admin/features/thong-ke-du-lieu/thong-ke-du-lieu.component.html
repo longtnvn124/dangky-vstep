@@ -1,0 +1,187 @@
+<div class="row">
+  <div class="col-12 d-flex flex-column " style="height:calc(100vh - 90px)">
+    <div class="hsk-header justify-content-between">
+      <h3 class="tbl-title ">Kết quả đăng ký</h3>
+      <div class="search-block ui-table-globalfilter-container ">
+        <div class="d-flex align-items-center">
+          <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+            <div class="d-flex" style="gap:10px;">
+              <div class="">
+                <p-dropdown [options]="kehoachthi" placeholder="Chọn đợt thi" optionValue="id" optionLabel="dotthi"
+                            [showClear]="true"
+                            (onChange)="onSelectKehoachThi($event.value)">
+
+                </p-dropdown>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hsk-header" *ngIf="dotthi_select">
+      <form [formGroup]="formSave" class="w-100 h-100">
+        <div class="search-form">
+          <div class="search-form_left">
+            <div class="">
+              <input pInputText type="text" class="ovic-w-150px" placeholder="Nhập CCCD" formControlName="search_cccd">
+
+            </div>
+            <div class="">
+              <input pInputText type="text" placeholder="Nhập họ tên" formControlName="search_name">
+            </div>
+            <div class="">
+              <p-dropdown [options]="dmCapdo" placeholder="Chọn cấp Hsk" optionValue="id" optionLabel="title"
+                          [showClear]="true"
+                          formControlName="caphsk_id">
+              </p-dropdown>
+            </div>
+            <div class="">
+              <p-dropdown [options]="paymentStatus" placeholder="Trạng thái thanh toán" optionValue="value"
+                          optionLabel="label" [showClear]="true"
+                          formControlName="trangthai_thanhtoan"
+              >
+
+              </p-dropdown>
+            </div>
+            <div class="">
+              <p-dropdown [options]="infoStatus" placeholder="Cập nhật thông tin" optionValue="value"
+                          optionLabel="label"
+                          [showClear]="true"
+                          formControlName="isThontin">
+
+              </p-dropdown>
+            </div>
+            <div class="">
+              <p-dropdown [options]="anhChandungStatus" placeholder="Cập nhật ảnh chân dung" optionValue="value"
+                          optionLabel="label" [showClear]="true"
+                          formControlName="isAnhchandung">
+
+              </p-dropdown>
+            </div>
+            <div class="">
+              <p-dropdown [options]="anhCccdStatus" placeholder="Cập nhật ảnh CCCCD (hộ chiếu)" optionValue="value"
+                          optionLabel="label" [showClear]="true"
+                          formControlName="isCccd">
+
+              </p-dropdown>
+            </div>
+            <div class="">
+              <p-dropdown [options]="dataFillGhichu" placeholder="Đối tượng đăng ký" optionValue="value"
+                          optionLabel="value" [showClear]="true"
+                          formControlName="search_ghichu">
+
+              </p-dropdown>
+            </div>
+          </div>
+          <div class="search-form_right" style="width: 250px">
+
+              <button pRipple pButton icon="pi pi-search" label="Tìm kiếm" (click)="btnSearch()"></button>
+              <button pRipple pButton icon="pi pi-file-excel" class="p-button-success ml-1" label="Xuất dữ liệu" (click)="exportDataFilter()"></button>
+
+          </div>
+        </div>
+      </form>
+
+    </div>
+    <div class="hsk-body">
+
+      <p-table [value]="dataViewClone"
+               styleClass="tbl-danhSachUser table-scroll-able table-able-dropdown-p-table table-none-header ovic-ui-table table-reBorder th-td-padding-5px">
+        <ng-template pTemplate="header">
+          <tr>
+
+            <th class="ovic-w-40px text-center ">STT</th>
+            <th class="ovic-w-40px text-center ">$$</th>
+            <th class="ovic-w-180px text-center">Họ và tên</th>
+            <th class="ovic-w-180px text-center">CCCD (hoặc hộ chiếu)</th>
+            <th class="ovic-w-120px text-center">Số điện thoại</th>
+            <th class="text-center">Lệ phí thi</th>
+            <th class="text-center">Cấp độ HSK</th>
+            <th class="ovic-w-150px text-center">Cập nhật thông tin</th>
+            <th class="ovic-w-150px text-center">Cập nhật ảnh chân dung</th>
+            <th class="ovic-w-150px text-center">Cập nhật ảnh CCCD (hộ chiếu)</th>
+            <th class="ovic-w-150px text-center">Ghi chú</th>
+          </tr>
+
+        </ng-template>
+        <ng-template pTemplate="body" let-item let-i="rowIndex">
+          <tr>
+            <td class="text-center">{{ i + 1 }}</td>
+            <td class="text-center">
+
+              <ng-container [ngSwitch]="item['__status_converted']">
+                <div *ngSwitchCase="2" class="thanh-toan check text-center" pTooltip="Giao dịch đang xử lý"
+                     tooltipPosition="right">
+                  <i class="pi pi-history"></i></div>
+                <div *ngSwitchCase="1" class="thanh-toan true text-center" pTooltip="Đăng ký thành công"
+                     tooltipPosition="right">
+                  <i class="pi pi-check-circle"></i></div>
+                <div *ngSwitchCase="-1" class="thanh-toan wait text-center" pTooltip="Đã chuyển khoản, chờ duyệt"
+                     tooltipPosition="right">
+                  <i class="pi pi-file-edit"></i></div>
+                <div *ngSwitchCase="0" class="thanh-toan false text-center" pTooltip="Chưa thanh toán"
+                     tooltipPosition="right">
+                  <i class="pi pi-exclamation-triangle"></i>
+                </div>
+              </ng-container>
+
+            </td>
+
+            <td><span class="tt-hover"> {{ item['__hoten'] }}</span></td>
+            <td class="text-center">{{ item['__cccd_so'] }}</td>
+            <td class="ovic-w-80px text-right">{{ item['__phone'] }}</td>
+            <td class="text-right">{{ item['__lephithi'] | numberToVndCurrencuy }}</td>
+            <td>
+              <div [ngClass]="'hsk hsk'+ item['caphsk_id']">{{ item['__capthi_converted'] }}</div>
+            </td>
+            <td class="text-left">
+              <ng-container [ngSwitch]="item['__isInfo']">
+
+                <div *ngSwitchCase="1" class="status true text-center">Đã cập nhật</div>
+                <div *ngSwitchCase="0" class="status false text-center">Chưa cập nhật</div>
+              </ng-container>
+            </td>
+            <td class="text-left">
+              <ng-container [ngSwitch]="item['__isAvata']">
+                <div *ngSwitchCase="1" class="status true text-center">Đã cập nhật</div>
+                <div *ngSwitchCase="0" class="status false text-center">Chưa cập nhật</div>
+              </ng-container>
+            </td>
+            <td class="text-left">
+              <ng-container [ngSwitch]="item['__isCccdImg']">
+                <div *ngSwitchCase="1" class="status true text-center">Đã cập nhật</div>
+                <div *ngSwitchCase="0" class="status false text-center">Chưa cập nhật</div>
+              </ng-container>
+            </td>
+
+            <td class="text-left">{{ item['__ghichu'] }}</td>
+
+
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" >
+          <tr>
+            <td colspan="20"> Không có dữ liệu thí sinh</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+    <div class="hsk-bottom">
+      <div *ngIf="dataViewClone && dataViewClone.length>=0" class="bt-view-total">
+        Có <span><strong>{{dataViewClone.length}}</strong></span> kết quả phù hợp.
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<ng-template #templateWaiting let-c="close" let-d="dismiss">
+  <div class="waiting-container">
+    <label>Vui lòng chờ...</label>
+    <div class="waiting-content">
+      <mat-progress-bar mode="buffer"></mat-progress-bar>
+    </div>
+  </div>
+</ng-template>

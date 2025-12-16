@@ -1,0 +1,103 @@
+<div class="container d-flex justify-content-center align-items-center" style="height: calc(100vh - 60px - 30px)">
+  <div class="khaibao-container">
+    <div class="khaibao_head">
+      <div>Khai báo phòng thi</div>
+      <div>
+        <button pButton pRipple icon="pi pi-plus" [iconPos]="'right'" label="Thêm mới" (click)="btnAddnew()"></button>
+      </div>
+    </div>
+    <div class="khaibao_body">
+      <div *ngIf="listData.length > 0 ,else notData">
+        <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+          <div *ngFor="let item of listData" class="khaibao__item">
+            <div class="row m-0">
+              <div class="col-3">
+                <div class="form-row">
+                  <label for="">Từ phòng</label>
+                  <input type="number" [(ngModel)]="item.fromAt" (ngModelChange)="onInputChange(item)">
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-row" [class.fieldset--error]="formSave.invalid">
+                  <label for="">Đến phòng</label>
+                  <input type="number" [(ngModel)]="item.toAt" (ngModelChange)="onInputChange(item)">
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-row">
+                  <label for="">Số lượng thí sinh/ 1 phòng</label>
+                  <input type="number" [(ngModel)]="item.soluong" (ngModelChange)="onInputChange(item)">
+                </div>
+              </div>
+              <div class="col-1">
+                <div class="d-flex align-items-end h-100">
+                  <button pButton pRipple class="p-button-danger" icon="pi pi-trash" label="Xóa" style="height: 42px;"
+                    (click)="btnDelete(item)"></button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <ng-template #notData>
+        <div class="w-100 h-100 d-flex justify-content-center align-items-center">
+          Không có dữ liệu
+        </div>
+      </ng-template>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<ng-template #fromUpdate>
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head">
+      <h4 class="ovic-side-navigation-content__head__title">{{formActive ? formActive.title : ''}}</h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+        class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
+    </div>
+    <div class="ovic-side-navigation-content__body ovic-scroll-style">
+      <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+        <form [formGroup]="formSave" autocomplete="off">
+          <div class="row">
+            <div class="col-6">
+              <div class="form-row">
+                <label>Từ phòng thứ<span class="ovic-mark">*</span></label>
+                <input pRipple pInputText type="number" placeholder="vd:1,2..." formControlName="fromAt"
+                  autocomplete="off">
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-row">
+                <label>đến phòng thứ <span class="ovic-mark">*</span></label>
+                <input pRipple pInputText type="number" placeholder="vd:1,2..." formControlName="toAt"
+                  autocomplete="off">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="form-row">
+                <label>Số lượng thí sinh trên 1 phòng<span class="ovic-mark">*</span></label>
+                <input pRipple pInputText type="number" placeholder="vd:1,2..." formControlName="soluong"
+                  autocomplete="off">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="ovic-side-navigation-content__foot">
+      <span class="ovic-side-navigation-content__foot__notice mr-auto"><mark>(*)</mark> bắt buộc phải nhập</span>
+      <button pButton pRipple type="button" [label]="btn_checkAdd" icon="pi pi-save" (click)="saveForm()"
+        class="p-button-success"></button>
+      <button pButton pRipple type="button" label="Đóng" class="p-button-secondary ml-3" icon="pi pi-times"
+        (click)="closeForm()"></button>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,28 @@
+<div class="answer-option-group">
+
+  <ng-container *ngFor="let option of options; index as i">
+
+    <div class=" row">
+      <div class="col-12">
+        <div class="form-row">
+          <label>Môn thi {{i+1}} </label>
+          <div class="d-flex flex-row w-100"
+               style="gap:10px ;border: 1px solid #ccc; border-radius: 4px;padding:10px;">
+           <div style="flex: 1 1 auto;display: flex;flex-direction: column;gap: 8px;">
+             <p-dropdown [options]="DmMonThi" optionLabel="tenmon" optionValue="id" placeholder="Chọn môn thi..."
+                         [(ngModel)]="option.mon_id" ></p-dropdown>
+             <p-calendar [showClear]="true" inputId="buttonbar" [timeOnly]="true" [showIcon]="true" [showSeconds]="false"
+                         placeholder="Chọn giờ gọi thí sinh vào thi..." [(ngModel)]="option.timeStart"></p-calendar>
+           </div>
+            <button pButton pRipple icon="pi pi-times"
+                    class="answer-option-group__answer__button p-button-outlined  p-button-danger h-100"
+                    (click)="deleteItem(option.id)"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <button pRipple pButton class="w-100 my-3" icon="pi pi-plus" label="Thêm môn thi"
+          (click)="addMoreAnswer()"></button>
+</div>

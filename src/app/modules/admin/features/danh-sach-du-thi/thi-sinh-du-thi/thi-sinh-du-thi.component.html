@@ -1,0 +1,177 @@
+<div class="row" >
+  <div class="col-12 ovic-ui-table site-thpt" style="height:calc(100vh - 90px)" [class.ovic-is-loading]="isLoading">
+    <div class="p-datatable-header" style="height:65px; border-bottom:1px solid #CCC;">
+      <h3 class="tbl-title ">Kết quả đăng ký</h3>
+      <div class="search-block ui-table-globalfilter-container ">
+        <div class="d-flex align-items-center">
+          <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+            <div class="d-flex" style="gap:10px;">
+              <div class="">
+                <p-dropdown [options]="statusTT" placeholder="Trạng thái thanh toán" optionValue="value" optionLabel="title" [showClear]="true"
+                            (onChange)="loadDropdowStatusTT($event.value)">
+
+                </p-dropdown>
+              </div>
+              <div class="">
+                <p-dropdown [options]="dsKehoachthi" placeholder="Chọn đợt thi" optionValue="id" optionLabel="dotthi" [showClear]="true"
+                            (onChange)="loadDropdow($event.value)">
+
+                </p-dropdown>
+              </div>
+              <div class="search-block__elm ">
+                <span class="p-input-icon-right">
+                  <i class="pi pi-search"></i>
+                  <input type="text" pInputText style="height:42px" placeholder="Nhập mã đăng ký..."
+                         (input)="onInputChange($event.target['value'])"/>
+                </span>
+              </div>
+              <div class="">
+                <button pButton pRipple icon="pi pi-bars" style="height:42px;width: 41px;"
+                        [matMenuTriggerFor]="menu"></button>
+                <mat-menu #menu="matMenu" class="d-flex flex-column w-100 h-100">
+                  <button class="btn-menu-material excel" (click)="btnExportExcelV2Hsk()">
+                    <i class="pi pi-file-excel"></i>
+                    <span>Xuất dữ liệu thí sinh</span>
+                  </button>
+                  <button class="btn-menu-material acsses" (click)="btnCheckTT()">
+                    <i class="pi pi-check-circle"></i>
+                    <span>Xác nhận thanh toán</span>
+                  </button>
+<!--                  <button class="btn-menu-material cancel" (click)="BtnHuyChoThanhToan()">-->
+<!--                    <i class="pi pi-times"></i>-->
+<!--                    <span>Hủy trạng thái chờ thanh toán</span>-->
+<!--                  </button>-->
+                  <button class="btn-menu-material delete" (click)="btnDelete_ids()">
+                    <i class="pi pi-trash"></i>
+                    <span>Xóa đăng ký</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ovic-wrap-table-rps ovic-scroll-style" style="height:calc(100% - 65px - 60px);background: #dedede;">
+      <div class="ovic-wrap-table-rps__inner">
+        <p-table [(selection)]="dataSelct" styleClass="p-datatable-gridlines" [value]="listData" [rowHover]="true"
+                 [rows]="rows" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="isLoading">
+          <ng-template pTemplate="header" class="d-bock">
+            <tr>
+              <th class="ovic-w-50px text-center">
+                <p-checkbox [binary]="true" (onChange)="selectDataByCheckbox($event)"></p-checkbox>
+              </th>
+              <th class="ovic-w-40px text-center ">STT</th>
+              <th class="ovic-w-40px text-center ">$$</th>
+              <th class="ovic-w-100px text-center ">Mã đăng ký</th>
+              <th class="ovic-w-180px text-center">Họ và tên</th>
+              <th class="ovic-w-80px text-center">CCCD (hoặc hộ chiếu)</th>
+              <th class="ovic-w-120px text-center">Số điện thoại</th>
+              <th class="text-center">Lệ phí thi</th>
+              <th class="text-center">Cấp độ HSK </th>
+              <th class="ovic-w-150px text-center">Đợt thi</th>
+              <th class="ovic-w-130px text-center">Mã giao dịch</th>
+              <th class="ovic-w-150px text-center">Thời gian TT</th>
+              <th class="ovic-w-150px text-center">Ghi chú</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-item let-i="rowIndex">
+            <tr>
+              <td *ngIf="item.trangthai_thanhtoan !== 1,else haveTT" class="text-center">
+                <p-tableCheckbox [value]="item" [disabled]="item['__status_converted'] ===1"></p-tableCheckbox>
+              </td>
+              <ng-template #haveTT>
+                <td class="text-center">
+                  <p-checkbox [disabled]="true"></p-checkbox>
+                </td>
+              </ng-template>
+<!--              <td>-->
+<!--                <p-tableCheckbox [value]="item" ></p-tableCheckbox>-->
+<!--              </td>-->
+              <td class="text-center">{{ item['_indexTable'] }}</td>
+              <td class="text-center">
+
+                <ng-container [ngSwitch]="item['__status_converted']">
+                  <div *ngSwitchCase="2" class="thanh-toan check text-center" pTooltip="Giao dịch đang xử lý" tooltipPosition="right">
+                    <i class="pi pi-history" ></i></div>
+                  <div *ngSwitchCase="1" class="thanh-toan true text-center" pTooltip="Đăng ký thành công" tooltipPosition="right">
+                    <i class="pi pi-check-circle"></i></div>
+                  <div *ngSwitchCase="-1" class="thanh-toan wait text-center" pTooltip="Đã chuyển khoản, chờ duyệt" tooltipPosition="right">
+                    <i class="pi pi-file-edit"></i></div>
+                  <div *ngSwitchCase="0" class="thanh-toan false text-center" pTooltip="Chưa thanh toán" tooltipPosition="right">
+                    <i class="pi pi-exclamation-triangle" ></i>
+                  </div>
+                </ng-container>
+
+              </td>
+              <td class="text-center">{{ item['__order_id_coverted'] }}</td>
+              <td><span class="tt-hover" (click)="btnViewTT(item)"> {{ item['__thisinh_hoten'] }}</span></td>
+              <td class="text-center">{{ item['__thisinh_cccd'] }}</td>
+              <td class="ovic-w-80px text-right">{{ item['__thisinh_phone'] }}</td>
+              <td class="text-right">{{ item['lephithi'] | numberToVndCurrencuy }}</td>
+
+              <td>
+                <div [ngClass]="'hsk hsk'+ item['caphsk_id']">{{item['__capthi_convenrtd']}}</div>
+              </td>
+              <td class="text-left">{{ item['__dotthi_coverted'] }}</td>
+
+              <td class="text-right">{{ item['giadich'] }}</td>
+              <td class="text-right">{{ item['__time_thanhtoan'] }}</td>
+              <td class="text-left">{{ item['__ghichu'] }}</td>
+
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="12">
+                Không có dữ liệu thí sinh!
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    <p-paginator class="duthi_panigator" [showCurrentPageReport]="true" [rows]="rows" [totalRecords]="recordsTotal" [pageLinkSize]="5"
+                 (onPageChange)="paginate($event)"></p-paginator>
+  </div>
+</div>
+
+<ng-template #fromUser>
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head">
+      <h4 class="ovic-side-navigation-content__head__title">Thông tin thí sinh</h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
+    </div>
+    <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style">
+      <app-thong-tin-thi-sinh [user_id]="thisinh_id" class="w-100 h-100"></app-thong-tin-thi-sinh>
+    </div>
+
+  </div>
+</ng-template>
+
+<ng-template #formregister>
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head">
+      <h4 class="ovic-side-navigation-content__head__title"></h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
+    </div>
+    <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style">
+      <app-thi-sinh-dang-ky-thi [thiSinh_id]="thisinh_id" class="w-100 h-100"></app-thi-sinh-dang-ky-thi>
+    </div>
+
+  </div>
+</ng-template>
+
+
+<ng-template #templateWaiting let-c="close" let-d="dismiss">
+  <div class="waiting-container">
+    <label>Vui lòng chờ...</label>
+    <div class="waiting-content">
+      <mat-progress-bar mode="buffer"></mat-progress-bar>
+    </div>
+  </div>
+</ng-template>

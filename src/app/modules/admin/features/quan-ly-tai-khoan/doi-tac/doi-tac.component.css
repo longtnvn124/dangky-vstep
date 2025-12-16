@@ -1,0 +1,37 @@
+.warning-pass {
+  background: #f9594e;
+  padding: 10px;
+  margin: 10px;
+  font-size: 13px;
+  color: #FFF;
+}
+
+.btn-check {
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.icon-check-pass {
+  color: #33bd1c;
+}
+
+.error-password-checker {
+  font-size: 13px;
+  color: tomato;
+}
+
+.veri {
+  padding: 5px 10px;
+  font-weight: 500;
+  border-radius: 43px;
+}
+
+.veri.veri-access{
+  color: #029108;
+  background-color: #c3fe9f;
+}
+
+.veri.veri-danger{
+  color: #f20404;
+  background-color: #f9cabe;
+}

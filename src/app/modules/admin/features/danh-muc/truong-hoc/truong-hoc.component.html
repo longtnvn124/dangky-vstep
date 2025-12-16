@@ -1,0 +1,150 @@
+<div class="row">
+  <div class="col-12 ovic-ui-table site-thpt" style="height:calc(100vh - 90px)" [class.ovic-is-loading]="isLoading">
+    <div class="p-datatable-header" style="height:65px; border-bottom:1px solid #CCC;">
+      <h3 class="tbl-title ">Danh sách </h3>
+      <div class="search-block ui-table-globalfilter-container ">
+        <div class="d-flex align-items-center">
+          <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+            <div class="d-flex" style="gap:10px;">
+              <div>
+                <p-multiSelect [style]="{'width':'250px'}" placeholder="Sở giáo dục và đào tạo" [options]="sogiaoduc" [(ngModel)]="sogiaoduc_select" optionValue="id" optionLabel="ten" (onChange)="multiChange($event.value)"></p-multiSelect>
+              </div>
+              <div class="search-block__elm ">
+                <span class="p-input-icon-right">
+                  <i class="pi pi-search"></i>
+                  <input type="text" pInputText style="height:42px" placeholder="Nhập tên trường..."
+                         (input)="onInputChange($event.target['value'])"/>
+                </span>
+              </div>
+              <div>
+                <button pButton pRipple label="Thêm mới" icon="pi pi-plus" class="p-button-success" style="height: 41px;" (click)="btnAdd()"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ovic-wrap-table-rps ovic-scroll-style" style="height:calc(100% - 65px - 60px);background: #dedede;">
+      <!--    <div class="ovic-wrap-table-rps ovic-scroll-style overflow-hidden overflow-y-auto" style="height:calc(100% - 65px - 60px);background: #dedede;">-->
+      <div class="ovic-wrap-table-rps__inner">
+        <p-table class="w-100"  [(selection)]="listData" styleClass="p-datatable-gridlines" [value]="listData" [rowHover]="true"
+                 [rows]="rows" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="isLoading">
+          <ng-template pTemplate="header" class="d-bock">
+            <tr>
+              <th class="ovic-w-40px text-center ">STT</th>
+              <th class=" text-left ">Tên </th>
+              <th class="ovic-w-250px text-center">Sở GD & ĐT</th>
+              <th class="ovic-w-180px text-center">Tỉnh / Thành phố</th>
+              <th class="ovic-w-180px text-center">Trạng thái</th>
+              <th class="ovic-w-180px text-center">Thao tác</th>
+
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-item let-i="rowIndex">
+            <tr>
+              <td class="text-center">{{ item['__index_table'] }}</td>
+              <td class="text-left" [innerHTML]=" item['__ten_converted'] | ovicSafeHtml" ></td>
+
+              <td class="text-center">{{ item['__sogiaoduc_converted'] }}</td>
+              <td class="text-left">{{ item['province'] }}</td>
+              <td class="text-center" [innerHTML]="item['__status'] |ovicSafeHtml"></td>
+
+              <td class="text-center">
+                <div class="d-flex justify-content-center" style="gap:10px;">
+                  <button style="width:32px;height:32px;" pRipple pButton class="p-button-warning" icon="pi pi-file-edit"  pTooltip="Cập nhật " tooltipPosition="left" (click)="btnUpdate(item)"></button>
+                  <button style="width:32px;height:32px;" pRipple pButton class="p-button-danger" icon="pi pi-trash" pTooltip="Xóa" tooltipPosition="left" (click)="btnDelete(item)"></button>
+                </div>
+              </td>
+
+<!--              __status-->
+<!--              __ten_converted-->
+<!--              __sogiaoduc_converted-->
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="10">
+                Không có dữ liệu thí sinh!
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    <p-paginator class="duthi_panigator" [showCurrentPageReport]="true" [rows]="rows" [totalRecords]="recordsTotal"
+                 [pageLinkSize]="5"
+                 (onPageChange)="paginate($event)"></p-paginator>
+  </div>
+</div>
+
+
+<ng-template #fromUpdate>
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head">
+      <h4 class="ovic-side-navigation-content__head__title">{{formActive ? formActive.title : ''}}</h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
+    </div>
+    <div class="ovic-side-navigation-content__body ovic-scroll-style">
+      <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+        <form [formGroup]="formSave" autocomplete="off">
+          <div class="row">
+            <div class="col-6">
+              <p class="form-row" >
+                <label>Tên<span class="ovic-mark">*</span></label>
+                <input pRipple pInputText type="text" placeholder="Tên ..." formControlName="ten"
+                       autocomplete="off">
+              </p>
+            </div>
+            <div class="col-6">
+              <p class="form-row">
+                <label>Trạng thái <span class="ovic-mark">*</span></label>
+                <p-dropdown placeholder="Chọn..." class="w-100" [options]="statusList" optionLabel="label"
+                            optionValue="value" [showClear]="true"
+                            formControlName='status'></p-dropdown>
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <p class="form-row">
+                <label>Sở giáo dục trực thuộc </label>
+                <p-dropdown placeholder="Chọn..." class="w-100" [options]="sogiaoduc" optionLabel="ten"
+                            optionValue="id" [showClear]="true"
+                            formControlName='parent_id'></p-dropdown>
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <p class="form-row">
+                <label >Tỉnh/ Thành phố <span class="ovic-mark">*</span></label>
+                <p-dropdown placeholder="Chọn..." class="w-100" [options]="provinces" formControlName="province" optionValue="name" optionLabel="name" [filter]="true"></p-dropdown>
+              </p>
+            </div>
+
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="form-row">
+                  <label >Địa chỉ</label>
+                  <textarea formControlName="address" cols="30" rows="5"></textarea>
+              </div>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+    <div class="ovic-side-navigation-content__foot">
+      <span class="ovic-side-navigation-content__foot__notice mr-auto"><mark>(*)</mark> bắt buộc phải nhập</span>
+      <button pButton pRipple type="button" [label]="btn_checkAdd"  icon="pi pi-save" (click)="saveForm()"
+              class="p-button-success"></button>
+      <button pButton pRipple type="button" label="Đóng" class="p-button-secondary ml-3" icon="pi pi-times"
+              (click)="closeForm()"></button>
+    </div>
+  </div>
+</ng-template>
+<!--<button pRipple pButton (click)="btnAddTool()" label='run create data'></button>-->

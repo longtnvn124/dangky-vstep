@@ -1,0 +1,72 @@
+
+<div class="mauphieu-container container">
+  <div class="mauphieu-item">
+    <div class="mauphieu-item_head">
+      I.FILE THƯ KÝ
+    </div>
+    <div class="mauphieu_item_body">
+      <div class="ovic-ui-table site-thpt">
+        <p-table styleClass="p-datatable-gridlines" [value]="mauthuky" [rowHover]="true"
+                 [loading]="isLoading">
+          <ng-template pTemplate="header" class="d-bock">
+            <tr>
+              <th class="text-center ovic-w-50px">STT</th>
+              <th class="text-center ovic-w-200px">Tên mẫu</th>
+              <th class="text-center">TÊN FILE</th>
+              <th class="text-center">Ghi chú</th>
+              <th class="text-center ovic-w-200px">Thao tác</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item let-i="rowIndex">
+            <tr>
+              <td class="text-center">{{ item.stt }}</td>
+              <td class="text-center"><p class="m-0"><strong>{{ item.mau }}</strong></p>
+
+              </td>
+              <td class="text-left">{{ item.name }}</td>
+              <td class="text-left">{{item.ghichu}}</td>
+              <td class="text-center">
+                <button pRipple pButton icon="pi pi-download" (click)="btnPhieuThukyDowload(item)"></button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="mauphieu-item">
+    <div class="mauphieu-item_head">
+      I.FILE TÚI PHỤ THEO PHÒNG THI
+    </div>
+    <div class="mauphieu_item_body">
+      <div class="ovic-ui-table site-thpt">
+        <p-table styleClass="p-datatable-gridlines" [value]="listPhongthi" [rowHover]="true"
+                 [loading]="isLoading">
+          <ng-template pTemplate="header" class="d-bock">
+            <tr>
+              <th class="text-center ovic-w-50px">STT</th>
+              <th class="text-center ovic-w-200px">Cấp HSK</th>
+              <th class="text-center ">Thao tác</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item let-i="rowIndex">
+            <tr>
+              <td>{{item['_index']}}</td>
+              <td class="font-weight-bold text-left">{{item['_capHsk']}}</td>
+              <td>
+                <div class="d-flex " style=" gap:10px;">
+                  <button pRipple pButton class="p-button-success" label="Danh sách ký nộp bài(M12)" icon="pi pi-download" (click)="btnExportM12(item)"></button>
+                  <button pRipple pButton class="" label="Danh sách Sổ cấp chứng chỉ(M13)" icon="pi pi-download" (click)="btnExportM13(item)"></button>
+                </div>
+
+              </td>
+            </tr>
+
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>

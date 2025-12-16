@@ -1,0 +1,38 @@
+.monthi_item{
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: #f3d48d;
+  font-weight: 400;
+  font-size:13px;
+}
+.monthi_item:nth-child(even){
+  background: #fbafaf;
+}
+
+
+.tt-hover:hover{
+  color: #1231c9;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 1px solid #1231c9;
+}
+
+.ovic-wrap-table-rps{
+  width:100%;
+  display: block;
+  overflow-x: auto;
+}
+
+.ovic-wrap-table-rps__inner{
+  display: block;
+  width: 100%;
+  min-width: 1400px;
+}
+.table-chitiet,
+.table-chitiet td,
+.table-chitiet tr,
+.table-chitiet th{
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+}

@@ -1,0 +1,138 @@
+import { SimpleRole } from '@core/models/auth';
+
+export const environment = {
+  production: false
+};
+
+// run locall
+
+const realm = 'dangky-hsk';
+const host = 'https://api-dev.ictu.vn';//offlline
+const port = '10091';//off
+// const host = 'https://hsk.tnu.edu.vn';//online
+// const port = '8093';//port online
+
+const port_socket = '10092';//off
+const ws_url = 'wss://api-dev.ictu.vn';//off
+// const port_socket = '8092';//online
+// const ws_url = 'wss://api-dev.ictu.vn';//online
+
+
+export const getHost = (): string => host;
+export const getRoute = (route: string): string => [].concat(host, [':', port, '/', realm, '/api/', route]).join('');
+export const getDateTime = (): string => [].concat(host, [':', port, '/', 'datetime']).join('');
+export const getLinkDrive = (id: string): string => [].concat(host, [':', port, '/', realm, '/api/driver/', id]).join('');
+export const getLinkMedia = (id: string): string => [].concat(host, [':', port, '/', realm, '/api/uploads/', id]).join('');
+export const getFileDir = (): string => [].concat(host, [':', port, '/', realm, '/api/uploads/folder/']).join('');
+export const getLinkDownload = (id: number | string): string => [].concat(host, [':', port, '/', realm, '/api/uploads/file/', id ? id.toString(10) : '']).join('');
+export const getWsUrl = (): string => ws_url + ':' + port_socket;
+export const wsPath = '/sso/socket';
+
+const acceptFileType = [
+  'application/doc',
+  'application/ms-doc',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/excel',
+  'application/vnd.ms-excel',
+  'application/x-excel',
+  'application/x-msexcel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/mspowerpoint',
+  'application/powerpoint',
+  'application/vnd.ms-powerpoint',
+  'application/x-mspowerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/pdf',
+  'application/zip',
+  'application/x-rar-compressed',
+  'application/octet-stream',
+  'application/x-zip-compressed',
+  'multipart/x-zip',
+  'audio/mpeg',
+  'image/jpeg',
+  'image/png',
+  'video/mp4',
+  'text/plain',
+  'video/quicktime',
+  'video/x-quicktime',
+  'image/mov',
+  'audio/aiff',
+  'audio/x-midi',
+  'audio/x-wav',
+  'video/avi'
+];
+
+const appLanguages = [
+  { name: 'vn', label: 'Tiếng việt' },
+  { name: 'en', label: 'English' }
+];
+
+const appDefaultLanguage = { name: 'vn', label: 'Tiếng việt' };
+
+const appVersion = '1.0.04';
+
+export const APP_CONFIGS = {
+  defaultRedirect: '/admin/thi-sinh/thong-tin',
+  pageTitle: 'TNU | Hệ thống đăng ký thi trên máy HSK',
+  multiLanguage: true,
+  defaultLanguage: appDefaultLanguage, // không được bỏ trống trường này ngay cả khi multiLanguage = false
+  languages: appLanguages,
+  realm: 'dangky-hsk', // app realm // dkhsk, ttn_dhtn
+  dateStart: '12/2024', // 06/2020
+  maxUploadSize: 838860800, // (1024 * 1024 * 200) = 800mb
+  maxFileUploading: 10, // The maximum number of files allowed to upload per time
+  donvi_id: 1, // default donvi id
+  coreVersion: '2.0.0',
+  appVersion: appVersion,
+  pingTime: 30, // unit seconds
+  storeLabels: ['Server File', 'ICTU Drive'],
+  metaKeyStore: '__store_dir',
+  metaKeyLanguage: '__language',
+  showHttpInterceptorError: false,
+  limitFileType: false,
+  info_console: true,
+  project_name: `Core 14 V${appVersion}`,
+  author: 'OvicSoft',
+  bg_color_01: '#008060',
+  bg_color_02: '#4959bd',
+  acceptList: acceptFileType,
+  cloudStorage: '1mkWmS69qTh_7uoS_wpKDju7OdHLSkA1y', //driveFolder id
+  lectureCloudStorage: '1Gwx6F72HUgM6ZDxonsvj8zLySGB6AYLJ',
+  teacherCloudStorage: '1YZwbEC_OBOTg6OyzvWXMWqxJI63dehH6',
+  soundAlert: true
+};
+
+/* define menu filter */
+export const HIDDEN_MENUS = new Set(['message/notification-details']); // id của menu không muốn hiển thị
+
+// export const CSRF_TOKEN_KEY         = 'CDaJMADt';
+// export const CSRF_TOKEN_EXPIRED_KEY = 'MsWAA8EX';
+
+export const USER_KEY = 'dkhskZpeJk7zV';
+export const EXPIRED_KEY = 'dkhskZY4dcVQ8';
+export const UCASE_KEY = 'dkhskS2e6M9AT';
+export const ROLES_KEY = 'dkhskxKwPLuJF';
+export const META_KEY = 'dkhskMKhGKn9P';
+export const ACCESS_TOKEN = 'dkhskWf5XG74P';
+export const REFRESH_TOKEN = 'dkhskAbLPDaGK';
+export const ENCRYPT_KEY = 'dkhskW4jM2P5r';
+export const APP_STORES = 'dkhsk4QfWtr6Z'; // no clear after logout
+export const SWITCH_DONVI_ID = 'dkhskC@gGA506'; // no clear after logout
+
+export const X_APP_ID = '64c9a192-cc0e-4198-acb8-2188dbb472fa';//dev
+// export const X_APP_ID = 'E3FAF94F-60AA-40FD-9FE4-07860B4F9264';// online for dev
+
+export const imgFalback = 'assets/images/placeholder.jpg';
+
+export const ROLES = Object.seal({
+  admin: { title: 'admin ', id: 49 },
+  chuyen_vien: { title: 'Chuyên viên', id: 46 }
+});
+
+export const ROLE_MANAGER = Object.seal({
+  list: new Set<string>(['manager', 'ld_huyen', 'ld_tinh', 'ld_xa']),
+  isManager: (roles: SimpleRole[]) => roles.reduce((collect, role) => collect || ROLE_MANAGER.list.has(role.name), false)
+});
+

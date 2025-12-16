@@ -1,0 +1,9 @@
+.monthi_item{
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #f3d48d;
+  font-weight: 500;
+}
+.monthi_item:nth-child(even){
+  background: #fbafaf;
+}

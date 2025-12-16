@@ -1,0 +1,407 @@
+
+
+
+
+<ng-container  [ngSwitch]="ngType">
+  <ng-container *ngSwitchCase="0">
+    <div class="d-flex justify-content-center align-items-center flex-column" style="height: calc(100vh - 90px);gap:10px;">
+      <div>
+        <i class=" pi pi-sync pi-spin" style="font-size: 32px;"></i>
+      </div>
+      <div style="font-size:18px;font-weight: bold;">Đang tải dữ liệu</div>
+    </div>
+  </ng-container>
+  <!--      <ng-container *ngSwitchCase="1">-->
+  <!--        <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 90px)">-->
+  <!--          <button pButton pRipple label="Chuyển phát kết quả thi" (click)="btnViewFormPhieu()"></button>-->
+  <!--        </div>-->
+  <!--      </ng-container>-->
+  <ng-container *ngSwitchCase="-1">
+    <div class="d-flex justify-content-center align-items-center flex-column text-center" style="height: calc(100vh - 90px);gap:10px;font-size:16px;">
+      <div >Load dữ liệu không thành công, vui lòng chọn <strong>"Tải lại"</strong></div>
+      <button pButton pRipple label="Tải lại" (click)="btnReload()"></button>
+    </div>
+
+
+  </ng-container>
+  <ng-container *ngSwitchCase="2">
+    <div class="row h-100">
+      <div class="col-12 ovic-ui-table site-thpt" style="height:calc(100vh - 95px)">
+        <div class="p-datatable-header" style="height:65px; border-bottom:1px solid #CCC;">
+          <h3 class="tbl-title ">Danh sách phiếu yêu cầu</h3>
+          <div class="search-block ui-table-globalfilter-container ">
+            <button pButton pRipple class="h-100 mx-2 border-radius-0" icon="pi pi-plus" label="Đăng ký chuyển phát chứng chỉ"
+                    (click)="btnViewFormPhieu()"></button>
+          </div>
+        </div>
+        <div class="ovic-wrap-table-rps ovic-scroll-style overflow-hidden overflow-y-auto"
+             style="height:calc(100% - 65px - 60px );background: #dedede;">
+          <div class="ovic-wrap-table-rps__inner">
+            <p-table styleClass="p-datatable-gridlines" [value]="listData"
+                     [rowHover]="true"
+                     [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]"
+            >
+              <ng-template pTemplate="header" class="d-bock">
+                <tr>
+                  <th class="ovic-w-40px text-center ">STT</th>
+                  <th class="text-center ">Tên phiếu</th>
+                  <th class="ovic-w-130px text-center">Đợt thi</th>
+                  <th class="ovic-w-180px text-center">Trạng thái thanh toán</th>
+                  <th class="ovic-w-180px text-center">Số tiền thanh toán</th>
+                  <th class="ovic-w-300px  text-center">Thao tác</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-item>
+                <tr>
+                  <td class="text-center">{{ item['__index'] }}</td>
+
+                  <td class="text-left">{{ item.tenphieu }}</td>
+
+                  <td class="text-center">{{ item['__kehoach_thi'] }}</td>
+                  <td class="text-center">
+                    <div class="d-block --fs-14" [innerHTML]="item['__status_converted'] | htmlDecode"></div>
+                  </td>
+                  <td class="text-center">{{ item.lephithi | numberToVndCurrencuy }}</td>
+
+                  <td class="text-center">
+                    <ng-container *ngIf="item.trangthai_thanhtoan === 1">
+                      <button pRipple pButton icon="pi pi-info" label="Chi tiết" (click)="viewInfoPhieu(item)"></button>
+                    </ng-container>
+
+                    <ng-container *ngIf="item.trangthai_thanhtoan === 2">
+                      <button pRipple pButton icon="pi pi-info" class="mx-1" label="Chi tiết" (click)="viewInfoPhieu(item)"></button>
+
+                    </ng-container>
+                    <ng-container *ngIf="item.trangthai_thanhtoan === 0">
+                      <button pRipple pButton icon="pi pi-info" class="mx-1" label="Chi tiết"
+                              (click)="viewInfoPhieu(item)"></button>
+                      <button pButton pRipple class="p-button-warning mx-1" label="Thanh toán" [pTooltip]="'Thanh toán'"
+                              [tooltipPosition]="'top'" icon="pi pi-credit-card"
+                              (click)="getPayment(item)"></button>
+                      <button pButton pRipple class="p-button-danger mx-1"
+                              [pTooltip]="'Xoá'" [tooltipPosition]="'top'" icon="pi pi-trash"
+                              (click)="deleteRow(item)"></button>
+                    </ng-container>
+
+                    <ng-container *ngIf="item.trangthai_thanhtoan === -1">
+                      <button pRipple pButton icon="pi pi-info" class="mx-1" label="Chi tiết" (click)="viewInfoPhieu(item)"></button>
+                    </ng-container>
+
+
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="12">
+                    Không có dữ liệu thí sinh!
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+
+        </div>
+        <div style="height: 60px">
+          <p-paginator [showCurrentPageReport]="true" [rows]="rows" [totalRecords]="recordsTotal" [pageLinkSize]="5"
+                       (onPageChange)="paginate($event)"></p-paginator>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+  <ng-container *ngSwitchCase="3">
+    <div class="phieu-container container p-0 intro-x">
+      <div class="phieu-head">
+        <button pButton pRipple icon="pi pi-arrow-left" (click)="btnReturnHome()" ></button>
+        <div class="header-title" style="text-transform: uppercase" >Đăng ký chuyển phát chứng chỉ</div>
+      </div>
+      <div class="phieu-body">
+        <div class="body-note">
+          <div><strong>LƯU Ý:</strong></div>
+          <div>
+
+            <div>1. Phí chuyển phát với mỗi lần tạo phiếu là <strong>{{70000 |numberToVndCurrencuy}}</strong> (1 bảo gốc).</div>
+            <div>2. Thí sinh có nhu cầu lấy chứng chỉ bản dịch ( phí dịch + công chứng 1 bản), lệ phí: <strong>{{120000 | numberToVndCurrencuy }} / 1 bản sao dịch</strong></div>
+            <div>3. Mọi thắc mắc vui lòng liên hệ : <span>- Số điện thoại: <strong>0925388988</strong></span><span> - Email: <strong>hsk@tnu.edu.vn</strong></span></div>
+          </div>
+        </div>
+        <div class="body-info">
+          <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+            <form [formGroup]="formSave" autocomplete="off">
+              <div class="body-info_head">
+                I. THÔNG TIN NGƯỜI NHẬN PHIẾU
+              </div>
+              <div class="row row-cols-1">
+                <div class="col-12 col-md-6">
+                  <div class="form-row">
+                    <label >Họ tên người nhận: <span class="ovic-mark">*</span></label>
+                    <input pInputText type="text" placeholder="Vd: Nguyễn Văn A" formControlName="nguoinhan_hoten">
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-row">
+                    <label >Họ tên thí sinh: <span class="ovic-mark">*</span></label>
+                    <input pInputText type="text" placeholder="Vd: Nguyễn Văn A" formControlName="thisinh_hoten">
+
+                  </div>
+                </div>
+
+
+              </div>
+              <div class="row ">
+
+                <div class="col-12 col-md-6">
+                  <div class="form-row">
+                    <label>Số Đt người nhận: <span class="ovic-mark">*</span></label>
+                    <input pInputText type="text" placeholder="Vd: 0911111111" formControlName="nguoinhan_phone">
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-row">
+                    <label>Số báo danh HSK : <span class="ovic-mark">*</span></label>
+                    <input pInputText type="text" placeholder="Vd: H92502850200000379" formControlName="sobaodanh">
+                  </div>
+                </div>
+              </div>
+              <div class="row ">
+                <div class="col-12">
+                  <div class="form-row">
+                    <label >Địa chỉ nhận phiếu điểm: <span class="ovic-mark">*</span></label>
+                    <textarea pInputText type="text" class="w-100" placeholder="Vd: ..." formControlName="nguoinhan_diachi"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!--          <div class="row row-cols-1">-->
+              <!--            <div class="col-12">-->
+              <!--              <div class="form-row">-->
+              <!--                <label>Đợt đăng ký</label>-->
+              <!--                <p-dropdown [options]="kehoachthi" optionValue="id" optionLabel="dotthi" placeholder="Chọn đợt thi..." formControlName="kehoach_id"-->
+              <!--                            (onChange)="btnSelectKehoachthi($event.value)"></p-dropdown>-->
+              <!--              </div>-->
+              <!--            </div>-->
+              <!--          </div>-->
+              <div class="body-info_head">
+                II. CHỌN ĐỢT THI CÓ KẾT QUẢ THI VÀ CẤP HSK DỰ THI
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="check-dotthi">
+                    <p-dropdown  [options]="kehoachthiByThisinh" optionValue="kehoach_id" optionLabel="dotthi" placeholder="Chọn đợt thi..." formControlName="kehoach_id"
+                                 (onChange)="btnSelectKehoachthi($event.value)"></p-dropdown>
+                    <div class="check-dotthi_item success" *ngIf="listKetquaThi && listKetquaThi.length>0">
+                      <i class="pi pi-check-circle"></i> <span>Đợt thi bạn chọn có kết quả thi !</span>
+                    </div>
+                    <div class="check-dotthi_item err" *ngIf="listKetquaThi && listKetquaThi.length == 0">
+                      <i class="pi pi-exclamation-circle"></i><span>Đợt thi bạn chọn không có kết quả thi !</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="listOrderByKehoachSelect.length>0" class="d-flex flex-column" style="gap: 10px;">
+                <p style="font-size: 16px;text-indent: 20px;font-weight: 500;">Chọn cấp Hsk:</p>
+                <div class="d-flex justify-content-center align-items-center">
+                  <button pButton pRipple [ngClass]="f['caphsk_id'].value === item.caphsk_id ?'p-button-primary' : 'ovic-button-none-selected'" *ngFor="let item of listOrderByKehoachSelect" [label]="item['_caphsk']" (click)="btnSelectCapBykehoach(item)"></button>
+                </div>
+              </div>
+
+              <div *ngIf="listKetquaThi && listKetquaThi.length > 0" class="row">
+
+                <div class="col-12">
+                  <div class="body-info_head">
+                    III. THÔNG TIN THANH TOÁN CHUYỂN PHÁT
+                  </div>
+                  <div>
+                    <table class="thanhtoan w-100">
+                      <tr style="border-bottom: 1px solid #ccc;" >
+                        <th class="text-left">Nội dung</th>
+                        <th class="text-center ovic-w-120px">Số lượng</th>
+                        <th class="text-right ovic-w-100px">Đơn giá</th>
+                      </tr>
+                      <tr *ngFor="let item of objectThanhtoan">
+                        <td>{{item['title']}}</td>
+                        <td class="text-center">
+                          <div class="changeOfNum">
+                            <button *ngIf="item.isChange == 1" pButton pRipple icon="pi pi-minus" (click)="btnAdditionOrSubtrac(item,-1)"></button>
+                            <span style="width:20px;">{{item['soluong']}}</span>
+                            <button *ngIf="item.isChange == 1" pButton pRipple icon="pi pi-plus" (click)="btnAdditionOrSubtrac(item,1)"></button>
+                          </div>
+                        </td>
+                        <td class="text-right">{{viewDongiaItem(item)  | numberToVndCurrencuy}}</td>
+                      </tr>
+                      <tr style="border-top: 1px solid #ccc;" >
+                        <td colspan="2"><strong>TỔNG THANH TOÁN</strong></td>
+                        <td class="text-right"><strong>{{ viewDongiaAll(objectThanhtoan) | numberToVndCurrencuy}}</strong></td>
+                      </tr>
+                    </table>
+                  </div>
+<!--                  <div class="d-flex align-items-center justify-content-start" style="padding:10px 0;">-->
+<!--                    <span>Thí sinh có muốn lấy thêm phiếu điểm của từng môn dự thi:</span>-->
+<!--                    <button pRipple pButton-->
+<!--                            style="margin-left: 10px;height: 30px;" class="p-button-success" label="Có" (click)="btnGetMonToDongia()"></button>-->
+<!--                    <button pRipple pButton-->
+<!--                            style="margin-left: 10px;height: 30px;" class="p-button-danger" label="Không" (click)="btnDeleteMontoDongia()"></button>-->
+<!--                  </div>-->
+                  <div>
+                    Thí sinh đến lấy phiếu trực tiếp hay nhận chuyển phát tại nhà ?
+<!--                    <button pButton pRipple class="mx-2 p-button-success" label="Chuyển phát" (click)="btnSelectChuyenphat(true)"> </button>-->
+<!--                    <button pButton pRipple class="mx-2 p-button-danger" label="Không chuyển phát" (click)="btnSelectChuyenphat(false)"> </button>-->
+
+                    <p-dropdown  [options]="dropChonChuyenphat" optionValue="value" optionLabel="title" placeholder="Chọn..."
+                                 (onChange)="btnSelectChuyenphat($event.value)"></p-dropdown>
+                  </div>
+
+                  <div class="d-flex justify-content-end align-items-center my-3" *ngIf=" viewDongiaAll(objectThanhtoan) >0 ">
+                    <button pButton pRipple class="p-button-success" label="Xác nhận thanh toán " icon="pi pi-credit-card" (click)="btnAcceptPhieu()">
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </form>
+          </div>
+
+        </div>
+
+        <div class="body-shift">
+          <div>
+
+          </div>
+        </div>
+      </div>
+      <div class="phieu-foot"></div>
+    </div>
+
+  </ng-container>
+</ng-container>
+
+
+
+
+<p-dialog class="phieuchuyenphatView" header="CHI TIẾT PHIẾU CHUYỂN PHÁT" [(visible)]="viewOrderShipSelect"  [style]="{width:'80vw',height:'80vh' }"
+          [modal]="true" [maximizable]="true" [draggable]="false" [resizable]="false">
+  <div *ngIf="orderShipSelect" >
+    <div >
+      <p><strong>I. THÔNG TIN CÁ NHÂN</strong></p>
+      <p><strong>Họ tên:</strong> {{thisinhInfo.hoten}}</p>
+      <p><strong>Số cccd:</strong> {{thisinhInfo.cccd_so}}</p>
+      <p><strong>Email:</strong> {{thisinhInfo['email']}}</p>
+      <p><strong>Số điện thoại:</strong> {{thisinhInfo['phone']}}</p>
+      <p><strong>Nơi sinh:</strong> {{thisinhInfo.noisinh}}</p>
+    </div>
+
+    <div >
+      <p><strong>II. THÔNG TIN CHUYỂN PHÁT</strong></p>
+      <p><strong>Họ tên người nhận:</strong> {{orderShipSelect.nguoinhan_hoten}}</p>
+      <p><strong>Số điện thoại người nhận:</strong> {{orderShipSelect.nguoinhan_phone}}</p>
+      <p><strong>Địa chỉ người nhận:</strong> {{orderShipSelect.nguoinhan_diachi}}</p>
+      <p><strong>Địa chỉ Email:</strong> {{thisinhInfo['email']}}</p>
+      <p><strong>Đợt thi:</strong> {{orderShipSelect['__kehoach_thi']}}</p>
+      <p><strong>Cấp HSK:</strong> {{orderShipSelect['__capHsk']}}</p>
+      <p><strong>Trạng thái:</strong> {{orderShipSelect['__status_converted_v2']}}</p>
+    </div>
+
+    <div>
+      <p><strong>III. CHI TIẾT THANH TOÁN</strong> </p>
+      <table class="w-100 table-chitiet"  >
+        <tr>
+          <th>Nội dung</th>
+          <th class="text-center">Số lượng</th>
+          <th class="text-center">Thành tiền</th>
+        </tr>
+        <tr *ngFor="let item of orderShipSelect['params']">
+          <td>{{item['title']}}</td>
+          <td class="text-center">{{item['soluong']}}</td>
+          <td class="text-right">{{viewDongiaItem(item) | numberToVndCurrencuy}}</td>
+        </tr>
+        <tr>
+          <td colspan="2"><strong>Tổng tiền</strong></td>
+          <td class="text-right"><strong>{{viewDongiaAll(orderShipSelect['params']) | numberToVndCurrencuy}}</strong></td>
+        </tr>
+
+      </table>
+    </div>
+    <div class="m-2" *ngIf="orderShipSelect['__minhchung']">
+      <p><strong>IV. MINH CHỨNG CHUYỂN KHOẢN</strong> </p>
+<!--      <div class="text-center">-->
+<!--        <img class="anh-minhchung" [src]="orderShipSelect['__minhchung']" alt="">-->
+<!--      </div>-->
+      <div class=" text-center flex justify-center">
+        <p-image [src]="orderShipSelect['__minhchung']" alt="Image" width="250" [preview]="true" appendTo="body" ></p-image>
+      </div>
+
+      <!--      <div class="text-center">-->
+      <!--        <p-image-->
+      <!--          [src]="orderShipSelect['__minhchung']"-->
+      <!--          alt="Image"-->
+      <!--          width="250"-->
+      <!--          [preview]="true"  ></p-image>-->
+      <!--      </div>-->
+    </div>
+  </div>
+</p-dialog>
+
+
+<p-dialog class="phieuchuyenphat" header="Thực hiên thanh toán " [(visible)]="displayPament"  [style]="{width:'80vw',height:'80vh' }"
+          [modal]="true" [maximizable]="true" [draggable]="false" [resizable]="false">
+  <div class="d-flex justify-content-center align-items-center flex-column" style="gap:10px;">
+    <!--                <div style="font-size: 18px; margin-bottom:10px;font-weight:500;">Chuyển khoản trực tiếp</div>-->
+    <div>
+      <div class="col-12 body-info_head">I. NỘI DUNG THANH TOÁN</div>
+      <div class="tttk-container">
+        <div class="row row-cols-1">
+
+          <div class="col-12 col-xl-6 col-lg-6">
+            <p>Thực hiện thanh toán qua chuyển khoản, kết quả đăng ký sẽ được ghi nhận trong vòng 24h, kể từ khi thanh
+              toán thành công.</p>
+            <p><strong>THÔNG TIN TÀI KHOẢN</strong></p>
+            <p>Chủ tài khoản: <strong>NGO THI THUY QUYNH</strong></p>
+            <p>Số tài khoản: <strong>1055093242</strong></p>
+            <p>Ngân hàng: <strong>Ngân Hàng Ngoại thương Việt Nam (VCB)</strong>
+            </p>
+            <p *ngIf="orderShipSelect" style="font-size: 20px">Nội dung chuyển khoản: <strong>{{ "hsk-" + orderShipSelect.id }}</strong></p>
+            <p *ngIf="orderShipSelect">Số tiền thanh toán: <strong>{{ orderShipSelect.lephithi | numberToVndCurrencuy }}</strong></p>
+          </div>
+          <div class="col-12 col-xl-6 col-lg-6">
+            <div class="d-flex justify-content-center align-items-center">
+              <img style="max-width:250px; width:100%;" src="assets/files/hsk/hsk_qrpay.png" alt="">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--            <p style="margin-top: 10px;color: #e51515;"><strong>Lưu ý:</strong> Sau khi chuyển khoản thành công, vui lòng-->
+      <!--              <strong>nhấn</strong> vào nút <strong>'Đã thanh toán'</strong> để xác nhận bạn đã chuyển khoản thành công,-->
+      <!--              chúng tôi sẽ kiểm tra và phản hổi lại bạn trong vòng 24h thông qua Email hoặc số điện thoại.</p>-->
+      <!--            <button pButton pRipple (click)="btnCheckChuyenkhoan()" label="Đã thanh toán"-->
+      <!--                    class="p-button-warning"></button>-->
+      <div class="col-12 body-info_head">II. XÁC NHẬN THANH TOÁN</div>
+      <div>
+        <div style="color: #e51515;"><strong>LƯU Ý:</strong></div>
+        <p style="margin-top: 10px;color: #e51515;">1. Yêu cầu thực hiện chuyển khoản theo đúng Số tài khoản,số tiền và nội dung chuyển khoản. Trường hợp thí sinh chuyển nhầm cho người khác, hệ thống không chịu trách nghiệm.</p>
+        <p style="color: #e51515;">2. Để xác nhận thanh toán, thí sinh thực hiện tải lên ảnh giao dịch thanh toán thành công rồi bấm nút <strong>"Xác nhận"</strong> hệ thống sẽ kiểm tra và phản hổi lại bạn trong vòng 24h thông qua Email hoặc số điện thoại.</p>
+      </div>
+      <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+        <form [formGroup]="formUpdate">
+          <div class="row">
+            <div class="col-12">
+              <div class="form-row">
+                <label>Ảnh minh chứng chuyển khoản<span class="ovic-mark">*</span></label>
+                <app-file-list-local class="w-100 ovic-vertical__file-list" [permission]="filePermission" [accept]="['.jpg', '.png', '.jpeg']"
+                                     [formField]="upload['files']" [multiple]="false"
+                                     [state]="1"></app-file-list-local>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div class="text-center my-4">
+          <button pRipple pButton class="" label="Xác nhận" (click)="btnAccessFile()"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</p-dialog>

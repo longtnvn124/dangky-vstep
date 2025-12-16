@@ -1,0 +1,35 @@
+<div class="w-100 d-flex justify-content-center align-items-center" style="height:100vh;background: #f8f7ff;">
+
+  <ng-container [ngSwitch]="type_check_valid">
+    <ng-container *ngSwitchCase="1">
+      <div class="d-flex flex-column justify-content-center align-items-center ">
+        <div>
+          <i class="pi pi-spin pi-spinner py-5" style="font-size:4rem"></i>
+        </div>
+        <div>Hệ thống đang xác thực tài khoản</div>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="2">
+      <div class="d-flex flex-column justify-content-center align-items-center ">
+        <div>
+          <i class="pi pi-check-circle py-5" style="font-size:4rem"></i>
+        </div>
+        <div>Xác nhận tài khoản thành công</div>
+<!--        <button pButon pRipple class="mr-top:10px" pButton pRipple label="Đăng nhập hệ thống" (click)="loginSystems()"></button>-->
+        <button pButton pRipple class="p-button-success p-button-outlined mt-4" label="Đăng nhập hệ thống" (click)="loginSystems()"></button>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="3">
+      <div class="d-flex flex-column justify-content-center align-items-center ">
+        <div>
+          <i  class="pi pi-times py-5" style="font-size:4rem;color:red;"></i>
+        </div>
+        <div style="color:red;">Xác nhận tài khoản không thành công</div>
+        <button pButton pRipple class="p-button-warning p-button-outlined mt-4" label="Trở lại trang chủ" (click)="goHome()"></button>
+
+      </div>
+    </ng-container>
+  </ng-container>
+
+
+</div>

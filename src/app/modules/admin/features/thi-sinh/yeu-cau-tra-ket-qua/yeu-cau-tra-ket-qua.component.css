@@ -1,0 +1,142 @@
+.phieu-container{
+  height:calc(100vh - 90px);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+
+}
+.phieu-head{
+  height:50px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  padding-left: 10px;
+  background: #fff;
+  box-shadow: 0 2px 3px 0 #ccc;
+}
+.phieu-body{
+  flex:1 1 auto;
+  height: 1%;
+  overflow: hidden;
+  overflow-y: auto;
+  padding:10px 5px 5px;
+}
+.phieu-foot{
+  height:0px;
+
+}
+
+
+
+
+.header-title{
+  font-weight: 700;
+  font-size: 16px;
+}
+.body-note{
+  background: #e35555;
+  border-left: 10px solid #ffed33;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  font-size: 14px;
+  gap: 9px;
+}
+.body-info{
+
+}
+.body-info_head{
+  padding:10px 0 0 ;
+  font-size:16px;
+  font-weight:500;
+}
+
+
+.check-dotthi{
+  padding:10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap:10px;
+}
+.check-dotthi_item{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap:10px;
+}
+.check-dotthi_item.err{
+  color: #f11010;
+}
+.check-dotthi_item.success{
+  color: #0B9419;
+}
+.check-dotthi_item i{
+  font-size:20px;
+}
+
+.chuyenphat-title{
+  border-top: 1px solid #ccc;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 10px;
+}
+
+.changeOfNum{
+  display:flex;
+  flex-direction: row;
+  gap:10px;
+  justify-content: center;
+  align-items: center;
+}
+.changeOfNum button{
+  width: 30px;
+  height:30px;
+}
+
+.body-shift{
+
+}
+
+table.thanhtoan td,
+table.thanhtoan tr,
+table.thanhtoan th {
+  padding:4px;
+  font-size: 13px;
+}
+
+.table-chitiet,
+.table-chitiet td,
+.table-chitiet tr,
+.table-chitiet th{
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  padding:4px;
+}
+
+
+.tttk-container {
+  background: lightyellow;
+  padding: 15px;
+  border-left: 2px solid #ff8d00;
+}
+
+.anh-minhchung{
+  width:300px;
+}
+
+@media (max-width:425px) {
+  .tbl-title{
+    font-size:15px !important;
+  }
+  .header-title {
+    font-size:12px
+  }
+  .anh-minhchung{
+    width:100%;
+  }
+}
