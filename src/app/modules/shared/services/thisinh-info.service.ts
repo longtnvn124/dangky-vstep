@@ -8,13 +8,15 @@ import {ThemeSettingsService} from "@core/services/theme-settings.service";
 import {HttpParamsHeplerService} from "@core/services/http-params-hepler.service";
 import {AuthService} from "@core/services/auth.service";
 import {ThiSinhInfo} from "@shared/models/thi-sinh";
+import {ConditionOption} from "@shared/models/condition-option";
+import {DmDiemduthi} from "@shared/services/dm-diem-du-thi.service";
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThisinhInfoService {
-  private api = getRoute('hsk-thisinh/');
+  private api = getRoute('thisinh/');
 
   constructor(
     private http: HttpClient,
@@ -226,4 +228,18 @@ export class ThisinhInfoService {
     })))
 
   }
+
+  getDataByPageNew(option: ConditionOption): Observable<{ data: ThiSinhInfo[], recordsFiltered: number }> {
+    let filter = option.page ? this.httpParamsHelper.paramsConditionBuilder(option.condition).set("paged", option.page) : this.httpParamsHelper.paramsConditionBuilder(option.condition);
+    if (option.set && option.set.length)
+      option.set.forEach(f => {
+        filter = filter.set(f.label, f.value);
+      })
+    return this.http.get<Dto>(this.api, {params: filter}).pipe(
+      map(res => {
+        return {data: res.data, recordsFiltered: res.recordsFiltered}
+      })
+    );
+  }
+
 }

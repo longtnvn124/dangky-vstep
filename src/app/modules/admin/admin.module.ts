@@ -30,44 +30,46 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HomeEducationComponent} from "@modules/admin/features/home/home-education/home-education.component";
 import {HomeSampleComponent} from "@modules/admin/features/home/home-sample/home-sample.component";
 import {CardWidgetComponent} from "@modules/admin/features/home/widgets/card-widget/card-widget.component";
-import { KeHoachThiComponent } from './features/ke-hoach-thi/ke-hoach-thi.component';
 import {DialogModule} from "primeng/dialog";
 import {EditorModule} from "primeng/editor";
 import {PaginatorModule} from "primeng/paginator";
 import {SplitterModule} from "primeng/splitter";
 import {CalendarModule} from "primeng/calendar";
 import {ChartModule} from "primeng/chart";
-import { DanhSachThiSinhComponent } from './features/ke-hoach-thi/danh-sach-thi-sinh/danh-sach-thi-sinh.component';
 import {TableModule} from "primeng/table";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
-import { CapdoTheoDotthiComponent } from './features/ke-hoach-thi/capdo-theo-dotthi/capdo-theo-dotthi.component';
 import { ThongKeDuLieuComponent } from './features/thong-ke-du-lieu/thong-ke-du-lieu.component';
 import {CheckboxModule} from "primeng/checkbox";
 import {MatMenuModule} from "@angular/material/menu";
 import { CardCountComponent } from './features/home/widgets/card-count/card-count.component';
 import { MailCheckComponent } from './features/mail-check/mail-check.component';
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {FocusInputPipe} from "@shared/pipes/focus-input.pipe";
 
 
-@NgModule( {
-	declarations : [
-		DashboardComponent ,
-		ContentNoneComponent ,
-		HomeComponent ,
-		SidenavComponent ,
-		UserInfoComponent ,
-		MenuLanguageComponent ,
-		NewHomeComponent,
+
+@NgModule({
+  declarations: [
+    DashboardComponent,
+    ContentNoneComponent,
+    HomeComponent,
+    SidenavComponent,
+    UserInfoComponent,
+    MenuLanguageComponent,
+    NewHomeComponent,
     HomeEducationComponent,
     HomeSampleComponent,
     CardWidgetComponent,
-    KeHoachThiComponent,
-    DanhSachThiSinhComponent,
-    CapdoTheoDotthiComponent,
+
     ThongKeDuLieuComponent,
     CardCountComponent,
     MailCheckComponent,
 
-	] ,
+
+  ],
+  exports: [
+
+  ],
   imports: [
     CommonModule,
     AdminRoutingModule,
@@ -97,7 +99,9 @@ import { MailCheckComponent } from './features/mail-check/mail-check.component';
     TableModule,
     MatProgressBarModule,
     CheckboxModule,
-    MatMenuModule
+    MatMenuModule,
+    MatCheckboxModule,
+    FocusInputPipe,
   ]
-} )
+})
 export class AdminModule {}

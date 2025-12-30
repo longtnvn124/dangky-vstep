@@ -6,7 +6,7 @@ export const environment = {
 
 // run locall
 
-const realm = 'dangky-hsk';
+const realm = 'dangky-vstep';
 const host = 'https://api-dev.ictu.vn';//offlline
 const port = '10091';//off
 // const host = 'https://hsk.tnu.edu.vn';//online
@@ -79,7 +79,7 @@ export const APP_CONFIGS = {
   multiLanguage: true,
   defaultLanguage: appDefaultLanguage, // không được bỏ trống trường này ngay cả khi multiLanguage = false
   languages: appLanguages,
-  realm: 'dangky-hsk', // app realm // dkhsk, ttn_dhtn
+  realm: 'dangky-vstep', // app realm // dkhsk, ttn_dhtn
   dateStart: '12/2024', // 06/2020
   maxUploadSize: 838860800, // (1024 * 1024 * 200) = 800mb
   maxFileUploading: 10, // The maximum number of files allowed to upload per time
@@ -110,16 +110,16 @@ export const HIDDEN_MENUS = new Set(['message/notification-details']); // id c�
 // export const CSRF_TOKEN_KEY         = 'CDaJMADt';
 // export const CSRF_TOKEN_EXPIRED_KEY = 'MsWAA8EX';
 
-export const USER_KEY = 'dkhskZpeJk7zV';
-export const EXPIRED_KEY = 'dkhskZY4dcVQ8';
-export const UCASE_KEY = 'dkhskS2e6M9AT';
-export const ROLES_KEY = 'dkhskxKwPLuJF';
-export const META_KEY = 'dkhskMKhGKn9P';
-export const ACCESS_TOKEN = 'dkhskWf5XG74P';
-export const REFRESH_TOKEN = 'dkhskAbLPDaGK';
-export const ENCRYPT_KEY = 'dkhskW4jM2P5r';
-export const APP_STORES = 'dkhsk4QfWtr6Z'; // no clear after logout
-export const SWITCH_DONVI_ID = 'dkhskC@gGA506'; // no clear after logout
+export const USER_KEY = 'dkVstepZpeJk7zV';
+export const EXPIRED_KEY = 'dkVstepZY4dcVQ8';
+export const UCASE_KEY = 'dkVstepS2e6M9AT';
+export const ROLES_KEY = 'dkVstepxKwPLuJF';
+export const META_KEY = 'dkVstepMKhGKn9P';
+export const ACCESS_TOKEN = 'dkVstepWf5XG74P';
+export const REFRESH_TOKEN = 'dkVstepAbLPDaGK';
+export const ENCRYPT_KEY = 'dkVstepW4jM2P5r';
+export const APP_STORES = 'dkVstep4QfWtr6Z'; // no clear after logout
+export const SWITCH_DONVI_ID = 'dkVstepC@gGA506'; // no clear after logout
 
 export const X_APP_ID = '64c9a192-cc0e-4198-acb8-2188dbb472fa';//dev
 // export const X_APP_ID = 'E3FAF94F-60AA-40FD-9FE4-07860B4F9264';// online for dev

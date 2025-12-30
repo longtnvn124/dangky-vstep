@@ -300,3 +300,44 @@
   padding: 4px;
   border-radius: 20px;
 }
+/*----------------------new 22/12/2025 --------------------------------*/
+
+.form-create{
+  border: 2px dashed #f3a0a0;
+  width: calc(100% - 10px);
+  margin: 10px 5px;
+  padding: 10px;
+
+}
+.form-create .head{
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-family: Roboto, sans-serif;
+  line-height: 24px;
+  text-align: center;
+}
+.info{
+  width: calc(100% - 10px);
+  margin: 10px 5px 0;
+  border: 1px solid #ededed;
+  padding: 10px;
+}
+.info div {
+  font-size: 14px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.info .count {
+  padding: 10px;
+  background: #89e46c;
+  border-radius: 12px;
+
+}
+.info .count.err {
+  background: #ffec6e;
+}

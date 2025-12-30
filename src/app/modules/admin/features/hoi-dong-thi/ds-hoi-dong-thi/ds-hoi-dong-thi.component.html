@@ -7,7 +7,7 @@
     <ng-template #tableData>
       <div class="p-datatable-header" style="border-bottom:1px solid #CCC;">
         <h3 class="tbl-title ">Danh sách hội đồng thi</h3>
-        <div class="search-block ui-table-globalfilter-container ">
+        <div class="search-block ui-table-global filter-container ">
           <div class="d-flex align-items-center">
             <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
               <div class="d-flex">
@@ -82,14 +82,23 @@
                       <i class="pi pi-user-plus"></i>
                       <span>Thêm thí sinh vào hội đồng</span>
                     </button>
-                    <button *ngIf="item['lock'] === 0" class="btn-menu-material excel" (click)="btnKetquathi(item)">
-                      <i class="pi pi-file-import"></i>
-                      <span>Kết quả dự thi của thí sinh</span>
-                    </button>
                     <button *ngIf="item['lock'] === 0" class="btn-menu-material excel" (click)="btnViewPhongthi(item)">
                       <i class="pi pi-chart-bar"></i>
-                      <span>Danh sách biểu mẫu</span>
+                      <span>Cài đặt phòng thi</span>
                     </button>
+<!--                    <button *ngIf="item['lock'] === 0" class="btn-menu-material excel" (click)="btnViewPhongthiThisinh(item)">-->
+<!--                    <i class="pi pi-chart-bar"></i>-->
+<!--                    <span>Cài đặt phòng thi</span>-->
+<!--                    </button>-->
+<!--                    <button *ngIf="item['lock'] === 0" class="btn-menu-material excel" (click)="btnKetquathi(item)">-->
+<!--                      <i class="pi pi-file-import"></i>-->
+<!--                      <span>Kết quả dự thi của thí sinh</span>-->
+<!--                    </button>-->
+
+<!--                    <button *ngIf="item['lock'] === 0" class="btn-menu-material excel" (click)="btnViewPhongthi(item)">-->
+<!--                      <i class="pi pi-chart-bar"></i>-->
+<!--                      <span>Danh sách biểu mẫu</span>-->
+<!--                    </button>-->
                     <button *ngIf="item['lock'] === 0" class="btn-menu-material warning" (click)="btnAddNew('update' , item)">
                       <i class="pi pi-file-edit"></i>
                       <span> Cập nhật </span>
@@ -170,7 +179,7 @@
               <p class="form-row">
                 <label>Đợt thi <span class="ovic-mark">*</span></label>
                 <p-dropdown placeholder="Chọn..." class="w-100" [options]="dataKeHoach" [filter]="true"
-                            optionLabel="dotthi" optionValue="id" [showClear]="true"
+                            optionLabel="title" optionValue="id" [showClear]="true" filterBy="title"
                             formControlName='kehoach_id'></p-dropdown>
               </p>
             </div>
@@ -205,6 +214,7 @@
 </ng-template>
 
 
+
 <ng-template #phongthi>
 
   <div class="ovic-side-navigation-content">
@@ -214,7 +224,8 @@
               class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
     </div>
     <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style ">
-      <app-phong-thi class="w-100" [hoidong]="hoidong_select"></app-phong-thi>
+<!--      <app-phong-thi class="w-100" [hoidong]="hoidong_select"></app-phong-thi>-->
+      <app-hoidongthi-phongthi  class="w-100 h-100 d-block" [hoidong]="hoidong_select" ></app-hoidongthi-phongthi>
 
     </div>
 
@@ -248,7 +259,24 @@
     </div>
     <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style ">
 
-      <app-ket-qua-thi class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-ket-qua-thi>
+<!--      <app-ket-qua-thi class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-ket-qua-thi>-->
+    </div>
+
+  </div>
+
+</ng-template>
+
+
+<ng-template #phongthiThisinh>
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head justify-content-between">
+      <h4 class="ovic-side-navigation-content__head__title">THÊM THÍ SINH VÀO HỘI ĐỒNG > {{hoidong_select.title}}</h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger p-button-text close "></button>
+    </div>
+    <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style ">
+
+      <app-add-thi-sinh class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-add-thi-sinh>
     </div>
 
   </div>

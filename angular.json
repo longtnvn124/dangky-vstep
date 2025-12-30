@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "dkhsk": {
+    "dkVstep": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/dkhsk",
+            "outputPath": "dist/dkVstep",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -124,10 +124,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "dkhsk:build:production"
+              "browserTarget": "dkVstep:build:production"
             },
             "development": {
-              "browserTarget": "dkhsk:build:development"
+              "browserTarget": "dkVstep:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -135,7 +135,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "dkhsk:build"
+            "browserTarget": "dkVstep:build"
           }
         },
         "test": {

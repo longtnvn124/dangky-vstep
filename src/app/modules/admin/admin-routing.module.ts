@@ -44,8 +44,6 @@ const routes : Routes = [
         component:KeHoachThiComponent,
         data      : { state : 'ke-hoach-thi' }
       } ,
-
-
       {
         path         : 'dangky-thi' ,
         loadChildren : () => import('@modules/admin/features/danh-sach-du-thi/danh-sach-du-thi.module').then( m => m.DanhSachDuThiModule )
@@ -70,24 +68,27 @@ const routes : Routes = [
       } ,
       {
         path         : 'quan-ly-thi-sinh' ,
-        loadChildren : () => import('@modules/admin/features/danh-sach-thi-sinh/danh-sach-thi-sinh.module').then( m => m.DanhSachThiSinhModule )
+        loadChildren : () => import('@modules/admin/features/danhsach-thisinh/danhsach-thisinh.module').then( m => m.DanhsachThisinhModule )
       } ,
       // {
       //   path         : 'tra-ket-qua-thi' ,
       //   loadChildren : () => import('@modules/admin/features/tra-ket-qua-thi/tra-ket-qua-thi.module').then( m => m.TraKetQuaThiModule )
       // } ,
-      {
-        path         : 'doi-tac' ,
-        loadChildren : () => import('@modules/admin/features/doi-tac/doi-tac.module').then( m => m.DoiTacModule )
-      } ,
-      {
-        path         : 'duyet-thanh-toan-doi-tac' ,
-        loadChildren : () => import('@modules/admin/features/duyet-thanh-toan-doi-tac/duyet-thanh-toan-doi-tac.module').then( m => m.DuyetThanhToanDoiTacModule )
-      } ,
-      {
-        path         : 'yeu-cau' ,
-        loadChildren : () => import('@modules/admin/features/yeu-cau/yeu-cau.module').then( m => m.YeuCauModule )
-      } ,
+      // {
+      //   path         : 'doi-tac' ,
+      //   loadChildren : () => import('@modules/admin/features/doi-tac/doi-tac.module').then( m => m.DoiTacModule )
+      // } ,
+      // {
+      //   path         : 'duyet-thanh-toan-doi-tac' ,
+      //   loadChildren : () => import('@modules/admin/features/duyet-thanh-toan-doi-tac/duyet-thanh-toan-doi-tac.module').then( m => m.DuyetThanhToanDoiTacModule )
+      // } , // {
+      //   path         : 'duyet-thanh-toan-doi-tac' ,
+      //   loadChildren : () => import('@modules/admin/features/duyet-thanh-toan-doi-tac/duyet-thanh-toan-doi-tac.module').then( m => m.DuyetThanhToanDoiTacModule )
+      // } ,
+      // {
+      //   path         : 'yeu-cau' ,
+      //   loadChildren : () => import('@modules/admin/features/yeu-cau/yeu-cau.module').then( m => m.YeuCauModule )
+      // } ,
 			// {
 			// 	path         : 'message' ,
 			// 	loadChildren : () => import('@modules/admin/features/ovic-message/ovic-message.module').then( m => m.OvicMessageModule )

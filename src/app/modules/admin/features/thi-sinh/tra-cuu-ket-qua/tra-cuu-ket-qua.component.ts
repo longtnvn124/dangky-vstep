@@ -38,7 +38,7 @@ export class TraCuuKetQuaComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadInit()
+    // this.loadInit()
   }
 
   loadInit(){

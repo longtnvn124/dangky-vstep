@@ -1,18 +1,32 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {FormType, NgPaginateEvent, OvicForm} from '@modules/shared/models/ovic-models';
-import { Paginator } from 'primeng/paginator';
-import {debounceTime, filter, forkJoin, Observable, of, Subject, Subscription, switchMap} from 'rxjs';
-import {HskKehoachThiService, KeHoachThi} from "@shared/services/hsk-kehoach-thi.service";
-import { ThemeSettingsService } from '@core/services/theme-settings.service';
-import {HskHoidongthi, HskHoidongthiService} from "@shared/services/hsk-hoidongthi.service";
+import {Paginator, PaginatorModule} from 'primeng/paginator';
+import {debounceTime, filter, Observable, Subject, Subscription} from 'rxjs';
+import {HskHoidongthi,} from "@shared/services/hsk-hoidongthi.service";
 import {NotificationService} from "@core/services/notification.service";
 import {HelperService} from "@core/services/helper.service";
-import {DanhMucCapDoService} from "@shared/services/danh-muc-cap-do.service";
-import {DmCapdo} from "@shared/models/danh-muc";
-import {HskHoidongthiThiSinh, HskHoidongthiThisinhService} from "@shared/services/hsk-hoidongthi-thisinh.service";
 import {BUTTON_NO, BUTTON_YES} from "@core/models/buttons";
-
+import {DropdownModule} from "primeng/dropdown";
+import {RippleModule} from "primeng/ripple";
+import {ButtonModule} from "primeng/button";
+import {TableModule} from "primeng/table";
+import {MatMenuModule} from "@angular/material/menu";
+import {NgIf} from "@angular/common";
+import {TooltipModule} from "primeng/tooltip";
+import {InputTextModule} from "primeng/inputtext";
+import {SharedModule} from "@shared/shared.module";
+import {CalendarModule} from "primeng/calendar";
+import {Hoidongthi, VstepHoidongThiService} from "@shared/services/vstep-hoidong-thi.service";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {ConditionOption} from "@shared/models/condition-option";
+import {OvicQueryCondition} from "@core/models/dto";
+import {
+  AddThiSinhComponent
+} from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/add-thi-sinh/add-thi-sinh.component";
+import {
+  HoidongthiPhongthiComponent
+} from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/hoidongthi-phongthi/hoidongthi-phongthi.component";
 
 interface FormHoiDong extends OvicForm {
   object: HskHoidongthi;
@@ -20,13 +34,32 @@ interface FormHoiDong extends OvicForm {
 @Component({
   selector: 'app-ds-hoi-dong-thi',
   templateUrl: './ds-hoi-dong-thi.component.html',
-  styleUrls: ['./ds-hoi-dong-thi.component.css']
+  styleUrls: ['./ds-hoi-dong-thi.component.css'],
+  imports: [
+    DropdownModule,
+    RippleModule,
+    ButtonModule,
+    TableModule,
+    MatMenuModule,
+    NgIf,
+    TooltipModule,
+    InputTextModule,
+    SharedModule,
+    PaginatorModule,
+    ReactiveFormsModule,
+    CalendarModule,
+    AddThiSinhComponent,
+    HoidongthiPhongthiComponent,
+
+  ],
+  standalone: true
 })
 export class DsHoiDongThiComponent implements OnInit {
 
   @ViewChild(Paginator) paginator: Paginator;
   @ViewChild('fromUpdate', {static: true}) template: TemplateRef<any>;
   @ViewChild('phongthi', {static: true}) phongthi: TemplateRef<any>;
+  @ViewChild('phongthiThisinh', {static: true}) phongthiThisinh: TemplateRef<any>;
   @ViewChild('addThiSinh', {static: true}) addThiSinh: TemplateRef<any>;
   @ViewChild('ketquathi', {static: true}) ketquathi: TemplateRef<any>;
   // @ViewChild(AddThiSinhComponent) addThisinhComponent: AddThiSinhComponent;
@@ -50,46 +83,39 @@ export class DsHoiDongThiComponent implements OnInit {
     [FormType.ADDITION]: {type: FormType.ADDITION, title: 'Thêm mới hội đồng', object: null, data: null},
     [FormType.UPDATE]: {type: FormType.UPDATE, title: 'Cập nhật hội đồng', object: null, data: null}
   };
-  rows = this.themeSettings.settings.rows;
-  page: number = 1;
-  recordsTotal: number = 0;
-  search: string = '';
-  formActive: FormHoiDong;
-  formSave: FormGroup;
-  isLoading: boolean = true;
-  loadInitFail: boolean = false;
-  dataKeHoach: KeHoachThi[];
-  subscription = new Subscription();
-  sizeFullWidth = 1024;
-  needUpdate = false;
-  menuName: 'hoi-dong';
-  btn_checkAdd: 'Lưu lại' | 'Cập nhật';
-  _kehoach_id: number;
+  rows              : number = 20;
+  page              : number = 1;
+  recordsTotal      : number = 0;
+  search            : string = '';
+  formActive        : FormHoiDong;
+  formSave          : FormGroup;
+  isLoading         : boolean = true;
+  loadInitFail      : boolean = false;
+  dataKeHoach       : KeHoachThi[];
+  subscription      : Subscription = new Subscription();
+  sizeFullWidth     : number = 1024;
+  needUpdate        : boolean = false;
+  menuName          : string = 'hoi-dong';
+  btn_checkAdd      : 'Lưu lại' | 'Cập nhật';
+  _kehoach_id       : number;
   private OBSERVE_PROCESS_FORM_DATA = new Subject<FormHoiDong>();
   hoidong_id: number;
-  listData: HskHoidongthi[];
+  listData: Hoidongthi[];
   kehoach_id_param: number;
-  thiSinhSelectTotal: number = 0;
-  orderSelectTotal: number = 0;
-  dsCapdo: DmCapdo[];
 
-
-
-  hoidong_select: HskHoidongthi;
+  hoidong_select: Hoidongthi;
 
   private inputChanged: Subject<string> = new Subject<string>();
 
 
 
   constructor(
-    private themeSettings: ThemeSettingsService,
-    private kehoachThiService: HskKehoachThiService,
-    private hskHoidongthiService: HskHoidongthiService,
+    private kehoachthiVstepService: KehoachthiVstepService,
+    private hoidongThiService: VstepHoidongThiService,
     private notifi: NotificationService,
     private fb: FormBuilder,
     private helperService: HelperService,
-    private danhMucCapDoService:DanhMucCapDoService,
-    private hskHoidongthiThisinhService: HskHoidongthiThisinhService
+    // private hoidongThisinhService: VstepHoidongThisinhService
   ) {
     const observeProcessFormData = this.OBSERVE_PROCESS_FORM_DATA.asObservable().pipe(debounceTime(100)).subscribe(form => this.__processFrom(form));
     this.subscription.add(observeProcessFormData);
@@ -118,27 +144,33 @@ export class DsHoiDongThiComponent implements OnInit {
   loadInit() {
     this.notifi.isProcessing(true)
     this.isLoading = true;
-    forkJoin<[DmCapdo[], KeHoachThi[]]>
-    ([
-      this.danhMucCapDoService.getDataUnlimit(),
-      this.kehoachThiService.getDataUnlimitNotstatus(),
-    ]).subscribe({
-      next: ([dmCapdo, data]) => {
-        this.dsCapdo = dmCapdo;
 
+    const conditon :ConditionOption = {
+      condition:[]
+      ,page: '1',
+      set:[
+        {
+          label:'limit',value:'-1'
+        }
+      ]
+    }
+
+    this.kehoachthiVstepService.getDataByPageNew(conditon).subscribe({
+      next:({data})=>{
         this.dataKeHoach = data;
-
-        if (this.dsCapdo && this.dataKeHoach) {
+        if (this.dataKeHoach) {
           this.loadData()
         }
         this.notifi.isProcessing(false);
         this.isLoading = false;
-      }, error: () => {
+      },error:()=>{
         this.notifi.isProcessing(false);
         this.isLoading = false;
         this.notifi.toastError('Mất kết nối với máy chủ');
       }
     })
+
+
   }
 
   changeSelectData(event) {
@@ -155,62 +187,75 @@ export class DsHoiDongThiComponent implements OnInit {
     this.isLoading = true;
     this.notifi.isProcessing(true);
     this.page = page;
-    this.hskHoidongthiService.getDataByKehoachIdAndSearch(this.page, this.search, this._kehoach_id).pipe(switchMap(prj => {
-      return this.loadThisinhByHoidong(prj)
-    })).subscribe({
-      next: ({recordsTotal, data}) => {
-        this.recordsTotal = recordsTotal;
+    const condition : ConditionOption = {
+      condition: [],
+      page: page.toString(),
+      set:[
+        { label:'limit',value: this.rows.toString()}
+      ]
+    }
+    if(this.search){
+      condition.condition.push({
+        conditionName:'title',
+        condition:OvicQueryCondition.like,
+        value:`%${this.search}%`
+      })
+    }
+    if(this._kehoach_id){
+      condition.condition.push({
+        conditionName:'kehoach_id',
+        condition:OvicQueryCondition.equal,
+        value:this._kehoach_id.toString()
+      })
+    }
+    this.hoidongThiService.getDataByPageNew(condition).subscribe({
+      next: ({data,recordsFiltered}) => {
+        this.recordsTotal = recordsFiltered;
         this.listData = data.map((m, index) => {
           m['__indexTable'] = (index + 1) + (this.page - 1) * 10;
-          m['__kehoach_coverted'] = this.dataKeHoach && this.dataKeHoach.find(f => f.id === m.kehoach_id) ? this.dataKeHoach.find(f => f.id === m.kehoach_id).dotthi : '';
+          m['__kehoach_coverted'] = this.dataKeHoach && this.dataKeHoach.find(f => f.id === m.kehoach_id) ? this.dataKeHoach.find(f => f.id === m.kehoach_id).title : '';
           const sIndex = this.statusList.findIndex(i => i.value === m.state);
           m['__status_converted'] = sIndex !== -1 ? this.statusList[sIndex].color : '';
           m['__ngaythi'] = m.ngaythi ? this.helperService.formatSQLToDateDMY(new Date(m.ngaythi)) : "";
           // const thisinhData = m['thisinhData'];
           m['__total'] = m['totalThisinh'];
-          // this.dmMon.forEach(f => {
-          //   m['__mon_' + f.kyhieu.toLowerCase()] = thisinhData ? this.covernumber(this.countOccurrences(f.id, thisinhData)) : '00';
-          // })
-
 
           return m;
         })
         this.isLoading = false;
         this.notifi.isProcessing(false);
       },
-      error: (e) => {
+      error: () => {
         this.isLoading = false;
         this.notifi.isProcessing(false);
+        this.notifi.toastError('Mất kết nối với máy chủ')
       }
     })
   }
 
-  private loadThisinhByHoidong(input: { recordsTotal: number; data: HskHoidongthi[] }): Observable<{
-    recordsTotal: number;
-    data: HskHoidongthi[]
-  }> {
-    try {
-      const index: number = input.data.findIndex(t => !t['_haveThisinh']);
-      if (index !== -1) {
-        return this.hskHoidongthiThisinhService.getTotalThisinh(input.data[index].id).pipe(
-          switchMap(m => {
-            // console.log(m);
-            input.data[index]['_haveThisinh'] = true;
-            input.data[index]['totalThisinh'] = m;
-            return this.loadThisinhByHoidong(input);
-          })
-        );
-      } else {
-        return of(input);
-      }
-    } catch (e) {
-      return of(input);
-    }
-  }
+  // private loadThisinhByHoidong(data: Hoidongthi[] ): Observable<Hoidongthi[] > {
+  //   try {
+  //     const index: number = data.findIndex(t => !t['_haveThisinh']);
+  //     if (index !== -1) {
+  //       return this.kehoachthiVstepService.getTotalThisinh(data[index].id).pipe(
+  //         switchMap(m => {
+  //           // console.log(m);
+  //           data[index]['_haveThisinh'] = true;
+  //           data[index]['totalThisinh'] = m;
+  //           return this.loadThisinhByHoidong(input);
+  //         })
+  //       );
+  //     } else {
+  //       return of(input);
+  //     }
+  //   } catch (e) {
+  //     return of(input);
+  //   }
+  // }
 
   private __processFrom({data, object, type}: FormHoiDong) {
     this.isLoading = true;
-    const observer$: Observable<any> = type === FormType.ADDITION ? this.hskHoidongthiService.create(data) : this.hskHoidongthiService.update(object.id, data);
+    const observer$: Observable<any> = type === FormType.ADDITION ? this.hoidongThiService.create(data) : this.hoidongThiService.update(object.id, data);
     observer$.subscribe({
       next: () => {
         this.needUpdate = true;
@@ -224,11 +269,13 @@ export class DsHoiDongThiComponent implements OnInit {
             tiento_sobaodanh: 'TNU241'
           });
         }
-        this.getDataHoiDong(this._kehoach_id);
-        this.isLoading = false;
+        this.notifi.closeSideNavigationMenu();
         this.notifi.toastSuccess('Thao tác thành công', 'Thông báo');
+        this.isLoading = false;
+        this.getDataHoiDong(1);
       },
       error: () => {
+        this.notifi.closeSideNavigationMenu();
         this.isLoading = false;
         this.notifi.toastError('Thao tác thất bại', 'Thông báo');
       }
@@ -332,16 +379,16 @@ export class DsHoiDongThiComponent implements OnInit {
     }
   }
 
-  async btnDelete(item: HskHoidongthi) {
+  async btnDelete(item: Hoidongthi) {
     const confirm = await this.notifi.confirmDelete();
     if (confirm) {
-      this.hskHoidongthiService.delete(item.id).subscribe({
+      this.hoidongThiService.delete(item.id).subscribe({
         next: () => {
           // this.page = Math.max(1, this.page - (this.listData.length > 1 ? 0 : 1));
           // this.listData.filter(f => f.id !== item.id)
           this.notifi.isProcessing(false);
           this.notifi.toastSuccess('Thao tác thành công');
-          this.getDataHoiDong(this._kehoach_id);
+          this.getDataHoiDong(1);
 
         }, error: () => {
           this.notifi.isProcessing(false);
@@ -351,7 +398,7 @@ export class DsHoiDongThiComponent implements OnInit {
     }
   }
 
-  btnAddThisinh(item: HskHoidongthi) {
+  btnAddThisinh(item: Hoidongthi) {
     this.notifi.isProcessing(false);
     this.hoidong_select = {...item};
     this.hoidong_id = item.id;
@@ -363,7 +410,7 @@ export class DsHoiDongThiComponent implements OnInit {
     });
   }
 
-  btnViewPhongthi(item: HskHoidongthi){
+  btnViewPhongthi(item: Hoidongthi){
     this.notifi.isProcessing(false);
     this.hoidong_select = {...item};
     this.hoidong_id = item.id;
@@ -374,16 +421,19 @@ export class DsHoiDongThiComponent implements OnInit {
       offsetTop: '0px'
     });
   }
-
-
-  onDataChange(event) {
-    this.thiSinhSelectTotal = event.thisinhSelect;
-    this.orderSelectTotal = event.orderSelect;
+  btnViewPhongthiThisinh(item: Hoidongthi){
+    this.notifi.isProcessing(false);
+    this.hoidong_select = {...item};
+    this.hoidong_id = item.id;
+    this.kehoach_id_param = item.kehoach_id;
+    this.notifi.openSideNavigationMenu({
+      template: this.phongthiThisinh,
+      size: this.sizeFullWidth,
+      offsetTop: '0px'
+    });
   }
 
-  covernumber(input: number) {
-    return input < 10 ? '0' + input : input.toString();
-  }
+
 
   paginate({page}: NgPaginateEvent) {
     this.page = page + 1;
@@ -391,14 +441,11 @@ export class DsHoiDongThiComponent implements OnInit {
     this.getDataHoiDong(this.page);
   }
 
-  countOccurrences(number, data) {
-    return data.reduce((acc, item) => acc + (item.monthi_ids.includes(number) ? 1 : 0), 0);
-  }
   async btnLockData(hoidong: HskHoidongthi) {
     const button = await this.notifi.confirmRounded('Thao tác nay sẽ khóa dữ liệu hội đồng thi ', 'XÁC NHẬN KHÓA DỮ LIỆU ', [BUTTON_NO, BUTTON_YES]);
     if (button.name === BUTTON_YES.name) {
       this.notifi.isProcessing(true);
-      this.hskHoidongthiService.update(hoidong.id, {lock: 1}).subscribe({
+      this.hoidongThiService.update(hoidong.id, {lock: 1}).subscribe({
         next: () => {
           this.notifi.isProcessing(false);
           this.notifi.toastSuccess('Khóa hội đồng thành công');

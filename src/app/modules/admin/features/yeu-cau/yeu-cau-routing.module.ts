@@ -15,22 +15,6 @@ const routes: Routes = [
     path:'cap-nhat-thong-tin',
     component:CapNhatThongTinThiSinhComponent
   },
-  {
-    path:'huy-dang-ky',
-    component:HuyDangKyComponent
-  },
-  {
-    path:'hoan-dang-ky',
-    component:HoanDangKyComponent
-  },
-  {
-    path:'duyet-huy-du-thi',
-    component:DuyetHuyDuThiComponent
-  },
-  {
-    path:'hoan-huy-dang-ky',
-    component:HoanHuyDangKyComponent
-  },
 
   {
     path:'phieu-chuyen-phat',

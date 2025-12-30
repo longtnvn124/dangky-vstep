@@ -13,10 +13,14 @@
                 </p-dropdown>
               </div>
               <div class="">
-                <p-dropdown [options]="dsKehoachthi" placeholder="Chọn đợt thi" optionValue="id" optionLabel="dotthi" [showClear]="true"
-                            (onChange)="loadDropdow($event.value)">
+<!--                <p-dropdown [options]="dsKehoachthi" placeholder="Chọn đợt thi" optionValue="id" optionLabel="title" [showClear]="true"-->
+<!--                            (onChange)="loadDropdow($event.value)" [filter]="true" [filterBy]="'title'"-->
+<!--                >-->
 
-                </p-dropdown>
+<!--                </p-dropdown>-->
+                <ovic-dropdown [options]="dsKehoachthi" placeholder="Chọn đợt thi" optionId="id" optionLabel="title" [showClear]="true"
+                               (onChange)="loadDropdow($event)" [filter]="true" [filterBy]="'title'" ></ovic-dropdown>
+
               </div>
               <div class="search-block__elm ">
                 <span class="p-input-icon-right">
@@ -68,7 +72,7 @@
               <th class="ovic-w-80px text-center">CCCD (hoặc hộ chiếu)</th>
               <th class="ovic-w-120px text-center">Số điện thoại</th>
               <th class="text-center">Lệ phí thi</th>
-              <th class="text-center">Cấp độ HSK </th>
+              <th class="text-center">Điểm dự thi </th>
               <th class="ovic-w-150px text-center">Đợt thi</th>
               <th class="ovic-w-130px text-center">Mã giao dịch</th>
               <th class="ovic-w-150px text-center">Thời gian TT</th>
@@ -76,7 +80,7 @@
             </tr>
           </ng-template>
 
-          <ng-template pTemplate="body" let-item let-i="rowIndex">
+          <ng-template pTemplate="body" let-item >
             <tr>
               <td *ngIf="item.trangthai_thanhtoan !== 1,else haveTT" class="text-center">
                 <p-tableCheckbox [value]="item" [disabled]="item['__status_converted'] ===1"></p-tableCheckbox>
@@ -112,7 +116,7 @@
               <td class="text-right">{{ item['lephithi'] | numberToVndCurrencuy }}</td>
 
               <td>
-                <div [ngClass]="'hsk hsk'+ item['caphsk_id']">{{item['__capthi_convenrtd']}}</div>
+                <div >{{item['__diemthi_convenrtd']}}</div>
               </td>
               <td class="text-left">{{ item['__dotthi_coverted'] }}</td>
 
@@ -125,7 +129,7 @@
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="12">
+              <td colspan="20">
                 Không có dữ liệu thí sinh!
               </td>
             </tr>

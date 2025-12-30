@@ -18,7 +18,7 @@ export interface DanhMucDoiTuong{
 })
 export class DanhMucDoituongUutienService {
 
-  private readonly api = getRoute('danhmuc-doituong/');
+  private readonly api = getRoute('dm-doituong-uutien/');
   constructor(
     private http: HttpClient,
     private httpParamsHelper: HttpParamsHeplerService,

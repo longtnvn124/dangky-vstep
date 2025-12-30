@@ -25,6 +25,7 @@ export class OvicAvataTypeThptComponent implements OnInit {
   @Input() file_name:string;
   @Input() footage:string ='horizontal';//horizontal :ngang,vertical:dài
 
+  @Input() public:number = 1;
   characterAvatar: string = '';
   fileList:OvicFile[]=[];
   _accept = '';
@@ -110,7 +111,7 @@ export class OvicAvataTypeThptComponent implements OnInit {
 
           // upload file to server
           // console.log({...fileUser,name:fileChooser.files[0].name});
-          this.fileService.uploadFile(fileUser, 1).subscribe({
+          this.fileService.uploadFile(fileUser, this.public).subscribe({
             next: fileUl => {
               // this.objectThumbnail = this.objectThumbnail.length>0 ? [].concat(fileUl);
 
@@ -143,35 +144,6 @@ export class OvicAvataTypeThptComponent implements OnInit {
     return fileName+'.'+(newType === 'jpeg'? 'jpg':newType);
   }
 
-  // async reSizeFileByCompression(file: File,file_size:number){
-  //   try {
-  //     const options = {
-  //       maxSizeMB: 1, // Bắt đầu với giới hạn dung lượng (1MB)
-  //       maxWidthOrHeight: 1024, // Kích thước tối đa
-  //       useWebWorker: true, // Sử dụng Web Worker để cải thiện hiệu suất
-  //       initialQuality: 0.9 // Chất lượng ban đầu
-  //     };
-  //     let compressedFile = await imageCompression(file, options);
-  //     while ( compressedFile.size < 21 && compressedFile.size > file_size * 1024) { // 50KB
-  //       options.initialQuality -= 0.1; // Giảm chất lượng thêm
-  //       if (options.initialQuality <= 0.1) break; // Ngưỡng tối thiểu
-  //
-  //       compressedFile = await imageCompression(file, options);
-  //     }
-  //
-  //     if (compressedFile.size >= 21 * 1024 && compressedFile.size <= file_size * 1024) {
-  //       // console.log(options.initialQuality)
-  //       return  compressedFile;
-  //
-  //     } else {
-  //       return  null
-  //     }
-  //
-  //   }catch (e){
-  //     console.error('Lỗi trong quá trình nén ảnh:', e);
-  //     return null;
-  //   }
-  // }
   async reSizeFileByCompression(file: File, file_size: number) {
     try {
       const minSize = 21 * 1024; // 25KB

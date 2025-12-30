@@ -1,12 +1,10 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-
 import {FormType, OvicForm} from '@modules/shared/models/ovic-models';
 import {ThiSinhInfo} from "@shared/models/thi-sinh";
 import {
   AbstractControl,
   FormBuilder,
-  FormControl,
-  FormGroup,
+  FormGroup, ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
   Validators
@@ -16,40 +14,28 @@ import {DiaDanh} from '@modules/shared/models/location';
 import {AuthService} from '@core/services/auth.service';
 import {NotificationService} from "@core/services/notification.service";
 import {LocationService} from "@shared/services/location.service";
-import {DDMMYYYYDateFormatValidator, NumberLessThanTenValidator, PhoneNumberValidator} from "@core/utils/validators";
+import {DDMMYYYYDateFormatValidator, PhoneNumberValidator} from "@core/utils/validators";
 import {ThisinhInfoService} from "@shared/services/thisinh-info.service";
 import {BUTTON_CANCEL, BUTTON_NO, BUTTON_YES} from "@core/models/buttons";
 import {
   DanToc,
-  DEFAULT_MODAL_OPTIONS,
-  DEPARTMENT_OF_EDUCATION,
-  SCHOOL_BY_DEPARTMENT,
-  SchoolDepartment
 } from "@shared/utils/syscat";
 import {DanhMucDoiTuong, DanhMucDoituongUutienService} from "@shared/services/danh-muc-doituong-uutien.service";
-import {DmTruongHoc} from "@shared/models/danh-muc";
-import {DanhMucTruongHocService} from "@shared/services/danh-muc-truong-hoc.service";
-import {DanhMucHskAddToolService, DmPhu} from "@shared/services/danh-muc-hsk-add-tool.service";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
+import {ButtonModule} from "primeng/button";
+import {RippleModule} from "primeng/ripple";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {InputTextModule} from "primeng/inputtext";
+import {InputMaskModule} from "primeng/inputmask";
+import {DropdownModule} from "primeng/dropdown";
+import {SharedModule} from "@shared/shared.module";
+import {OvicInputAddressNewComponent} from "@shared/components/ovic-input-address-new/ovic-input-address-new.component";
+import {CheckboxModule} from "primeng/checkbox";
 
 
 interface FormThisinh extends OvicForm {
   object: ThiSinhInfo;
 }
-
-// export function replaceCommaValidator(): ValidatorFn {
-//   return (control: AbstractControl): ValidationErrors | null => {
-//     if (control.value == null) {
-//       return null;
-//     }
-//     const value = control.value.toString();
-//     const newValue = value.replace(/,/g, '.');
-//     if (newValue !== value) {
-//       control.setValue(newValue, {emitEvent: false}); // Update value without emitting event
-//     }
-//     return null; // Always return null since we're just replacing characters
-//   };
-// }
 
 export function replaceCommaValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -75,13 +61,29 @@ export function replaceCommaValidator(): ValidatorFn {
 @Component({
   selector: 'app-thong-tin-thi-sinh',
   templateUrl: './thong-tin-thi-sinh.component.html',
-  styleUrls: ['./thong-tin-thi-sinh.component.css']
+  styleUrls: ['./thong-tin-thi-sinh.component.css'],
+  imports: [
+    NgSwitch,
+    ButtonModule,
+    RippleModule,
+    MatProgressBarModule,
+    ReactiveFormsModule,
+    InputTextModule,
+    InputMaskModule,
+    DropdownModule,
+    SharedModule,
+    OvicInputAddressNewComponent,
+    CheckboxModule,
+    NgIf,
+    NgSwitchCase
+  ],
+  standalone: true
 })
 export class ThongTinThiSinhComponent implements OnInit {
   @ViewChild('tplNotifiAvata') tplNotifiAvata: ElementRef;
 
-  dataSogiaoduc:DmTruongHoc[];
-  checkdata: 1 | 0 = 0;// o :load data
+
+  checkdata: 1 | 0 | -1= 0;// o :load data
   formSave: FormGroup;
 
   userInfo: ThiSinhInfo;
@@ -104,28 +106,11 @@ export class ThongTinThiSinhComponent implements OnInit {
 
 
 
-  hskk_lever = [
-    {label:'Sơ cấp',value:'socap',ten_tiengtrung:'HSKK（初级）'},
-    {label:'Trung cấp',value:'trungcap',ten_tiengtrung:'HSKK（中级）'},
-    {label:'Cao cấp',value:'Cao cấp',ten_tiengtrung:'HSKK（高级）'},
-  ]
 
   danhMucDoiTuong: DanhMucDoiTuong[];
 
-  data_Loaigiayto :{name:string,value:string}[] = [
-    {
-      name:'Căn cước công dân',
-      value:'身份证'
-    },
-    {
-      name:'Hộ chiếu',
-      value:'护照'
-    },
-  ]
 
   file_name:string = '';
-  dmQuoctich:DmPhu[];
-  dmNgonngume:DmPhu[];
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
@@ -133,9 +118,6 @@ export class ThongTinThiSinhComponent implements OnInit {
     private notifi: NotificationService,
     private locationService: LocationService,
     private danhMucDoituongUutienService: DanhMucDoituongUutienService,
-    private danhMucTruongHocService: DanhMucTruongHocService,
-    private dmPhuservice: DanhMucHskAddToolService,
-    private modalSerivce: NgbModal
   ) {
     const observeProcessFormData = this.OBSERVE_PROCESS_FORM_DATA.asObservable().pipe(debounceTime(100)).subscribe(form => this.__processFrom(form));
     this.subscription.add(observeProcessFormData);
@@ -144,8 +126,6 @@ export class ThongTinThiSinhComponent implements OnInit {
       user_id: [this.auth.user.id, Validators.required],
       ten: [''],
       hoten: [this.auth.user.display_name, Validators.required],
-      hoten_tiengtrung: ['',],
-      namhoc_tiengtrung: [null, [Validators.required,NumberLessThanTenValidator, replaceCommaValidator()]],
       ngaysinh: ['', [Validators.required, DDMMYYYYDateFormatValidator]],
       dantoc: [''],
       tongiao: [''],
@@ -159,15 +139,10 @@ export class ThongTinThiSinhComponent implements OnInit {
       cccd_img_truoc: [null, Validators.required],
       cccd_img_sau: [null, Validators.required],
       thuongtru_diachi: [{}, ],
-      thuongtru_diachi_moi: [{}, ],
       status: [0],
       camket: [0, Validators.required],
-      // quoctich: [null],
       email: [this.auth.user.email, Validators.required],
-      // hskk_lever: [null,],
-      ma_quoctich:['',Validators.required],
-      ngonngu_me:['',Validators.required],
-      loai_giayto:['',Validators.required],
+
     });
     this.file_name = this.replaceHoten(this.auth.user.display_name)+ '_' + this.auth.user.username;
 
@@ -195,29 +170,28 @@ export class ThongTinThiSinhComponent implements OnInit {
   }
 
   getDataCitis() {
-    forkJoin<[DiaDanh[], DanhMucDoiTuong[],DmTruongHoc[], DmPhu[],DmPhu[]]>(
-      this.locationService.listProvinces(),
+    this.checkdata = 0;
+    forkJoin<[DiaDanh[], DanhMucDoiTuong[]]>(
+      this.locationService.getListByIdAndKey(null, "regions"),
       this.danhMucDoituongUutienService.getdataUnlimit(),
-      this.danhMucTruongHocService.getSogiaoduc(),
-      this.dmPhuservice.getDataUnlimitByType("quoctich"),
-      this.dmPhuservice.getDataUnlimitByType('ngonngume')
     ).subscribe({
-      next: ([diadanh, doituong,sogiaoduc, dmQuoctich,dmNgonngume]) => {
+      next: ([diadanh, doituong]) => {
         this.provinceOptions = diadanh;
         this.danhMucDoiTuong = doituong;
-        this.dataSogiaoduc = sogiaoduc;
-        this.dmQuoctich = dmQuoctich;
-        this.dmNgonngume = dmNgonngume;
-        if(this.provinceOptions.length>0 && this.danhMucDoiTuong.length>0 &&this.dataSogiaoduc.length>0 ){
-          this._getDataUserInfo(this.auth.user.id);
 
+        if(this.provinceOptions.length>0 && this.danhMucDoiTuong.length>0){
+          this._getDataUserInfo(this.auth.user.id);
         }
+      },error:()=>{
+        this.notifi.toastError('Mất kết nối với máy chủ');
+        this.checkdata = -1
       }
     })
 
   }
 
   async _getDataUserInfo(user_id: number) {
+    this.checkdata = 0;
     this.notifi.isProcessing(true);
     this.thisinhInfoService.getUserInfo(user_id).subscribe({
       next: data => {
@@ -233,9 +207,8 @@ export class ThongTinThiSinhComponent implements OnInit {
             user_id: this.auth.user.id,
             ten: data.ten,
             hoten: data.hoten,
-            namhoc_tiengtrung: data.namhoc_tiengtrung,
-            hoten_tiengtrung: data.hoten_tiengtrung,
             ngaysinh: data.ngaysinh,
+            email:data.email,
             gioitinh: data.gioitinh,
             dantoc: data.dantoc,
             tongiao: data.tongiao,
@@ -248,21 +221,12 @@ export class ThongTinThiSinhComponent implements OnInit {
             cccd_img_truoc: data.cccd_img_truoc,
             cccd_img_sau: data.cccd_img_sau,
             thuongtru_diachi: data.thuongtru_diachi,
-            thuongtru_diachi_moi: data['thuongtru_diachi_moi'],
             status:data.status,
             camket: data.camket === 1 ? true : false,
-            // quoctich: data.quoctich === 1 ? true : false,
-            email: data.email? data.email : this.auth.user.email ,
-            ma_quoctich:data.ma_quoctich,
-            ngonngu_me:data.ngonngu_me,
-            loai_giayto:data.loai_giayto,
 
           });
-          // this.changeInfoDepartment10(data.lop10_department)
-          // this.changeInfoDepartment11(data.lop11_department)
-          // this.changeInfoDepartment12(data.lop12_department)
+
           this.changeThuongchu(data.thuongtru_diachi);
-          this.changeThuongchuMoi(data['thuongtru_diachi_moi']);
           this.userInfo = data;
 
           this.file_name = this.replaceHoten(this.auth.user.display_name)+ '_' + data.cccd_so;
@@ -277,6 +241,7 @@ export class ThongTinThiSinhComponent implements OnInit {
         this.notifi.isProcessing(false);
       }, error: (e) => {
         this.notifi.isProcessing(false);
+        this.checkdata = -1;
       }
     });
 
@@ -303,10 +268,10 @@ export class ThongTinThiSinhComponent implements OnInit {
     }
     if (type === FormType.UPDATE) {
 
-      if(this.userInfo.request_update === 2){
-        data['request_update'] = 0;
-        data['lock'] = 1;
-      }
+      // if(this.userInfo.request_update === 2){
+      //   data['request_update'] = 0;
+      //   data['lock'] = 1;
+      // }
 
 
       this.thisinhInfoService.update(object.id, data).subscribe({
@@ -386,9 +351,7 @@ export class ThongTinThiSinhComponent implements OnInit {
   changeThuongchu(event) {
     this.f['thuongtru_diachi'].setValue(event);
   }
-  changeThuongchuMoi(event) {
-    this.f['thuongtru_diachi_moi'].setValue(event);
-  }
+
 
 
   isRequestUpdate:boolean = false;
@@ -411,10 +374,11 @@ export class ThongTinThiSinhComponent implements OnInit {
   }
 
   viewNotifiAvatar:boolean= false;
-  btnviewNotifiAvatar(){
-    // this.viewNotifiAvatar = true;
 
-    this.modalSerivce.open( this.tplNotifiAvata,DEFAULT_MODAL_OPTIONS);
+  reLoad(){
+    this.loadInit()
   }
+
+
 
 }

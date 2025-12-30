@@ -48,9 +48,9 @@ export class LocationService {
 	}
 
   //-----------------------------------------------------------------------
-  getListByIdAndKey( provinceId : number, key:string) : Observable<DiaDanh[]> {
+
+  getListByIdAndKey( provinceId : number, key:'provinces' |'regions') : Observable<DiaDanh[]> {
     return this._getChildByParentId( provinceId , getRoute( key +'/' ) );
   }
-
 
 }

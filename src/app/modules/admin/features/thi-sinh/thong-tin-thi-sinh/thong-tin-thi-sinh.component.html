@@ -1,12 +1,25 @@
 <ng-container [ngSwitch]="checkdata">
+  <ng-container *ngSwitchCase="'-1'">
+    <div class="h-100 d-flex flex-column justify-content-center align-items-center"
+         style="gap:4px;background:#c1ccd8">
+      <div style="font-size:16px;"></div>
+      <div style="font-size:16px;">Mất kết nối với máy chủ vui lòng bấm 'Tải lại'</div>
+      <button pButton pRipple label="Tải lại" (click)="reLoad()"></button>
+    </div>
+  </ng-container>
   <ng-container *ngSwitchCase="'0'">
-    <div class="w-100 d-flex justify-content-center align-items-center flex-column "
-      style="height: calc(100vh - 90px);gap:10px;">
-      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-      <div style="font-size:20px; font-weight:400;">
-        Hệ thống đang load dữ liệu
+
+    <div class="w-100 d-flex flex-column justify-content-center align-items-center"
+         style="height: calc(100vh - 90px);gap:10px; background:#ededed">
+      <div class=" text-center"
+           style="font-size: 15px;background: #d6def7;padding: 14px 20px;border-radius: 10px;border: 1px solid #ccc;">
+        <p>Đang tải dữ liệu, vui lòng chờ</p>
+        <div style=" width: 300px">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </div>
       </div>
     </div>
+
   </ng-container>
   <ng-container *ngSwitchCase="'1'">
     <div class="ovic-container">
@@ -19,7 +32,6 @@
               </div>
             </div>
             <div class="row ">
-<!--              <div class="col-12 col-lg-8">-->
               <div class="col-12 ">
                 <div class="row row-cols-1">
                   <div class="col col-lg-4 col-xl-4">
@@ -30,71 +42,28 @@
                     </div>
                   </div>
                   <div class="col col-lg-4 col-xl-4">
-                    <div class="form-row" [class.fieldset--error]="f['hoten_tiengtrung'].touched && f['hoten_tiengtrung'].invalid"
-                         [class.fieldset--invalid]="f['hoten_tiengtrung'].touched && f['hoten_tiengtrung'].valid">
-                      <label>Họ và tên (Tiếng Trung Quốc)</label>
-                      <input pInputText type="text" placeholder="Vd: 陈明龙" formControlName="hoten_tiengtrung" autocomplete="off">
-                    </div>
-                  </div>
-                  <div class="col col-lg-4 col-xl-4 ">
-                    <div class="form-row" [class.fieldset--error]="f['loai_giayto'].touched && f['loai_giayto'].invalid"
-                         [class.fieldset--invalid]="f['loai_giayto'].touched && f['loai_giayto'].valid">
-                      <label>Loại giấy tờ<span class="ovic-mark">*</span></label>
-                      <p-dropdown class="w-100" [style]="{'width':'100%'}" [options]="data_Loaigiayto" formControlName="loai_giayto"
-                                  optionLabel="name" optionValue="value" placeholder="CCCD (hoặc hộ chiếu)"></p-dropdown>
-                    </div>
-                  </div>
-
-                </div>
-                <div class="row row-cols-1">
-<!--                  <div class="col col-lg-6 col-xl-6">-->
-<!--                    <div class="form-row" [class.fieldset&#45;&#45;error]="f['namhoc_tiengtrung'].touched && f['namhoc_tiengtrung'].invalid"-->
-<!--                         [class.fieldset&#45;&#45;invalid]="f['namhoc_tiengtrung'].touched && f['namhoc_tiengtrung'].valid">-->
-<!--                      <label>Số năm học tiếng trung <span class="ovic-mark">*</span></label>-->
-<!--                      <input pInputText type="text" placeholder="Vd: 1,..." formControlName="namhoc_tiengtrung" autocomplete="off">-->
-<!--                    </div>-->
-<!--                  </div>-->
-<!--                  <div class="col col-lg-6 col-xl-6">-->
-<!--                    <div class="form-row" [class.fieldset&#45;&#45;error]="f['hskk_lever'].touched && f['hskk_lever'].invalid"-->
-<!--                         [class.fieldset&#45;&#45;invalid]="f['hskk_lever'].touched && f['hskk_lever'].valid">-->
-<!--                      <label>Trình độ HSKK liên quan <span class="ovic-mark">*</span></label>-->
-<!--                      <p-dropdown class="w-100" [style]="{'width':'100%'}" [options]="hskk_lever" formControlName="hskk_lever"-->
-<!--                                  optionLabel="label" optionValue="value" placeholder="Chọn..."></p-dropdown>-->
-<!--                    </div>-->
-<!--                  </div>-->
-
-                </div>
-                <div class="row row-cols-1">
-                  <div class="col col-lg-4 col-xl-4">
-                    <div class="form-row" [class.fieldset--error]="f['phone'].touched && f['phone'].invalid"
-                         [class.fieldset--invalid]="f['phone'].touched && f['phone'].valid">
-                      <label>Số điện thoại<span class="ovic-mark">*</span></label>
-                      <input pInputText type="text" placeholder="Vd: 0112233445" formControlName="phone"
-                             autocomplete="off">
-                    </div>
-                  </div>
-
-                  <div class="col col-lg-4 col-xl-4">
                     <div class="form-row" [class.fieldset--error]="f['ngaysinh'].touched && f['ngaysinh'].invalid"
-                      [class.fieldset--invalid]="f['ngaysinh'].touched && f['ngaysinh'].valid">
+                         [class.fieldset--invalid]="f['ngaysinh'].touched && f['ngaysinh'].valid">
                       <label>Ngày sinh <span class="ovic-mark">*</span></label>
                       <p-inputMask class="w-100" formControlName="ngaysinh" mask="99/99/9999" placeholder="__/__/____"
-                        slotChar="dd/mm/yyyy"></p-inputMask>
+                                   slotChar="dd/mm/yyyy"></p-inputMask>
                       <span class="test-member__from__col__span"
-                        *ngIf="f['ngaysinh'].touched && f['ngaysinh'].invalid">{{ f[ 'ngaysinh' ].getError(
+                            *ngIf="f['ngaysinh'].touched && f['ngaysinh'].invalid">{{ f[ 'ngaysinh' ].getError(
                         'theDateDoesNotExist' ) ? 'Ngày không tồn tại' : 'Định dạng ngày chưa đúng' }}</span>
                     </div>
 
                   </div>
                   <div class="col col-lg-4 col-xl-4 ">
                     <div class="form-row" [class.fieldset--error]="f['gioitinh'].touched && f['gioitinh'].invalid"
-                      [class.fieldset--invalid]="f['gioitinh'].touched && f['gioitinh'].valid">
+                         [class.fieldset--invalid]="f['gioitinh'].touched && f['gioitinh'].valid">
                       <label>Giới tính<span class="ovic-mark">*</span></label>
                       <p-dropdown class="w-100" [style]="{'width':'100%'}" [options]="sex" formControlName="gioitinh"
-                        optionLabel="name" optionValue="code" placeholder="Chọn..."></p-dropdown>
+                                  optionLabel="name" optionValue="code" placeholder="Chọn..."></p-dropdown>
                     </div>
                   </div>
                 </div>
+
+
                 <div class="row row-cols-1">
                   <div class="col col-lg-4 col-xl-4">
                     <div class="form-row" [class.fieldset--error]="f['dantoc'].touched && f['dantoc'].invalid"
@@ -122,57 +91,33 @@
                                   placeholder="Chọn..."></p-dropdown>
                     </div>
                   </div>
-
                 </div>
+
                 <div class="row row-cols-1">
-
-<!--                  <div class="col col-lg-6 col-xl-6 d-flex">-->
-<!--                    <div class="form-row w-100">-->
-<!--                      <label></label>-->
-<!--                      <div class="w-100" style="border:1px solid #ccc; border-radius:6px;height:42px;">-->
-<!--                        <div class="d-flex justify-content-start align-items-center h-100 " style="padding: 0 10px;gap: 6px;">-->
-<!--                          <p-checkbox formControlName="quoctich" [binary]="true" inputId="binary"></p-checkbox>-->
-<!--                          <div style="font-size: 14px;">Quốc tịch nước ngoài</div>-->
-<!--                        </div>-->
-<!--                      </div>-->
-<!--                    </div>-->
-
-<!--                  </div>-->
                   <div class="col col-lg-4 col-xl-4">
-                    <div class="form-row" [class.fieldset--error]="f['namhoc_tiengtrung'].touched && f['namhoc_tiengtrung'].invalid"
-                         [class.fieldset--invalid]="f['namhoc_tiengtrung'].touched && f['namhoc_tiengtrung'].valid">
-                      <label>Số năm học tiếng trung <span class="ovic-mark">*</span></label>
-                      <input pInputText type="number" placeholder="Vd: 1,2..." formControlName="namhoc_tiengtrung" autocomplete="off">
+                    <div class="form-row" [class.fieldset--error]="f['phone'].touched && f['phone'].invalid"
+                         [class.fieldset--invalid]="f['phone'].touched && f['phone'].valid">
+                      <label>Số điện thoại<span class="ovic-mark">*</span></label>
+                      <input pInputText type="text" placeholder="Vd: 0112233445" formControlName="phone"
+                             autocomplete="off">
+                    </div>
+                  </div>
+                  <div class="col col-lg-4 col-xl-4">
+                    <div class="form-row" [class.fieldset--error]="f['email'].touched && f['email'].invalid"
+                         [class.fieldset--invalid]="f['email'].touched && f['email'].valid">
+                      <label>Email<span class="ovic-mark">*</span></label>
+                      <input pInputText type="text" placeholder="Vd: nguyenvanA@gmail.com" formControlName="email"
+                             autocomplete="off">
                     </div>
                   </div>
 
-                  <div class="col col-lg-4 col-xl-4">
-                    <div class="form-row" [class.fieldset--error]="f['ma_quoctich'].touched && f['ma_quoctich'].invalid"
-                         [class.fieldset--invalid]="f['ma_quoctich'].touched && f['ma_quoctich'].valid">
-                      <label>Quốc tịch<span class="ovic-mark">*</span></label>
-                      <p-dropdown class="w-100" [filter]="true" [style]="{'width':'100%'}" [options]="dmQuoctich"
-                                  formControlName="ma_quoctich" optionLabel="ten" optionValue="ma_quoctich"
-                                  placeholder="Chọn..."></p-dropdown>
-                    </div>
-                  </div>
-
-                  <div class="col col-lg-4 col-xl-4">
-                    <div class="form-row" [class.fieldset--error]="f['ngonngu_me'].touched && f['ngonngu_me'].invalid"
-                         [class.fieldset--invalid]="f['ngonngu_me'].touched && f['ngonngu_me'].valid">
-                      <label>Ngôn ngữ mẹ<span class="ovic-mark">*</span></label>
-                      <p-dropdown class="w-100" [filter]="true" [style]="{'width':'100%'}" [options]="dmNgonngume"
-                                  formControlName="ngonngu_me" optionLabel="ten" optionValue="ma_ngonngu"
-                                  placeholder="Chọn..."></p-dropdown>
-                    </div>
-                  </div>
 
                 </div>
               </div>
-
             </div>
             <div class="row">
               <div class="mar-14px col-12 col-lg-4">
-                <ovic-avata-type-thpt [disabled]=" f['status'].value ===1" [formField]="f['anh_chandung']"
+                <ovic-avata-type-thpt [disabled]=" f['status'].value ===1" [formField]="f['anh_chandung']" [public]="0"
                                       [aspectRatio]="2 / 3" [accept]="['.jpg', '.png', '.jpeg']" [site]="true"
                                       [textView]="'<span>Tải ảnh chân dung(*)</span><p>(Dung lượng file tối thiểu 21kb và tối đa 100kb.)</p>'"
                                       [file_size]="100" [file_name]="file_name" [footage]="'vertical'" [rotateShow] = true
@@ -213,12 +158,12 @@
                   <label for=></label>
                   <div class="row w-100 m-0">
                     <div class="p-0 col-12 col-lg-6 mt-1">
-                      <ovic-avata-type-thpt [formField]="f['cccd_img_truoc']" [aspectRatio]="5 / 3"
+                      <ovic-avata-type-thpt [formField]="f['cccd_img_truoc']" [aspectRatio]="5 / 3" [public]="0"
                         [disabled]=" f['status'].value ===1" [accept]="['.jpg', '.png', '.jpeg']"
                         [textView]="'Tải ảnh CCCD(Hoặc hộ chiếu) mặt trước (*)'" [rotateShow] = true></ovic-avata-type-thpt>
                     </div>
                     <div class="p-0 col-12 col-lg-6 mt-1">
-                      <ovic-avata-type-thpt [formField]="f['cccd_img_sau']" [aspectRatio]="5 / 3"
+                      <ovic-avata-type-thpt [formField]="f['cccd_img_sau']" [aspectRatio]="5 / 3" [public]="0"
                         [disabled]=" f['status'].value ===1" [accept]="['.jpg', '.png', '.jpeg']"
                         [textView]="'Tải ảnh CCCD(Hoặc hộ chiếu) mặt sau(*)'" [rotateShow] = true></ovic-avata-type-thpt>
                     </div>
@@ -262,55 +207,15 @@
             <div class="row">
               <div class="col-12">
                 <div class="form-row">
-                  <label>Địa chỉ thường trú (Cũ)<span class="ovic-mark">*</span></label>
-                  <ovic-input-address-four-layouts [disabled]=" f['status'].value ===1" class="w-100"
-                    [formField]="f['thuongtru_diachi']"
-                    (onChanges)="changeThuongchu($event)"></ovic-input-address-four-layouts>
-
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12">
-                <div class="form-row">
-                  <label>Địa chỉ thường trú (Mới)<span class="ovic-mark">*</span></label>
+                  <label>Địa chỉ thường trú <span class="ovic-mark">*</span></label>
                   <ovic-input-address-new [disabled]=" f['status'].value ===1" class="w-100"
-                                                   [formField]="f['thuongtru_diachi_moi']"
-                                                   (onChanges)="changeThuongchuMoi($event)"></ovic-input-address-new>
+                                                   [formField]="f['thuongtru_diachi']"
+                                                   (onChanges)="changeThuongchu($event)"></ovic-input-address-new>
 
                 </div>
               </div>
             </div>
-<!--            <div class="row row-cols-1">-->
-<!--              <div class="col-12 col-xl-4">-->
-<!--                <div class="form-row" [class.fieldset&#45;&#45;error]="f['doituong'].touched && f['doituong'].invalid"-->
-<!--                     [class.fieldset&#45;&#45;invalid]="f['doituong'].touched && f['doituong'].valid">-->
-<!--                  <label>Khu vực <span class="ovic-mark">*</span></label>-->
-<!--                  <p-dropdown class="w-100" [style]="{'width':'100%'}" [filter]="true" [options]="khuvucdata"-->
-<!--                              formControlName="khuvuc" optionLabel="title" optionValue="code"-->
-<!--                              placeholder="Chọn khu vực..."></p-dropdown>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <div class="col-12 col-xl-4">-->
-<!--                <div class="form-row" [class.fieldset&#45;&#45;error]="f['khuvuc'].touched && f['khuvuc'].invalid"-->
-<!--                  [class.fieldset&#45;&#45;invalid]="f['khuvuc'].touched && f['khuvuc'].valid">-->
-<!--                  <label>Đối tượng ưu tiên</label>-->
-<!--                  <p-dropdown class="w-100" [style]="{'width':'100%'}" [filter]="true" [options]="danhMucDoiTuong" [showClear]="true"-->
-<!--                    formControlName="doituong" optionLabel="doituong" optionValue="doituong"-->
-<!--                    placeholder="Chọn đối tượng ..."></p-dropdown>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <div class="col-12 col-xl-4">-->
-<!--                <div class="form-row"-->
-<!--                  [class.fieldset&#45;&#45;error]="f['namtotnghiep_thpt'].touched && f['namtotnghiep_thpt'].invalid"-->
-<!--                  [class.fieldset&#45;&#45;invalid]="f['namtotnghiep_thpt'].touched && f['namtotnghiep_thpt'].valid">-->
-<!--                  <label>Năm tốt nghiệp</label>-->
-<!--                  <input type="text" placeholder="Vd: 2017, 2018, ..." formControlName="namtotnghiep_thpt" autocomplete="off">-->
 
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
 
             <div class="row">
               <div class="col-12 d-flex align-items-center" >
@@ -333,9 +238,7 @@
         </div>
 
         <ng-template #statuscheck>
-<!--          <div *ngIf="userInfo['lock'] === 0" class="w-100 h-100 d-flex justify-content-center align-items-center" style="padding: 20px 0;gap: 12px;" >-->
-<!--            <button [disabled]="!f['camket'].value"  pButton pRipple label="Lưu thông tin" icon="pi pi-check-square" (click)="saveForm()"> </button>-->
-<!--          </div>-->
+
 
           <div class="w-100 h-100 d-flex justify-content-center align-items-center" style="padding: 20px 0;gap: 12px;" >
             <button [disabled]="!f['camket'].value" pButton pRipple label="Lưu thông tin" icon="pi pi-check-square" (click)="saveForm()"> </button>
@@ -357,13 +260,7 @@
   </ng-container>
 </ng-container>
 
-<!--<p-dialog  header="CHI TIẾT ẢNH THẺ " class="notifi-avata" [(visible)]="viewNotifiAvatar" [modal]="true" [maximizable]="true" [draggable]="false" [resizable]="false">-->
-<!--  <div>-->
-<!--    <div><strong> Lưu ý:</strong></div>-->
-<!--    <div>1.yêu cầu ảnh chân dung có nền màu trắng, không đeo kính. </div>-->
-<!--    <div>2. Ảnh chân dung không hợp lệ là nhưng ảnh : nền màu xanh, đỏ, phông ảnh đời thường, ảnh tự sướng, ảnh đeo kính, ảnh có động vật không ở định dạng chân dung </div>-->
-<!--  </div>-->
-<!--</p-dialog>-->
+
 
 <ng-template #tplNotifiAvata>
   <div>

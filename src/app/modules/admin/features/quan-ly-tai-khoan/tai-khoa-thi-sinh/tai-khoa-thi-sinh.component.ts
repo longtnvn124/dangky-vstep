@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators} from "@angular/forms";
 import {Paginator} from "primeng/paginator";
 import {SimpleRole} from "@core/models/auth";
@@ -47,6 +47,7 @@ export class TaiKhoaThiSinhComponent implements OnInit {
 
   @ViewChild(Paginator) paginator: Paginator;
   @ViewChild('tplCreateAccount') tplCreateAccount: ElementRef;
+  @Input() roleName : string= 'thi-sinh';
 
   formSave: FormGroup;
 
@@ -250,7 +251,7 @@ export class TaiKhoaThiSinhComponent implements OnInit {
           return m;
         });
 
-        this.role_use = data.find(f=>f.name === 'thisinh_hsk')? data.find(f=>f.name === 'thisinh_hsk').id.toString() :null;
+        this.role_use = data.find(f=>f.name === 'thi-sinh')? data.find(f=>f.name === 'thi-sinh').id.toString() :null;
 
         if(this.dataRoles){
           this.loadData()

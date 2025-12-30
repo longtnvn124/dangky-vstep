@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { HoiDongThiRoutingModule } from './hoi-dong-thi-routing.module';
-import { DsHoiDongThiComponent } from './ds-hoi-dong-thi/ds-hoi-dong-thi.component';
-import { AddThiSinhComponent } from './ds-hoi-dong-thi/add-thi-sinh/add-thi-sinh.component';
 import {RippleModule} from "primeng/ripple";
 import {ButtonModule} from "primeng/button";
 import {SharedModule} from "@shared/shared.module";
@@ -23,8 +21,11 @@ import { KetQuaThiComponent } from './ds-hoi-dong-thi/ket-qua-thi/ket-qua-thi.co
 
 @NgModule({
   declarations: [
-    DsHoiDongThiComponent,
-    AddThiSinhComponent,
+
+    PhongThiComponent,
+    KetQuaThiComponent
+  ],
+  exports: [
     PhongThiComponent,
     KetQuaThiComponent
   ],

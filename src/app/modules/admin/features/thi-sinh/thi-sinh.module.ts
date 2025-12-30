@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 
 import { ThiSinhRoutingModule } from './thi-sinh-routing.module';
 import { ThiSinhDangKyComponent } from './thi-sinh-dang-ky/thi-sinh-dang-ky.component';
-import { ThongTinThiSinhComponent } from './thong-tin-thi-sinh/thong-tin-thi-sinh.component';
 import {SharedModule} from "@shared/shared.module";
 import {ReactiveFormsModule} from "@angular/forms";
 import {DropdownModule} from "primeng/dropdown";
@@ -25,17 +24,18 @@ import {MatMenuModule} from "@angular/material/menu";
 import {InputTextareaModule} from "primeng/inputtextarea";
 import {ImageModule} from "primeng/image";
 import {OvicInputAddressNewComponent} from "@shared/components/ovic-input-address-new/ovic-input-address-new.component";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 
 @NgModule({
     declarations: [
         ThiSinhDangKyComponent,
-        ThongTinThiSinhComponent,
+
         TraCuuKetQuaComponent,
         YeuCauTraKetQuaComponent
     ],
     exports: [
-        ThongTinThiSinhComponent
+
     ],
   imports: [
     CommonModule,
@@ -58,7 +58,8 @@ import {OvicInputAddressNewComponent} from "@shared/components/ovic-input-addres
     MatMenuModule,
     InputTextareaModule,
     ImageModule,
-    OvicInputAddressNewComponent
+    OvicInputAddressNewComponent,
+    MatProgressBarModule
   ]
 })
 export class ThiSinhModule { }

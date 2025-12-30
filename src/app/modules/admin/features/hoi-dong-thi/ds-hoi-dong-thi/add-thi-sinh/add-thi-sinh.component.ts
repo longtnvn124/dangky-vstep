@@ -1,19 +1,43 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {HskHoidongthi} from "@shared/services/hsk-hoidongthi.service";
 import {NotificationService} from "@core/services/notification.service";
-import {ThemeSettingsService} from "@core/services/theme-settings.service";
-import {HskHoidongthiThiSinh, HskHoidongthiThisinhService} from "@shared/services/hsk-hoidongthi-thisinh.service";
 import {NgPaginateEvent} from "@shared/models/ovic-models";
-import {debounceTime, first, Observable, of, Subject, switchMap} from "rxjs";
+import {debounceTime, forkJoin, Observable, of, Subject, switchMap} from "rxjs";
 import * as XLSX from "xlsx";
-import {Paginator} from "primeng/paginator";
+import {Paginator, PaginatorModule} from "primeng/paginator";
 import {BUTTON_NO, BUTTON_YES} from "@core/models/buttons";
+import {ButtonModule} from "primeng/button";
+import {RippleModule} from "primeng/ripple";
+import {TableModule} from "primeng/table";
+import {NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
+import {MatMenuModule} from "@angular/material/menu";
+import {InputTextModule} from "primeng/inputtext";
+import {HoidongThisinh, VstepHoidongThisinhService} from "@shared/services/vstep-hoidong-thisinh.service";
+import {ConditionOption} from "@shared/models/condition-option";
+import {OvicQueryCondition} from "@core/models/dto";
+import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
+import {ThiSinhInfo} from "@shared/models/thi-sinh";
+import {ThisinhInfoService} from "@shared/services/thisinh-info.service";
+import {DmDiemduthi, DmDiemDuThiService} from "@shared/services/dm-diem-du-thi.service";
+
 type AOA = any[][];
 
 @Component({
   selector: 'app-add-thi-sinh',
   templateUrl: './add-thi-sinh.component.html',
-  styleUrls: ['./add-thi-sinh.component.css']
+  styleUrls: ['./add-thi-sinh.component.css'],
+  imports: [
+    ButtonModule,
+    RippleModule,
+    TableModule,
+    PaginatorModule,
+    NgSwitch,
+    NgSwitchCase,
+    MatMenuModule,
+    InputTextModule,
+    NgIf
+  ],
+  standalone: true
 })
 export class AddThiSinhComponent implements OnInit {
   // @ViewChild('ViewuploadP') paginatorViewUpload: Paginator;
@@ -22,26 +46,33 @@ export class AddThiSinhComponent implements OnInit {
   @Input() set hoidong(item: HskHoidongthi) {
     this.hoidong_select = {...item};
     this.ngtype = 0;
+
+
     this.loadInit();
   }
 
-  ngtype: -1 | 0 | 1 | 2 = 2;//-1 err,1:true,0:load. 2:form
-  hoidong_select: HskHoidongthi;
-  rows: number = 0;
-  listData: HskHoidongthiThiSinh[] = []
-  dataUpload: any[] = [];
-  recordTotal: number = 0;
-  page: number = 1;
-  search: string= '';
-  private inputChanged: Subject<string> = new Subject<string>();
+  ngtype                : -1 | 0 | 1 | 2 = 2;//-1 err,1:true,0:load. 2:form
+  hoidong_select        : HskHoidongthi;
+
+  listData              : HoidongThisinh[] = []
+  dataUpload            : any[] = [];
+  recordTotal           : number = 0;
+  page                  : number = 1;
+  search                : string= '';
+  private inputChanged  : Subject<string> = new Subject<string>();
+  rows                  : number = 20;
+
+  dmDiemduthi: DmDiemduthi[]= [];
 
   constructor(
     private notifi: NotificationService,
-    private themeSettingsService: ThemeSettingsService,
-    private hskHoidongthiThisinhService: HskHoidongthiThisinhService,
+    private hoidongThisinhService: VstepHoidongThisinhService,
+    private ordersService : VstepOrdersService,
+    private thisinhService: ThisinhInfoService,
+    private dmDiemDuThiService: DmDiemDuThiService
 
   ) {
-    this.rows = this.themeSettingsService.settings.rows;
+
   }
 
   ngOnInit(): void {
@@ -51,33 +82,120 @@ export class AddThiSinhComponent implements OnInit {
   }
 
   loadInit() {
-    this.file_name ='';
-    this.datauploadView = [];
-    this.dataUpload = [];
+    // this.file_name ='';
+    // this.datauploadView = [];
+    // this.dataUpload = [];
+    this.ngtype = 0;
+    this.loopGetDiemduthi(1,200,[],1).subscribe({
+      next:(data)=>{
+        this.dmDiemduthi = data;
+        this.getData();
+      },error:()=>{
+        this.ngtype = -1;
+        this.notifi.toastError('Mất kết nối với máy chủ')
+      }
+    })
+
+
+
+
+  }
+
+
+  getData(){
     this.notifi.isProcessing(true);
 
-    this.hskHoidongthiThisinhService.getDataByHoidongAndSearch(this.page, this.hoidong_select.id, this.search).subscribe({
-      next: ({recordsTotal, data}) => {
-        this.recordTotal = recordsTotal;
+    const condtion :ConditionOption = {
+      condition: [
+        {
+          conditionName:'hoidong_id',
+          condition:OvicQueryCondition.equal,
+          value:this.hoidong_select.id.toString()
+        },
+        {
+          conditionName:'hoidong_id',
+          condition:OvicQueryCondition.equal,
+          value:this.hoidong_select.id.toString()
+        }
+      ],
+      page: this.page.toString(),
+      set:[
+        {label:'limit',value:this.rows.toString()},
+        {label:'order',value:'ASC'},
+        // {label:'orderby',value:'hoten'},
+      ]
+    }
+    if(this.search){
+      condtion.condition.push(
+        {
+          conditionName:'hoten',
+          condition:OvicQueryCondition.like,
+          value:`%${this.search}%`
+        },
+      )
+    }
+
+    this.hoidongThisinhService.getDataByPageNew(condtion).pipe(switchMap(prj=>{
+
+      const thisinh_ids = Array.from(new Set(prj.data.map(m=>m.thisinh_id)))
+      return forkJoin([
+        of(prj),
+        this.loopGetThisinh(1,20,thisinh_ids,[])
+      ])
+    })).subscribe({
+      next:([{data,recordsFiltered},thisinhs])=>{
+        this.recordTotal = recordsFiltered;
         this.listData = data.length>0 ? data.map((m,index)=>{
           m['__index'] = (this.page -1)*this.rows +( index + 1);
+
+          m['_diemduthi'] = this.dmDiemduthi.find(f=>f.id == m.diemduthi_id) ? this.dmDiemduthi.find(f=>f.id == m.diemduthi_id).title : '';
+
+          const thisinh = thisinhs.find(f=>f.id === m.thisinh_id)
+          m['_thisinh'] = thisinh;
+          m['_hoten'] = thisinh ? thisinh.hoten : '';
+          m['_cccd'] = thisinh ? thisinh.cccd_so : '';
+          m['_email'] = thisinh ? thisinh.email:'';
+          m['_phone'] = thisinh ? thisinh.phone:'';
+          m['_gioitinh'] = thisinh ? thisinh.gioitinh == 'nam' ? 'Nam' : 'Nữ' :'';
+          m['_ngaysinh'] = thisinh ? thisinh.ngaysinh:'';
+
           return m;
-          }): [];
+        }): [];
         this.notifi.isProcessing(false);
         this.ngtype =  this.listData.length> 0 ? 1: 2;
-      },
-      error: () => {
+      },error:()=>{
         this.notifi.isProcessing(false);
         this.ngtype = -1;
         this.notifi.toastError('load dữ liệu không thành công');
       }
     })
-
   }
+
+  loopGetDiemduthi(page:number, limit:number,arr:DmDiemduthi[],recor:number):Observable<DmDiemduthi[]>{
+    if(arr.length < recor){
+      const condtion :ConditionOption = {
+        condition: [
+
+        ],
+        page: this.page.toString(),
+        set:[
+          {label:'limit',value:limit.toString()},
+          {label:'select',value:'id,title'},
+        ]
+      }
+      return this.dmDiemDuThiService.getDataByPageNew(condtion).pipe(switchMap(m=>{
+        return this.loopGetDiemduthi(page+1,limit,[...arr,...m.data],m.recordsFiltered)
+      }))
+
+    }else{
+      return of(arr)
+    }
+  }
+
 
   paginate({page}: NgPaginateEvent) {
     this.page = page + 1;
-    this.loadInit();
+    this.getData();
   }
 
   onInputChange(event: string) {
@@ -87,7 +205,7 @@ export class AddThiSinhComponent implements OnInit {
   searchContentByInput(text: string) {
     this.page = 1;
     this.search= text ? text.trim():'';
-    this.loadInit();
+    this.getData();
   }
 
 
@@ -263,7 +381,7 @@ export class AddThiSinhComponent implements OnInit {
     const index = data.findIndex(i => !i['isCreated']);
     if (index !== -1) {
       const item  = {...data[index],hoidong_id:this.hoidong_select.id,kehoach_id:this.hoidong_select.kehoach_id,phongthi:this.replacePhongthi(data[index].phongthi) };
-      return this.hskHoidongthiThisinhService.create(item).pipe(switchMap(m=>{
+      return this.hoidongThisinhService.create(item).pipe(switchMap(m=>{
         data[index]['isCreated']= true;
         const newPercent: number = percent + step;
         this.notifi.loadingAnimationV2({process: {percent: newPercent}});
@@ -285,11 +403,11 @@ export class AddThiSinhComponent implements OnInit {
     const btn =  await this.notifi.confirmRounded(html,head,[BUTTON_NO,BUTTON_YES]);
     if(btn.name === 'yes'){
       this.notifi.isProcessing(true);
-      this.hskHoidongthiThisinhService.deleteByHoidong(this.hoidong_select.id,'hoidong_id').subscribe({
+      this.hoidongThisinhService.deleteByKey(this.hoidong_select.id,'hoidong_id').subscribe({
         next:()=>{
           this.notifi.toastSuccess('Thao tác thành công');
           this.notifi.isProcessing(false);
-          this.loadInit();
+          this.getData();
           },
         error:()=>{
           this.notifi.toastError('Thao tác không thành công');
@@ -299,5 +417,193 @@ export class AddThiSinhComponent implements OnInit {
       })
     }
   }
+
+
+  isbuttonLoad  : boolean =false;
+  showCheck     : boolean =false;
+  dataOrders: OrdersVstep[] = [];
+  btnCheckData(){
+    this.isbuttonLoad = true;
+
+
+    this.loopGetOrrder(1,100,this.hoidong_select.kehoach_id, [], 1).pipe(switchMap(m=>{
+      const thisinh_ids = Array.from(new Set(m.map(a=>a.thisinh_id))) ;
+      console.log(thisinh_ids)
+      return forkJoin([
+        of(m),
+        this.loopGetThisinh(1,20, thisinh_ids,[])
+      ])
+    })).subscribe({
+      next:([data,thisinhs])=>{
+        console.log(data);
+        this.dataOrders = data.map(m=>{
+          m['_thisinh'] = thisinhs.find(f=>f.id == m.thisinh_id);
+          m['_hoten'] =  m['_thisinh'] ?  m['_thisinh']['hoten'] : '';
+          return m;
+        });
+        this.isbuttonLoad = false;
+        this.showCheck = true;
+
+      },error:()=>{
+        this.isbuttonLoad = false;
+        this.showCheck = true;
+        this.notifi.toastError('Mất kết nối với máy chủ');
+      }
+    })
+  }
+
+  private loopGetOrrder(page: number, limit:number, kehoach_id:number , data:OrdersVstep[], recordFilteled:number):Observable<OrdersVstep[]>{
+
+    if(data.length < recordFilteled){
+      const conditionCheck :ConditionOption  ={
+        condition:[
+          {
+            conditionName:'trangthai_thanhtoan',
+            condition:OvicQueryCondition.equal,
+            value:'1'
+          },
+          {
+            conditionName:'kehoach_id',
+            condition:OvicQueryCondition.equal,
+            value:kehoach_id.toString()
+          },
+          {
+            conditionName:'diemduthi_id',
+            condition:OvicQueryCondition.notEqual,
+            value:'0'
+          },
+        ],page:page.toString(),
+        set:[
+          {label:'limit',value:limit.toString()},
+          {label:'select',value:'thisinh_id,trangthai_thanhtoan,user_id,diemduthi_id,lephithi'},
+
+        ]
+      }
+
+      return  this.ordersService.getDataByPageNew(conditionCheck).pipe(switchMap(m=>{
+
+        return this.loopGetOrrder(page+1,limit,kehoach_id,[...data,...m.data],m.recordsFiltered)
+      }))
+    }else{
+      return of(data);
+    }
+  }
+  loopGetThisinh(page:number,limit:number,ids:number[],data:ThiSinhInfo[]):Observable<ThiSinhInfo[]>{
+    // return of(data)
+
+    const start = (page- 1)*limit;
+    const end = start  + limit
+
+    if( (page == 0 ? limit : limit *page) < ids.length){
+      const ids_select = ids.slice(start , end);
+      const conditionDm : ConditionOption = {
+        condition: [
+          {
+            conditionName: 'id',
+            condition:OvicQueryCondition.equal,
+            value:ids_select.toString(),
+            orWhere:'in'
+          }
+        ],
+        page: '1',
+        set: [
+          {label: 'limit', value:ids_select.length.toString(),}
+        ]
+      }
+      return this.thisinhService.getDataByPageNew(conditionDm).pipe(switchMap(a=>{
+        return this.loopGetThisinh(page + 1,limit,ids,data.concat(a.data))
+      }))
+
+    }else{
+      const ids_select = ids.slice(start,end );
+      const conditionDm : ConditionOption = {
+        condition: [
+          {
+            conditionName: 'id',
+            condition:OvicQueryCondition.equal,
+            value:ids_select.toString(),
+            orWhere:'in'
+          }
+        ],
+        page: '1',
+        set: [
+          {label: 'limit', value:ids_select.length.toString(),}
+        ]
+      }
+
+
+      return this.thisinhService.getDataByPageNew(conditionDm).pipe(switchMap(a=>{
+        return of(data.concat(a.data))
+      }))
+    }
+
+  }
+
+  async btnAccept(){
+    let html = `
+      <div style="font-size:14px;">- Thao tác này sẽ thêm thí sinh vào hội đồng thi</div>
+      <div style="font-size:14px;">- Trong thời gian đồng bộ vui lòng không <strong>Tắt hệ thống, Ngắt kết nối mạng...</strong></h4>
+    `;
+    const btn = await this.notifi.confirm(html,'Thông báo thêm sinh viên vào hội đồng' ,[BUTTON_NO,BUTTON_YES])
+
+    if(btn.name =='yes'){
+      const step: number = 100 / this.dataOrders.length;
+      this.notifi.loadingAnimationV2({process: {percent: 0}});
+      this.loopCreatedThisinhWithHoidong(this.dataOrders, step, 0).subscribe({
+        next: (mess) => {
+          this.notifi.toastSuccess('Thao tác thành công');
+          this.notifi.isProcessing(false);
+          this.notifi.disableLoadingAnimationV2();
+          this.loadInit();
+
+        }, error: () => {
+          this.notifi.toastError('Thao tác vừa thực hiện không thành công');
+          this.notifi.isProcessing(false);
+          this.notifi.disableLoadingAnimationV2();
+        }
+      })
+    }
+  }
+
+
+  private loopCreatedThisinhWithHoidong(data: OrdersVstep[],step:number,percent:number):Observable<OrdersVstep[]>{
+    const index = data.findIndex(f=>!f['isCreated'])
+    if (index !== -1) {
+          const item  = {
+
+            thisinh_id:data[index].thisinh_id ,
+            diemduthi_id:data[index].diemduthi_id ,
+            hoten:data[index]['_hoten'] ,
+            user_id:data[index].user_id ,
+            hoidong_id:this.hoidong_select.id,
+            kehoach_id:this.hoidong_select.kehoach_id};
+          return this.hoidongThisinhService.create(item).pipe(switchMap(m=>{
+            data[index]['isCreated']= true;
+            const newPercent: number = percent + step;
+            this.notifi.loadingAnimationV2({process: {percent: newPercent}});
+            return this.loopCreatedThisinhWithHoidong(data,step,newPercent);
+          }))
+    }else{
+      return of(data);
+    }
+
+
+  }
+
+  // private loopUploadData(data:any[],step:number,percent:number):Observable<any> {
+  //
+  //   const index = data.findIndex(i => !i['isCreated']);
+  //   if (index !== -1) {
+  //     const item  = {...data[index],hoidong_id:this.hoidong_select.id,kehoach_id:this.hoidong_select.kehoach_id};
+  //     return this.HskHoidongKetquaService.create(item).pipe(switchMap(m=>{
+  //       data[index]['isCreated']= true;
+  //       const newPercent: number = percent + step;
+  //       this.notifi.loadingAnimationV2({process: {percent: newPercent}});
+  //       return this.loopUploadData(data,step,newPercent);
+  //     }))
+  //   } else {
+  //     return of(data);
+  //   }
+  // }
 
 }

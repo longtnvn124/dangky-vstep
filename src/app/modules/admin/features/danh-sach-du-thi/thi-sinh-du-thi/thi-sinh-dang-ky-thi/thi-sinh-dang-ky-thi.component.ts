@@ -5,11 +5,21 @@ import {DmMon} from "@shared/models/danh-muc";
 import {NotificationService} from "@core/services/notification.service";
 import {HskOrdersService, OrdersHsk} from "@shared/services/hsk-orders.service";
 import {HskKehoachThiService, KeHoachThi} from "@shared/services/hsk-kehoach-thi.service";
+import {TableModule} from "primeng/table";
+import {SharedModule} from "@shared/shared.module";
+import {NgForOf, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-thi-sinh-dang-ky-thi',
   templateUrl: './thi-sinh-dang-ky-thi.component.html',
-  styleUrls: ['./thi-sinh-dang-ky-thi.component.css']
+  styleUrls: ['./thi-sinh-dang-ky-thi.component.css'],
+  imports: [
+    TableModule,
+    SharedModule,
+    NgForOf,
+    NgIf
+  ],
+  standalone: true
 })
 export class ThiSinhDangKyThiComponent implements OnInit,OnChanges {
   @Input() thiSinh_id: number;

@@ -6,11 +6,18 @@ import { DiaDanh } from '@modules/shared/models/location';
 import { ThiSinhInfo } from '@modules/shared/models/thi-sinh';
 import { LocationService } from '@modules/shared/services/location.service';
 import { ThisinhInfoService } from '@modules/shared/services/thisinh-info.service';
+import {NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
 
 @Component({
   selector: 'app-thong-tin-thi-sinh',
   templateUrl: './thong-tin-thi-sinh.component.html',
-  styleUrls: ['./thong-tin-thi-sinh.component.css']
+  styleUrls: ['./thong-tin-thi-sinh.component.css'],
+  imports: [
+    NgSwitch,
+    NgSwitchCase,
+    NgIf
+  ],
+  standalone: true
 })
 export class ThongTinThiSinhComponent implements OnInit {
   @Input() set user_id(id: number){

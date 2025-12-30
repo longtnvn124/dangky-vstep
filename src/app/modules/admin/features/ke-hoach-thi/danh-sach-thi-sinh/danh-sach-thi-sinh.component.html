@@ -15,12 +15,12 @@
 
 <!--          </ng-template>-->
 
-          <p-dropdown [options]="dmCapdo" class="capdo-hsk" placeholder="Cấp độ HSK" optionValue="id" optionLabel="title" [showClear]="true"
-                      (onChange)="slelectDrop($event.value)">
-          </p-dropdown>
+<!--          <p-dropdown [options]="dmCapdo" class="capdo-hsk" placeholder="Cấp độ HSK" optionValue="id" optionLabel="title" [showClear]="true"-->
+<!--                      (onChange)="slelectDrop($event.value)">-->
+<!--          </p-dropdown>-->
 <!--          <button pRipple pButton icon="pi pi-file-excel" class="mx-2 p-button-success" (click)="btnExportDataThisinhByKehoach()" label="Xuất danh sách thí sinh dự thi"></button>-->
-          <button pRipple pButton icon="pi pi-file-excel" class="mx-2 p-button-success" (click)="btnExportDataThisinhByKehoachV2()" label="Xuất danh sách thí sinh dự thi"></button>
-          <button pRipple pButton icon="pi pi-folder-open" class="mx-2 " (click)="btnExport()" label="Xuất album ảnh "></button>
+<!--          <button pRipple pButton icon="pi pi-file-excel" class="mx-2 p-button-success" (click)="btnExportDataThisinhByKehoachV2()" label="Xuất danh sách thí sinh dự thi"></button>-->
+<!--          <button pRipple pButton icon="pi pi-folder-open" class="mx-2 " (click)="btnExport()" label="Xuất album ảnh "></button>-->
 
         </div>
       </div>
@@ -28,8 +28,8 @@
         <!--              <div class="ovic-wrap-table-rps__inner">-->
         <div class="" >
           <p-table  styleClass="p-datatable-gridlines"
-                    [value]="thisinhInKehoach" [rowHover]="true"
-                    [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]"
+                    [value]="listData" [rowHover]="true"
+                    [showCurrentPageReport]="true" [rowsPerPageOptions]="[20,25,50]"
                     [loading]="isLoading">
             <ng-template pTemplate="header" class="d-bock">
               <tr>
@@ -38,7 +38,7 @@
                 <th class=" text-center">Họ và tên</th>
                 <th class="ovic-w-120px text-center">Số CCCD</th>
                 <th class="ovic-w-120px text-center">Số điện thoại</th>
-                <th class="ovic-w-200px text-center">Cấp độ</th>
+                <th class="ovic-w-200px text-center">Điểm dự thi</th>
                 <th class="ovic-w-200px text-center">Lệ phí thi</th>
                 <th class="ovic-w-200px text-center">Trạng thái thanh toán</th>
                 <th class="ovic-w-200px text-center">Ghi chú</th>
@@ -49,18 +49,19 @@
             <ng-template pTemplate="body" let-item let-i="rowIndex">
               <tr>
 
-                <td class="text-center">{{ item['__index'] }}</td>
-                <td><span class="tt-hover" > {{ item['__hoten'] }}</span></td>
-                <td class="ovic-w-120px text-right">{{ item['__cccd_so'] }}</td>
-                <td class="ovic-w-200px text-right">{{ item['__phone'] }}</td>
-                <td class="ovic-w-200px text-center">{{ item['__capdo'] }}</td>
+                <td class="text-center">{{ item['_index'] }}</td>
+                <td><span class="tt-hover" > {{ item['thisinh']['hoten'] }}</span></td>
+                <td class="ovic-w-120px text-right">{{ item['thisinh']['cccd_so'] }}</td>
+                <td class="ovic-w-200px text-right">{{ item['thisinh']['phone'] }}</td>
+                <td class="ovic-w-200px text-center">{{ item['_diemduthi_name'] }}</td>
                 <td class="ovic-w-200px text-right"><div>{{ item['__lephithi']  |numberToVndCurrencuy }}</div></td>
-                <td class="ovic-w-200px text-right"><div><div [ngClass]="'status-pay pay-' + item['__status_converted']"> {{item['__trangthai_thanhtoan']}}</div></div></td>
+                <td class="ovic-w-200px text-right"><div><div [ngClass]="'status-pay pay-' + item['trangthai_thanhtoan']"> {{item['__trangthai_thanhtoan']}}</div></div></td>
                 <td>{{item['__ghichu']}}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
               <tr>
+
                 <td colspan="20">
                   Không có dữ liệu thí sinh!
                 </td>

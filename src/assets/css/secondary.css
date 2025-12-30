@@ -604,7 +604,7 @@ app-chuyen-de {
   max-width: 100% !important;
 }
 
-.--role-thisinh_hsk{
+.--role-thisinh{
   color: #7a691a;
   background-color: #f8ebce;
   font-size: 12px;
@@ -1444,4 +1444,12 @@ thong-ke-du-lieu{
 }
 .upload-body .p-datatable>.p-datatable-wrapper{
   overflow: unset;
+}
+/*--------------------------------------------*/
+.pani-h-by-class{
+  height:100%;
+}
+.pani-h-by-class .p-paginator {
+  flex-wrap: unset;
+  height:100%;
 }

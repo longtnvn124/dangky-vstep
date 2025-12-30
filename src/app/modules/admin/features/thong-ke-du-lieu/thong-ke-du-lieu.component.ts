@@ -95,7 +95,6 @@ export class ThongKeDuLieuComponent implements OnInit {
           this.dmCapdo= dmCapdo;
           this.kehoachthi = kehoachthi;
         this.notifi.isProcessing(false);
-
       },
       error:()=>{
         this.notifi.isProcessing(false);

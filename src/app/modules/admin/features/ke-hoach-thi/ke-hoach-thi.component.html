@@ -37,7 +37,7 @@
                     <div class="col-12">
                       <p class="form-row">
                         <label>Tên đợt thi <span class="ovic-mark">*</span></label>
-                        <input type="text" placeholder="Tên đợt thi..." formControlName="dotthi" autocomplete="off">
+                        <input type="text" placeholder="Tên đợt thi..." formControlName="title" autocomplete="off">
                       </p>
                     </div>
                   </div>
@@ -72,7 +72,7 @@
                     <div class="col">
                       <div class="form-row">
                         <label>Thời gian bắt đầu <span class="ovic-mark">*</span></label>
-                        <p-calendar placeholder="chọn..." class="w-100" dateFormat="dd/mm/yy"
+                        <p-calendar placeholder="chọn..." class="w-100" dateFormat="dd/mm/yy" [maxDate]="f['ngayketthuc'].value"
                                     formControlName="ngaybatdau"
                                     [showTime]="false" [showIcon]="true" [showSeconds]="false"></p-calendar>
                       </div>
@@ -82,7 +82,7 @@
                     <div class="col-12">
                       <div class="form-row">
                         <label>Thời gian kết thúc<span class="ovic-mark">*</span></label>
-                        <p-calendar placeholder="chọn..." class="w-100" dateFormat="dd/mm/yy" formControlName="ngayketthuc"
+                        <p-calendar placeholder="chọn..." class="w-100" dateFormat="dd/mm/yy" formControlName="ngayketthuc" [minDate]="f['ngaybatdau'].value"
                                     [showTime]="false" [showIcon]="true" [showSeconds]="false"></p-calendar>
                       </div>
                     </div>
@@ -96,16 +96,37 @@
                       </div>
                     </div>
                   </div>
+                  <div class="row m-0">
+                    <div class="col-12">
+                      <div class="form-row">
+                        <label>Đơn giá theo đợt(VNĐ) <span class="ovic-mark">*</span></label>
+                        <input type="number" placeholder="Vd: 1000000 " formControlName="gia" autocomplete="off">
+
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </ng-template>
               <ng-template pTemplate>
-                <div class="row m-0">
-                  <div class="col-12">
-                    <p class="form-row">
-                      <label>Mô tả </label>
-                      <ovic-editor [formField]="f['mota']" class="w-100"></ovic-editor>
-                    </p>
+                <div class="w-100 d-block ovic-scroll-style overflow-hidden overflow-y-auto pb-1">
+                  <div class="row m-0">
+                    <div class="col-12">
+                      <p class="form-row">
+                        <label>Mô tả </label>
+                        <ovic-editor [formField]="f['mota']" [height]="'200px'" class="w-100"></ovic-editor>
+                      </p>
+                    </div>
                   </div>
+
+
+<!--                  <div class="row m-0">-->
+<!--                    <div class="col ">-->
+<!--                      <div class="form-row">-->
+<!--                        <label>Điểm dự thi của thí sinhS </label>-->
+<!--                        <form-select-diemduthi class="w-100" [formField]="f['diemthi_ids']" ></form-select-diemduthi>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
                 </div>
               </ng-template>
             </p-splitter>
@@ -130,7 +151,7 @@
 <ng-template #formMembers>
   <div class="ovic-side-navigation-content">
     <div class="ovic-side-navigation-content__head">
-      <h4 class="ovic-side-navigation-content__head__title">{{ kehoach_select ? kehoach_select.dotthi:'Danh sách thí sinh theo đợt ' }} </h4>
+      <h4 class="ovic-side-navigation-content__head__title">{{ kehoach_select ? kehoach_select.title:'Danh sách thí sinh theo đợt ' }} </h4>
       <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
               class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
     </div>
@@ -140,16 +161,17 @@
   </div>
 </ng-template>
 
-<ng-template #formCapdo>
+
+
+<ng-template #formDiemthi>
   <div class="ovic-side-navigation-content">
     <div class="ovic-side-navigation-content__head">
-      <h4 class="ovic-side-navigation-content__head__title">{{ kehoach_select ? kehoach_select.dotthi:'Danh sách thí sinh theo đợt ' }} </h4>
+      <h4 class="ovic-side-navigation-content__head__title">{{ kehoach_select ? kehoach_select.title + ' > Điểm dự thi và số lượng mỗi điểm dự thi':'Danh sách thí sinh theo đợt ' }} </h4>
       <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
               class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
     </div>
     <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style">
-<!--      <app-danh-sach-thi-sinh [kehoachthi]="kehoach_select"></app-danh-sach-thi-sinh>-->
-      <app-capdo-theo-dotthi [kehoachthi]="kehoach_select"></app-capdo-theo-dotthi>
+      <app-kehoachthi-diemthi [kehoachthi]="kehoach_select"></app-kehoachthi-diemthi>
     </div>
   </div>
 </ng-template>
