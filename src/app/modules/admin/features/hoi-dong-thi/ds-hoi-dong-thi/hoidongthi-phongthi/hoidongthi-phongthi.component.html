@@ -7,6 +7,19 @@
       <button pButton pRipple label="Tải lại" icon="pi pi-sync" (click)="reload()"></button>
     </div>
   </ng-container>
+  <ng-container *ngSwitchCase="-2">
+    <div class="h-100 d-flex flex-column justify-content-center align-items-center"
+         style="background:#ededed">
+      <div class=" text-center"
+           style="font-size: 15px;background: #d6ddf1;padding: 14px 20px;border-radius: 10px;border: 1px solid #ccc;">
+        <i class="pi pi-times-circle" style="font-size:60px;color: #faad1a;"></i>
+        <p class="my-2">Điểm thi không có trong đợt thi này </p>
+<!--        <div style=" width: 300px">-->
+<!--          <mat-progress-bar mode="indeterminate"></mat-progress-bar>-->
+<!--        </div>-->
+      </div>
+    </div>
+  </ng-container>
   <ng-container *ngSwitchCase="0">
     <div class="h-100 d-flex flex-column justify-content-center align-items-center"
          style="background:#ededed">
@@ -25,13 +38,17 @@
         <div class="phongthi-h_title">Danh sách phòng thi theo điểm thi</div>
         <div class="phongthi-h_btn">
           <button pButton pRipple icon="pi pi-plus" label="Thêm mới" class="p-button-success" (click)=" btnCreate()"></button>
-          <button pButton pRipple icon ="pi pi-sliders-h" label="Xếp phòng thi cho thí sinh" (click)="btnFormSortThisinh()"></button>
 
-          <button pRipple pButton icon="pi pi-trash" class="p-button-danger" (click)=" btnDeleteByHoidong()"></button>
+          <ng-container *ngIf="isAdmin">
+            <button pButton pRipple icon ="pi pi-sliders-h" label="Xếp phòng thi cho thí sinh" (click)="btnFormSortThisinh()"></button>
+
+          </ng-container>
+<!--          <button pButton pRipple icon ="pi pi-sliders-h" label="Xếp phòng thi cho thí sinh" (click)="btnFormSortThisinh()"></button>-->
+<!--          <button pRipple pButton icon="pi pi-trash" class="p-button-danger" (click)=" btnDeleteByHoidong()"></button>-->
         </div>
       </div>
       <div class="phongthi-body ">
-        <ng-container *ngIf="listPhongthi.length > 0 else notData">
+<!--        <ng-container *ngIf="listPhongthi.length > 0 else notData">-->
           <div class="ovic-wrap-table-rps ovic-scroll-style">
             <!--    <div class="ovic-wrap-table-rps ovic-scroll-style overflow-hidden overflow-y-auto" style="height:calc(100% - 65px - 60px);background: #dedede;">-->
             <div class="ovic-wrap-table-rps__inner ">
@@ -41,7 +58,16 @@
                          [value]="listKehoachDiemthi" [rowHover]="true">
                   <ng-template pTemplate="body" let-item let-i="rowIndex">
                     <tr >
-                      <td class="font-weight-bold text-left text-uppercase" colspan="5"> {{ item['__index'] + '. ' + item['__diemduthi_title'] }}</td>
+                      <td class="font-weight-bold text-left text-uppercase" colspan="5">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div>
+                            {{ (i + 1 ) + '. ' + item['__diemduthi_title'] }}
+                          </div>
+                          <div *ngIf="isAdmin">
+                            <button pButton pRipple icon="pi pi-trash" class="p-button-danger" (click)="btnDeleteByDiemduthi(item)"></button>
+                          </div>
+                        </div>
+                      </td>
                     </tr>
                     <tr>
                       <td class="font-weight-bold text-center">STT</td>
@@ -68,18 +94,18 @@
               </div>
             </div>
           </div>
-        </ng-container>
-        <ng-template #notData>
+<!--        </ng-container>-->
+<!--        <ng-template #notData>-->
 
-          <div class="h-100 d-flex flex-column justify-content-center align-items-center"
-               style="background:#ededed">
-            <div class=" text-center"
-                 style="font-size: 15px;background: #d6def7;padding: 14px 20px;border-radius: 10px;border: 1px solid #ccc;">
-              <span>Không có dữ liệu</span>
+<!--          <div class="h-100 d-flex flex-column justify-content-center align-items-center"-->
+<!--               style="background:#ededed">-->
+<!--            <div class=" text-center"-->
+<!--                 style="font-size: 15px;background: #d6def7;padding: 14px 20px;border-radius: 10px;border: 1px solid #ccc;">-->
+<!--              <span>Không có dữ liệu</span>-->
 
-            </div>
-          </div>
-        </ng-template>
+<!--            </div>-->
+<!--          </div>-->
+<!--        </ng-template>-->
       </div>
     </div>
 

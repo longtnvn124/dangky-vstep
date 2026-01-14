@@ -1,12 +1,10 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {forkJoin, Observable, of, switchMap} from "rxjs";
-import {DanhMucCapDoService} from "@shared/services/danh-muc-cap-do.service";
-import {HskOrdersService, OrdersHsk} from "@shared/services/hsk-orders.service";
-import {UserService} from "@core/services/user.service";
-import {HskKehoachThiService, KeHoachThi} from "@shared/services/hsk-kehoach-thi.service";
-import {DmCapdo} from "@shared/models/danh-muc";
+
+
+import {DmCapdo, DonVi} from "@shared/models/danh-muc";
 import {NotificationService} from "@core/services/notification.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {ThisinhInfoService} from "@shared/services/thisinh-info.service";
 import {User} from "@core/models/user";
 import {ThiSinhInfo} from "@shared/models/thi-sinh";
@@ -14,21 +12,54 @@ import {WAITING_POPUP} from "@shared/utils/syscat";
 import {ExportThiSinhDuThiService} from "@shared/services/export-thi-sinh-du-thi.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {HskSummaryService} from "@shared/services/hsk-summary.service";
+import {DropdownModule} from "primeng/dropdown";
+import {TableModule} from "primeng/table";
+import {RippleModule} from "primeng/ripple";
+import {ButtonModule} from "primeng/button";
+import {NgClass, NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
+import {TooltipModule} from "primeng/tooltip";
+import {SharedModule} from "@shared/shared.module";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {InputTextModule} from "primeng/inputtext";
+import {DonViService} from "@shared/services/don-vi.service";
+import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {AuthService} from "@core/services/auth.service";
+import {ConditionOption} from "@shared/models/condition-option";
+import {map} from "rxjs/operators";
+import {OvicQueryCondition} from "@core/models/dto";
 
 @Component({
   selector: 'app-thong-ke-du-lieu',
   templateUrl: './thong-ke-du-lieu.component.html',
-  styleUrls: ['./thong-ke-du-lieu.component.css']
+  styleUrls: ['./thong-ke-du-lieu.component.css'],
+  imports: [
+    DropdownModule,
+    ReactiveFormsModule,
+    TableModule,
+    RippleModule,
+    ButtonModule,
+    NgSwitch,
+    TooltipModule,
+    NgSwitchCase,
+    SharedModule,
+    NgClass,
+    MatProgressBarModule,
+    NgIf,
+    InputTextModule
+  ],
+  standalone: true
 })
 export class ThongKeDuLieuComponent implements OnInit {
 
   @ViewChild('templateWaiting') templateWaiting: ElementRef;
 
+  dataDonvi: DonVi[] = [];
   dmCapdo:DmCapdo[];
   kehoachthi:KeHoachThi[];
 
-  dataView:OrdersHsk[];
-  dataViewClone:OrdersHsk[];
+  dataView:OrdersVstep[];
+  dataViewClone:OrdersVstep[];
   rows:number = 1;
   isLoading:boolean =false;
   recordsTotal: number;
@@ -56,10 +87,8 @@ export class ThongKeDuLieuComponent implements OnInit {
   }
 
   constructor(
-    private danhMucCapDoService: DanhMucCapDoService,
-    private orderService:HskOrdersService,
-    private useService:UserService,
-    private hskKehoachThiService: HskKehoachThiService,
+
+    // private hskKehoachThiService: HskKehoachThiService,
     private notifi: NotificationService,
     private fb: FormBuilder,
     private thisinhInfoService: ThisinhInfoService,
@@ -67,12 +96,16 @@ export class ThongKeDuLieuComponent implements OnInit {
     private modalService:NgbModal,
     private hkSummaryService : HskSummaryService,
 
+    private kehoachthiVstepService:KehoachthiVstepService,
+    private donViService:DonViService,
+    private orderService:VstepOrdersService,
+    private auth:AuthService
 
   ) {
     this.formSave = this.fb.group({
       kehoach_id:[null],
       trangthai_thanhtoan:[null],
-      caphsk_id:[null],
+      diemduthi_id:[null],
       isThontin:[null],
       isAnhchandung:[null],
       isCccd:[null],
@@ -87,12 +120,22 @@ export class ThongKeDuLieuComponent implements OnInit {
   }
   getDanhMuc(){
     this.notifi.isProcessing(true);
+
+    const conditionKehoach:ConditionOption= {
+      condition:[],
+      page:'1',
+      set:[
+        {label:'limit',value:'-1'},
+      ]
+    }
+
     forkJoin([
-      this.danhMucCapDoService.getDataUnlimit(),
-      this.hskKehoachThiService.getDataUnlimitNotstatus()
+      this.donViService.getChildren(this.auth.user.donvi_id),
+      this.kehoachthiVstepService.getDataByPageNew(conditionKehoach).pipe(map(m=>m.data))
     ]).subscribe({
-      next:([dmCapdo,kehoachthi])=>{
-          this.dmCapdo= dmCapdo;
+      next:([dataDonvi,kehoachthi])=>{
+        console.log(dataDonvi);
+          this.dataDonvi= dataDonvi;
           this.kehoachthi = kehoachthi;
         this.notifi.isProcessing(false);
       },
@@ -119,11 +162,11 @@ export class ThongKeDuLieuComponent implements OnInit {
         this.logGetOrderByKehoachId(1,150 ,event,[],1).pipe( switchMap(order=>{
 
 
-        const data_TuDangky  = order.filter(f=>f['created_by'] === f.user_id && f.parent_id === 0 && f.caphsk_id !== 0 );
-        const data_Dangky_cha  = order.filter(f=>f.caphsk_id === 0);
-        const data_Dangky_con  = order.filter(f=>f.parent_id && f.caphsk_id !== 0);
+        const data_TuDangky  = order.filter(f=> f.parent_id === 0 && f.diemduthi_id !== 0 );
+        const data_Dangky_cha  = order.filter(f=>f.diemduthi_id === 0);
+        const data_Dangky_con  = order.filter(f=>f.parent_id && f.diemduthi_id !== 0);
 
-        const dataChild:OrdersHsk[] = [].concat(data_TuDangky,data_Dangky_con).filter(f=>!f['huy']);
+        const dataChild:OrdersVstep[] = [].concat(data_TuDangky,data_Dangky_con).filter(f=>!f['huy']);
         return forkJoin([this.loopGetThisinh(dataChild,150), of(data_Dangky_cha)])
       }))
 
@@ -134,9 +177,9 @@ export class ThongKeDuLieuComponent implements OnInit {
           const dataMap = dataOrder.map((m)=>{
             const user:User = m['user'];
             const thisinh:ThiSinhInfo = m['thisinh'];
-            const parent:OrdersHsk = m.parent_id === 0 ? null : (dataParent.find(f=>f.id === m.parent_id) ?dataParent.find(f=>f.id === m.parent_id) : null);
+            const parent:OrdersVstep = m.parent_id === 0 ? null : (dataParent.find(f=>f.id === m.parent_id) ?dataParent.find(f=>f.id === m.parent_id) : null);
             m['__status_converted'] = m.trangthai_thanhtoan;
-            m['__capthi_converted'] = this.dmCapdo.length>0 && this.dmCapdo.find(f=>f.id === m.caphsk_id) ? this.dmCapdo.find(f=>f.id === m.caphsk_id).title : '';
+            m['__capthi_converted'] = this.dataDonvi.length>0 && this.dataDonvi.find(f=>f.id === m.diemduthi_id) ? this.dataDonvi.find(f=>f.id === m.diemduthi_id).title : '';
             m['__hoten']= user && user['name'] ? user['name'] :(thisinh ? thisinh.hoten : '');
             m['__cccd_so']= user ? user.username :(thisinh ? thisinh.cccd_so : '');
             m['__phone']= user ? user.phone :(thisinh ? thisinh.phone : '');
@@ -179,14 +222,32 @@ export class ThongKeDuLieuComponent implements OnInit {
 
 
 
-  logGetOrderByKehoachId(page:number,limit:number,kehoach_id:number,data:OrdersHsk[],recordsFiltered:number):Observable<OrdersHsk[]>{
+  logGetOrderByKehoachId(page:number,limit:number,kehoach_id:number,data:OrdersVstep[],recordsFiltered:number):Observable<OrdersVstep[]>{
     if (data.length < recordsFiltered) {
 
+      const condi: ConditionOption= {
+        condition:[
+          {
+            conditionName:'trangthai_thanhtoan',
+            condition:OvicQueryCondition.equal,
+            value:'1'
+          },
+          {
+            conditionName:'kehoach_id',
+            condition:OvicQueryCondition.equal,
+            value:kehoach_id.toString()
+          },
+        ],
+        page:page.toString(),
+        set:[
+          {label:'limit',value:limit.toString()}
+        ]
+      }
 
-      return this.orderService.getDataBykehoachIdAndPageAndLimit(page,limit,kehoach_id).pipe(
+      return this.orderService.getDataByPageNew(condi).pipe(
         switchMap(m=>{
 
-          return this.logGetOrderByKehoachId(page+1,limit,kehoach_id,data.concat(m['data']),m['recordsFiltered'])
+          return this.logGetOrderByKehoachId(page+1,limit,kehoach_id,data.concat(m.data),m.recordsFiltered)
         })
       )
     } else{
@@ -196,7 +257,7 @@ export class ThongKeDuLieuComponent implements OnInit {
 
 
 
-   loopGetThisinh(data:OrdersHsk[],limit:number):Observable<OrdersHsk[]>{
+   loopGetThisinh(data:OrdersVstep[],limit:number):Observable<OrdersVstep[]>{
      const missingThisinh = data.filter(m => !m['thisinh']);
      if (missingThisinh.length === 0) {
        return of(data);
@@ -238,8 +299,8 @@ export class ThongKeDuLieuComponent implements OnInit {
     if(findData['trangthai_thanhtoan'] !== null){
       dataSearch = dataSearch.filter(f=> (findData['trangthai_thanhtoan'] === 1)? f.trangthai_thanhtoan === 1 : f.trangthai_thanhtoan !== 1 );
     }
-    if(findData['caphsk_id'] !== null){
-      dataSearch = dataSearch.filter(f=>f.caphsk_id === findData['caphsk_id']);
+    if(findData['diemduthi_id'] !== null){
+      dataSearch = dataSearch.filter(f=>f.diemduthi_id === findData['diemduthi_id']);
     }
     if(findData['isThontin'] !== null){
       dataSearch = dataSearch.filter(f=>f['__isInfo'] === findData['isThontin']);
@@ -276,7 +337,7 @@ export class ThongKeDuLieuComponent implements OnInit {
     if (this.dataViewClone .length>0) {
       this.notifi.isProcessing(true);
       this.modalService.open(this.templateWaiting, WAITING_POPUP);
-      const datacheck :OrdersHsk[] = JSON.parse(JSON.stringify(this.dataViewClone)).map((m,index)=>{
+      const datacheck :OrdersVstep[] = JSON.parse(JSON.stringify(this.dataViewClone)).map((m,index)=>{
 
         return{
           index: index+1,
@@ -301,7 +362,7 @@ export class ThongKeDuLieuComponent implements OnInit {
 
       if (datacheck) {
         this.modalService.dismissAll();
-        this.exportThiSinhDuThiService.exportToLongHskThongke(datacheck, this.dotthi_select.dotthi);
+        this.exportThiSinhDuThiService.exportToLongHskThongke(datacheck, this.dotthi_select.title);
       }
 
     } else {

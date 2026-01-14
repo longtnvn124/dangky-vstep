@@ -27,6 +27,8 @@ import {
 import {
   HoidongthiPhongthiComponent
 } from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/hoidongthi-phongthi/hoidongthi-phongthi.component";
+import {Auth} from "@core/models/auth";
+import {AuthService} from "@core/services/auth.service";
 
 interface FormHoiDong extends OvicForm {
   object: HskHoidongthi;
@@ -107,6 +109,8 @@ export class DsHoiDongThiComponent implements OnInit {
 
   private inputChanged: Subject<string> = new Subject<string>();
 
+  isAdmin   : boolean = false;
+  isTramthi : boolean = false;
 
 
   constructor(
@@ -115,6 +119,7 @@ export class DsHoiDongThiComponent implements OnInit {
     private notifi: NotificationService,
     private fb: FormBuilder,
     private helperService: HelperService,
+    private auth: AuthService
     // private hoidongThisinhService: VstepHoidongThisinhService
   ) {
     const observeProcessFormData = this.OBSERVE_PROCESS_FORM_DATA.asObservable().pipe(debounceTime(100)).subscribe(form => this.__processFrom(form));
@@ -131,6 +136,9 @@ export class DsHoiDongThiComponent implements OnInit {
       state: [1, Validators.required],
       ngaythi: ['', Validators.required],
     })
+
+    this.isAdmin= this.auth.userHasRole('admin');
+    this.isTramthi = this.auth.userHasRole('diem-du-thi')
   }
 
 
@@ -191,7 +199,8 @@ export class DsHoiDongThiComponent implements OnInit {
       condition: [],
       page: page.toString(),
       set:[
-        { label:'limit',value: this.rows.toString()}
+        { label:'limit',value: this.rows.toString()},
+        { label:'order',value: 'DESC'}
       ]
     }
     if(this.search){
@@ -218,7 +227,7 @@ export class DsHoiDongThiComponent implements OnInit {
           m['__status_converted'] = sIndex !== -1 ? this.statusList[sIndex].color : '';
           m['__ngaythi'] = m.ngaythi ? this.helperService.formatSQLToDateDMY(new Date(m.ngaythi)) : "";
           // const thisinhData = m['thisinhData'];
-          m['__total'] = m['totalThisinh'];
+          // m['__total'] = m['totalThisinh'];
 
           return m;
         })

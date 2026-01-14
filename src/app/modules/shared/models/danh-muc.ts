@@ -68,6 +68,9 @@ export interface DonVi {
   parent_id: number; //Đơn vị cấp trên ID
   description: string;
   status: number; //1 Active; 0: inactive
+  phone?:string;
+  email?:string;
+  code?:string;
 }
 
 

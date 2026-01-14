@@ -23,6 +23,9 @@ import * as XLSX from "xlsx";
 import {BUTTON_NO, BUTTON_YES} from "@core/models/buttons";
 import {OrdersVstep} from "@shared/services/vstep-orders.service";
 import {HoidongThisinh, VstepHoidongThisinhService} from "@shared/services/vstep-hoidong-thisinh.service";
+import {DonViService} from "@shared/services/don-vi.service";
+import {DonVi} from "@shared/models/danh-muc";
+import {AuthService} from "@core/services/auth.service";
 
 type AOA = any[][];
 
@@ -48,15 +51,23 @@ export class HoidongthiPhongthiComponent implements OnInit {
 
   listPhongthi:HoidongPhongthi[] = [];
 
-  ngView :0 |-1| 1| 2|3 = 0; //3 :Giao dien xếp phongf thi
+  ngView :-2 | 0 |-1| 1 | 2 | 3 = 0; //3 :Giao dien xếp phongf thi
+
+  dataDonvi:DonVi[] = [];
+  isAdmin:boolean=false;
+  isTramthi:boolean = false;
   constructor(
-    private dmDiemDuThiService: DmDiemDuThiService,
-    private kehoachthiVstepService: KehoachthiVstepService,
     private kehoachthiDiemthiVstepService: KehoachthiDiemthiVstepService,
     private hoidongPhongthiService : VstepHoidongPhongthiService,
     private notifi : NotificationService,
-    private hoidongThisinhService: VstepHoidongThisinhService
-  ) { }
+    private hoidongThisinhService: VstepHoidongThisinhService,
+    private donviServer:DonViService,
+    private auth:AuthService
+  ) {
+    this.isAdmin = this.auth.userHasRole('admin')
+    this.isTramthi = this.auth.userHasRole('diem-du-thi')
+
+  }
 
   ngOnInit(): void {
   }
@@ -78,35 +89,41 @@ export class HoidongthiPhongthiComponent implements OnInit {
 
     this.kehoachthiDiemthiVstepService.getDataByPageNew(conditionkehoachDIemduthi).pipe(switchMap(prj=>{
       const ids = prj.data.map(m=>m.diemduthi_id);
-      console.log(ids)
       return forkJoin([
         of(prj),
         this.loopGetDiemduthi(1,50,ids,[])
       ])
     })).subscribe({
       next:([kehoacDiemthi,dmDiemthi])=>{
-        this.dmDiemduthi = dmDiemthi;
         console.log(kehoacDiemthi);
         console.log(dmDiemthi);
-        this.ngView = 1;
+        this.dataDonvi = dmDiemthi;
+        const diemthi_ids= kehoacDiemthi.data.map(m=>m.diemduthi_id)
+        if(this.isTramthi && !diemthi_ids.includes(this.auth.user.donvi_id)){
+          this.ngView =-2;
+          return;
+        }
 
-        this.getDataHoidongphongthi(1,50,[],1).subscribe({
-          next:(data)=>{
+
+        this.getDataHoidongphongthi(1, 50, [], 1).subscribe({
+          next: (data) => {
             console.log(data)
             this.listPhongthi = data;
 
-            this.listKehoachDiemthi = kehoacDiemthi.data.map((m,index)=>{
-              m['__index'] = index + 1;
-              m['__dmDiemthi'] = !!dmDiemthi.find(f=>f.id == m.diemduthi_id) ? dmDiemthi.find(f=>f.id == m.diemduthi_id):null;
-              m['__diemduthi_title'] = m['__dmDiemthi']? m['__dmDiemthi'].title: '';
-              m['__hoidongPhongthi'] = data.filter(f=>f.diemduthi_id == m.diemduthi_id);
+            const khDiemthi = kehoacDiemthi.data.map((m, index) => {
+              // m['__index'] = index + 1;
+              m['__dmDiemthi'] = dmDiemthi.find(f => f.id == m.diemduthi_id) ? dmDiemthi.find(f => f.id == m.diemduthi_id) : null;
+              m['__diemduthi_title'] = m['__dmDiemthi'] ? m['__dmDiemthi'].title : '';
+              m['__hoidongPhongthi'] = data.filter(f => f.diemduthi_id == m.diemduthi_id);
 
               return m;
             })
 
+            this.listKehoachDiemthi = this.isTramthi ? khDiemthi.filter(f => f.diemduthi_id == this.auth.user.donvi_id) : khDiemthi;
+            console.log(this.listKehoachDiemthi)
             this.ngView = 1;
 
-          },error:()=>{
+          }, error: () => {
             this.ngView = -1;
             this.notifi.toastError('Mất kết nối với máy chủ')
           }
@@ -120,7 +137,7 @@ export class HoidongthiPhongthiComponent implements OnInit {
 
   }
 
-  loopGetDiemduthi(page:number, limit:number,ids:number[],data:DmDiemduthi[]):Observable<DmDiemduthi[]>{
+  loopGetDiemduthi(page:number, limit:number,ids:number[],data:DonVi[]):Observable<DonVi[]>{
     const start = (page- 1)*limit;
     const end = start  + limit
 
@@ -140,8 +157,10 @@ export class HoidongthiPhongthiComponent implements OnInit {
           {label: 'limit', value:ids_select.length.toString(),}
         ]
       }
-      return this.dmDiemDuThiService.getDataByPageNew(conditionDm).pipe(switchMap(a=>{
-        return this.loopGetDiemduthi(page + 1,limit,ids,data.concat(a.data))
+
+
+      return this.donviServer.getDataByPageNew(conditionDm).pipe(switchMap(a=>{
+        return this.loopGetDiemduthi(page + 1,limit,ids,data.concat(...a.data))
       }))
 
     }else{
@@ -162,8 +181,8 @@ export class HoidongthiPhongthiComponent implements OnInit {
       }
 
 
-      return this.dmDiemDuThiService.getDataByPageNew(conditionDm).pipe(switchMap(a=>{
-        return of(data.concat(a.data))
+      return this.donviServer.getDataByPageNew(conditionDm).pipe(switchMap(a=>{
+        return of(data.concat(...a.data))
       }))
     }
   }
@@ -490,6 +509,15 @@ export class HoidongthiPhongthiComponent implements OnInit {
     }else{
       return of(data)
     }
+  }
+
+  //-------------------------------------------------------------
+  async btnDeleteByDiemduthi(item:KehoachthiDiemduthi){
+    const button= await this.notifi.confirmDelete('Thao tác nãy sẽ xóa phòng thi, và thí sinh đã sắp xếp trong phòng thi ?');
+
+    // if(button){
+    //   this.hoidongPhongthiService.deleteByKey(item.id,)
+    // }
   }
 
 }

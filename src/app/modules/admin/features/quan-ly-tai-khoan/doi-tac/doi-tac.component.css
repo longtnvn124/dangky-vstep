@@ -1,3 +1,9 @@
+.form-row .ovic-drp{
+  width: calc(100% - 125px);
+}
+
+
+/*------------------------------------------*/
 .warning-pass {
   background: #f9594e;
   padding: 10px;

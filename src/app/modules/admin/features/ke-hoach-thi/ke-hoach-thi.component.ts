@@ -4,7 +4,7 @@ import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators
 import {Paginator, PaginatorModule} from "primeng/paginator";
 import {debounceTime, filter, Observable, Subject, Subscription} from "rxjs";
 import {NotificationService} from "@core/services/notification.service";
-import {OvicButton} from "@core/models/buttons";
+import {BUTTON_NO, BUTTON_YES, OvicButton} from "@core/models/buttons";
 
 import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
 import {SharedModule} from "@shared/shared.module";
@@ -19,6 +19,16 @@ import {NgIf} from "@angular/common";
 import {
   DanhSachThiSinhComponent
 } from "@modules/admin/features/ke-hoach-thi/danh-sach-thi-sinh/danh-sach-thi-sinh.component";
+import {AuthService} from "@core/services/auth.service";
+import {KehoachthiDiemthiVstepService} from "@shared/services/kehoachthi-diemthi-vstep.service";
+import {ConditionOption} from "@shared/models/condition-option";
+import {OvicQueryCondition} from "@core/models/dto";
+import {DialogModule} from "primeng/dialog";
+import {InputTextModule} from "primeng/inputtext";
+import {
+  KehoachthiDiemthiV2Component
+} from "@modules/admin/features/ke-hoach-thi/kehoachthi-diemthi-v2/kehoachthi-diemthi-v2.component";
+
 interface FormKehoachthi extends OvicForm {
   object: KeHoachThi;
 }
@@ -38,7 +48,10 @@ interface FormKehoachthi extends OvicForm {
     CalendarModule,
     KehoachthiDiemthiComponent,
     NgIf,
-    DanhSachThiSinhComponent
+    DanhSachThiSinhComponent,
+    DialogModule,
+    InputTextModule,
+    KehoachthiDiemthiV2Component
   ],
   standalone: true
 })
@@ -105,46 +118,7 @@ export class KeHoachThiComponent implements OnInit {
       headClass: 'ovic-w-110px text-center',
       rowClass: 'ovic-w-110px text-center'
     },
-    {
-      tooltip: '',
-      fieldType: 'buttons',
-      field: [],
-      rowClass: 'ovic-w-110px text-center',
-      checker: 'fieldName',
-      header: 'Thao tác',
-      sortable: false,
-      headClass: 'ovic-w-180px text-center',
-      buttons: [
-        {
-          tooltip: 'Cập nhật số lượng dự thi theo điểm thi',
-          label: '',
-          icon: 'pi pi-book',
-          name: 'DIEMTHI_DECISION',
-          cssClass: 'btn-warning rounded'
-        },
-        {
-          tooltip: 'danh sách dự thi',
-          label: '',
-          icon: 'pi pi-users',
-          name: 'MEMBER_DECISION',
-          cssClass: 'btn-success rounded'
-        },
-        {
-          tooltip: 'Sửa',
-          label: '',
-          icon: 'pi pi-file-edit',
-          name: 'EDIT_DECISION',
-          cssClass: 'btn-primary rounded'
-        },
-        {
-          tooltip: 'Xoá',
-          label: '',
-          icon: 'pi pi-trash',
-          name: 'DELETE_DECISION',
-          cssClass: 'btn-danger rounded'
-        }
-      ]
-    }
+
   ];
 
   headButtons = [
@@ -183,15 +157,85 @@ export class KeHoachThiComponent implements OnInit {
 
   constructor(
 
-    private notificationService: NotificationService,
+    private notifi: NotificationService,
     private fb: FormBuilder,
-    private kehoachthiVstepService: KehoachthiVstepService
+    private kehoachthiVstepService: KehoachthiVstepService,
+    private auth: AuthService,
+    private kehoachthiDiemthiVstepService: KehoachthiDiemthiVstepService,
   ) {
+
+    console.log(this.auth.roles);
+
+
+    const roleAdmin =  this.auth.roles.map(m=>m.name).includes('admin')
+
+    if(roleAdmin){
+      this.tblStructure.push({
+        tooltip: '',
+        fieldType: 'buttons',
+        field: [],
+        rowClass: 'ovic-w-110px text-center',
+        checker: 'fieldName',
+        header: 'Thao tác',
+        sortable: false,
+        headClass: 'ovic-w-180px text-center',
+        buttons: [
+          {
+            tooltip: 'Cập nhật số lượng dự thi theo điểm thi',
+            label: '',
+            icon: 'pi pi-book',
+            name: 'DIEMTHI_DECISION',
+            cssClass: 'btn-warning rounded'
+          },
+          {
+            tooltip: 'danh sách dự thi',
+            label: '',
+            icon: 'pi pi-users',
+            name: 'MEMBER_DECISION',
+            cssClass: 'btn-success rounded'
+          },
+          {
+            tooltip: 'Sửa',
+            label: '',
+            icon: 'pi pi-file-edit',
+            name: 'EDIT_DECISION',
+            cssClass: 'btn-primary rounded'
+          },
+          {
+            tooltip: 'Xoá',
+            label: '',
+            icon: 'pi pi-trash',
+            name: 'DELETE_DECISION',
+            cssClass: 'btn-danger rounded'
+          }
+        ]
+      })
+    }else{
+      this.tblStructure.push({
+        tooltip: '',
+        fieldType: 'buttons',
+        field: [],
+        rowClass: 'ovic-w-110px text-center',
+        checker: 'fieldName',
+        header: 'Thao tác',
+        sortable: false,
+        headClass: 'ovic-w-180px text-center',
+        buttons: [
+          {
+            tooltip: 'Cập nhật số lượng dự thi',
+            label: '',
+            icon: 'pi pi-cog',
+            name: 'DIEMTHI_SETTING_DECISION',
+            cssClass: 'btn-warning rounded'
+          },
+        ]
+      })
+    }
     const observeProcessFormData = this.OBSERVE_PROCESS_FORM_DATA.asObservable().pipe(debounceTime(100)).subscribe(form => this.__processFrom(form));
     this.subscription.add(observeProcessFormData);
-    const observeProcessCloseForm = this.notificationService.onSideNavigationMenuClosed().pipe(filter(menuName => menuName === this.menuName && this.needUpdate)).subscribe(() => this.loadData(this.page));
+    const observeProcessCloseForm = this.notifi.onSideNavigationMenuClosed().pipe(filter(menuName => menuName === this.menuName && this.needUpdate)).subscribe(() => this.loadData(this.page));
     this.subscription.add(observeProcessCloseForm);
-    const observerOnResize = this.notificationService.observeScreenSize.subscribe(size => this.sizeFullWidth = size.width)
+    const observerOnResize = this.notifi.observeScreenSize.subscribe(size => this.sizeFullWidth = size.width)
     this.subscription.add(observerOnResize);
 
     this.formSave = this.fb.group({
@@ -235,7 +279,7 @@ export class KeHoachThiComponent implements OnInit {
         this.isLoading = false;
       }, error: () => {
         this.isLoading = false;
-        this.notificationService.toastError('Mất kết nối với máy chủ');
+        this.notifi.toastError('Mất kết nối với máy chủ');
       }
     })
   }
@@ -244,12 +288,12 @@ export class KeHoachThiComponent implements OnInit {
     const observer$: Observable<any> = type === FormType.ADDITION ? this.kehoachthiVstepService.create(data) : this.kehoachthiVstepService.update(object.id, data);
     observer$.subscribe({
       next: () => {
-        this.notificationService.closeSideNavigationMenu();
+        this.notifi.closeSideNavigationMenu();
         this.needUpdate = true;
         this.loadData(1, this.search);
-        this.notificationService.toastSuccess('Thao tác thành công', 'Thông báo');
+        this.notifi.toastSuccess('Thao tác thành công', 'Thông báo');
       },
-      error: () => this.notificationService.toastError('Thao tác thất bại', 'Thông báo')
+      error: () => this.notifi.toastError('Thao tác thất bại', 'Thông báo')
     });
   }
 
@@ -265,8 +309,8 @@ export class KeHoachThiComponent implements OnInit {
   }
 
   private preSetupForm(name: string) {
-    this.notificationService.isProcessing(false);
-    this.notificationService.openSideNavigationMenu({
+    this.notifi.isProcessing(false);
+    this.notifi.openSideNavigationMenu({
       name,
       template: this.template,
       size: this.sizeFullWidth,
@@ -276,7 +320,7 @@ export class KeHoachThiComponent implements OnInit {
 
   closeForm() {
     this.loadInit();
-    this.notificationService.closeSideNavigationMenu(this.menuName);
+    this.notifi.closeSideNavigationMenu(this.menuName);
   }
 
 
@@ -324,18 +368,18 @@ export class KeHoachThiComponent implements OnInit {
 
         break;
       case 'DELETE_DECISION':
-        const confirm = await this.notificationService.confirmDelete();
+        const confirm = await this.notifi.confirmDelete();
         if (confirm) {
           this.kehoachthiVstepService.delete(decision.id).subscribe({
             next: () => {
               this.page = Math.max(1, this.page - (this.listData.length > 1 ? 0 : 1));
-              this.notificationService.isProcessing(false);
-              this.notificationService.toastSuccess('Thao tác thành công');
+              this.notifi.isProcessing(false);
+              this.notifi.toastSuccess('Thao tác thành công');
               this.loadData(this.page);
 
             }, error: () => {
-              this.notificationService.isProcessing(false);
-              this.notificationService.toastError('Thao tác không thành công');
+              this.notifi.isProcessing(false);
+              this.notifi.toastError('Thao tác không thành công');
             }
           })
         }
@@ -344,7 +388,7 @@ export class KeHoachThiComponent implements OnInit {
         const object2 = this.listData.find(u => u.id === decision.id);
         this.kehoach_select = {...object2};
 
-        this.notificationService.openSideNavigationMenu({
+        this.notifi.openSideNavigationMenu({
           name:this.menuName,
           template: this.formMembers,
           size: this.sizeFullWidth,
@@ -356,16 +400,65 @@ export class KeHoachThiComponent implements OnInit {
         const object3 = this.listData.find(u => u.id === decision.id);
         this.kehoach_select = {...object3};
 
-        this.notificationService.openSideNavigationMenu({
+        this.notifi.openSideNavigationMenu({
           name:this.menuName,
           template: this.formDiemthi,
           size: this.sizeFullWidth,
           offsetTop: '0px'
         });
-        break
+        break;
+      case 'DIEMTHI_SETTING_DECISION':
+        this.kehoach_select = {...this.listData.find(u => u.id === decision.id)};
+
+        this.soLuongDiemduthiTheoTram(this.listData.find(u => u.id === decision.id))
+
+        break;
       default:
         break;
     }
+  }
+
+
+  soluongDkByDiemduthi  : number = null;
+  typeDkByDiemduthi     : boolean = false;
+  displayModal          : boolean = false;
+  soLuongDiemduthiTheoTram(object : KeHoachThi){
+    console.log(object);
+
+    this.notifi.isProcessing(true);
+    const condition:ConditionOption = {
+      condition:[
+        {
+          conditionName:'diemduthi_id',
+          condition:OvicQueryCondition.equal,
+          value:this.auth.user.donvi_id.toString(),
+        },
+        {
+          conditionName:'kehoach_id',
+          condition:OvicQueryCondition.equal,
+          value:object.id.toString(),
+        },
+
+      ],page:'1',
+       set:[
+         {label:'limit',value:'1'},
+
+       ]
+    };
+
+    this.kehoachthiDiemthiVstepService.getDataByPageNew(condition).subscribe({
+      next:({data})=>{
+        this.notifi.isProcessing(false);
+        this.soluongDkByDiemduthi = data.length>0 ? data[0].soluong : null;
+        this.typeDkByDiemduthi = data.length > 0 ? true : false;
+
+        this.displayModal = true;
+
+      },error:()=>{
+        this.notifi.isProcessing(false);
+        this.notifi.toastError('Load dữ liệu không thành công');
+      }
+    })
   }
 
   get f(): { [key: string]: AbstractControl<any> } {
@@ -382,11 +475,11 @@ export class KeHoachThiComponent implements OnInit {
           this.formActive.data = this.formSave.value;
           this.OBSERVE_PROCESS_FORM_DATA.next(this.formActive);
       } else {
-        this.notificationService.toastError('Vui lòng không nhập khoảng trống');
+        this.notifi.toastError('Vui lòng không nhập khoảng trống');
       }
     } else {
       this.formSave.markAllAsTouched();
-      this.notificationService.toastError('Vui lòng nhập đủ thông tin');
+      this.notifi.toastError('Vui lòng nhập đủ thông tin');
     }
   }
 
@@ -407,5 +500,33 @@ export class KeHoachThiComponent implements OnInit {
       result += [date.getDate().toString().padStart(2, '0'), (date.getMonth() + 1).toString().padStart(2, '0'), date.getFullYear().toString()].join('/');
     }
     return result;
+  }
+
+
+  async btnAcceptDiemduthi(){
+    if(this.soluongDkByDiemduthi && this.soluongDkByDiemduthi > 0 ){
+      const btn = await this.notifi.confirmRounded('','Xác nhận',[BUTTON_YES,BUTTON_NO]);
+
+      if(btn.name == 'yes'){
+        const item = {
+          kehoach_id:this.kehoach_select.id,
+          soluong : this.soluongDkByDiemduthi,
+          diemduthi_id:this.auth.user.donvi_id,
+        }
+        this.kehoachthiDiemthiVstepService.create(item).subscribe({
+          next:()=>{
+            this.displayModal=false;
+            this.notifi.toastSuccess('Thao tác thành công');
+            this.notifi.isProcessing(false);
+          },error:()=>{
+            this.notifi.isProcessing(false);
+            this.notifi.toastError('Mất kết nối với máy chủ');
+          }
+        })
+      }
+
+    }else{
+      this.notifi.toastError('Vui lòng cài đặt số lượng thí sinh được phép dự thi');
+    }
   }
 }

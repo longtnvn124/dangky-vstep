@@ -7,7 +7,7 @@
           <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
             <div class="d-flex" style="gap:10px;">
               <div class="">
-                <p-dropdown [options]="kehoachthi" placeholder="Chọn đợt thi" optionValue="id" optionLabel="dotthi"
+                <p-dropdown [options]="kehoachthi" placeholder="Chọn đợt thi" optionValue="id" optionLabel="title"
                             [showClear]="true"
                             (onChange)="onSelectKehoachThi($event.value)">
 
@@ -30,9 +30,9 @@
               <input pInputText type="text" placeholder="Nhập họ tên" formControlName="search_name">
             </div>
             <div class="">
-              <p-dropdown [options]="dmCapdo" placeholder="Chọn cấp Hsk" optionValue="id" optionLabel="title"
+              <p-dropdown [options]="dataDonvi" placeholder="Chọn điểm thi" optionValue="id" optionLabel="title"
                           [showClear]="true"
-                          formControlName="caphsk_id">
+                          formControlName="diemduthi_id">
               </p-dropdown>
             </div>
             <div class="">
@@ -96,7 +96,7 @@
             <th class="ovic-w-180px text-center">CCCD (hoặc hộ chiếu)</th>
             <th class="ovic-w-120px text-center">Số điện thoại</th>
             <th class="text-center">Lệ phí thi</th>
-            <th class="text-center">Cấp độ HSK</th>
+            <th class="text-center">Điểm dự thi</th>
             <th class="ovic-w-150px text-center">Cập nhật thông tin</th>
             <th class="ovic-w-150px text-center">Cập nhật ảnh chân dung</th>
             <th class="ovic-w-150px text-center">Cập nhật ảnh CCCD (hộ chiếu)</th>

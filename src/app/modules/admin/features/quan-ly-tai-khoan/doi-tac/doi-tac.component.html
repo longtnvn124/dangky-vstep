@@ -30,13 +30,22 @@
           <input type="text" placeholder="Vd: email@gmail.com" id="email1" formControlName="email" autocomplete="off">
         </p>
         <p class="form-row" [class.err-input]="f['display_name'].invalid">
-          <label for="dname1">Tên đối tác <span class="ovic-mark">*</span></label>
+          <label for="dname1">Tên trạm thi <span class="ovic-mark">*</span></label>
           <input type="text" id="dname1" formControlName="display_name" placeholder="Vd: TTPTPM ICTU" autocomplete="off">
         </p>
         <p class="form-row">
           <label for="phone1">Số điện thoại <span class="ovic-mark">*</span></label>
           <input type="text" id="phone1" formControlName="phone" placeholder="Vd: 0323394233" autocomplete="off">
         </p>
+        <div
+          class="form-row">
+          <label for="phone1">Đơn vị<span class="ovic-mark">*</span></label>
+          <div class="ovic-drp">
+            <p-dropdown placeholder="Chọn điểm dự thi" class="w-100" [options]="dataDonvi" formControlName="donvi_id" optionLabel="title" optionValue="id"></p-dropdown>
+
+          </div>
+          <!--          <ovic-dropdown placeholder="Chọn đơn vị..." [formField]="f['donvi_id']" [options]="dataDonvi" [filter]="true" [filterBy]="'title'" optionId="id" optionLabel="title"></ovic-dropdown>-->
+        </div>
         <div class="form-row form-group position-relative" [class.err-input]="changPassState && f['password'].invalid">
           <label for="new_password">Mật khẩu <span class="ovic-mark">*</span></label>
           <input type="{{type_password}}" id="new_password" formControlName="password" placeholder="Nhập ..."

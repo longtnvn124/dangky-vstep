@@ -1,23 +1,29 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {Paginator} from "primeng/paginator";
+import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators} from "@angular/forms";
+import {Paginator, PaginatorModule} from "primeng/paginator";
 import {SimpleRole} from "@core/models/auth";
 import {User} from "@core/models/user";
 import {NgPaginateEvent, OvicTableStructure} from "@shared/models/ovic-models";
-import {debounceTime, Subject, Subscription, switchMap} from "rxjs";
+import {debounceTime, forkJoin, Subject, Subscription, switchMap} from "rxjs";
 import {NotificationService} from "@core/services/notification.service";
 import {RoleService} from "@core/services/role.service";
 import {UserService} from "@core/services/user.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ProfileService} from "@core/services/profile.service";
 import {AuthService} from "@core/services/auth.service";
-import {ThemeSettingsService} from "@core/services/theme-settings.service";
 import {PhoneNumberValidator} from "@core/utils/validators";
 import {OvicButton} from "@core/models/buttons";
 import {DEFAULT_MODAL_OPTIONS} from "@shared/utils/syscat";
 import {RegisterUserService} from "@shared/services/register-user.service";
 import {RegisterAccountService} from "@shared/services/register-account.service";
 import {Router} from "@angular/router";
+import {SharedModule} from "@shared/shared.module";
+import {ButtonModule} from "primeng/button";
+import {RippleModule} from "primeng/ripple";
+import {TooltipModule} from "primeng/tooltip";
+import {NgClass, NgIf} from "@angular/common";
+import {DonViService} from "@shared/services/don-vi.service";
+import {DonVi} from "@shared/models/danh-muc";
 
 export function customInputValidator(): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {
@@ -41,7 +47,18 @@ export function customInputValidator(): ValidatorFn {
 @Component({
   selector: 'app-doi-tac',
   templateUrl: './doi-tac.component.html',
-  styleUrls: ['./doi-tac.component.css']
+  styleUrls: ['./doi-tac.component.css'],
+  imports: [
+    SharedModule,
+    PaginatorModule,
+    ButtonModule,
+    RippleModule,
+    ReactiveFormsModule,
+    TooltipModule,
+    NgClass,
+    NgIf
+  ],
+  standalone: true
 })
 export class DoiTacComponent implements OnInit {
   @ViewChild(Paginator) paginator: Paginator;
@@ -56,12 +73,13 @@ export class DoiTacComponent implements OnInit {
   editUserId: number;
 
   dsNhomQuyen: SimpleRole[] = [];
+  dataDonvi: DonVi[] = [];
   dataRoles : SimpleRole[];
 
-  data: User[] = [];
-  page:number=1;
-  recordTotal:number=0;
-  rows= this.themeSettingsService.settings.rows;
+  data        : User[] = [];
+  page        : number = 1;
+  recordTotal : number = 0;
+  rows        : number = 20;
   search:string = '';
   cols: OvicTableStructure[] = [
     {
@@ -77,15 +95,15 @@ export class DoiTacComponent implements OnInit {
     {
       fieldType: 'normal',
       field: ['username'],
-      header: 'Số CCCD',
-      sortable: true,
+      header: 'Tên tài khoản',
+      // sortable: true,
       headClass: 'ovic-w-180px text-center',
       rowClass: 'ovic-w-180px '
     },
     {
       fieldType: 'normal',
       field: ['display_name'],
-      header: 'Tên đối tác',
+      header: 'Tên Trạm thi',
       sortable: false,
       headClass: 'ovic-w-180px text-center',
       rowClass: 'ovic-w-180px text-left'
@@ -176,18 +194,18 @@ export class DoiTacComponent implements OnInit {
     }
   ];
 
-  canEdit: boolean;
-  canAdd: boolean;
-  canDelete: boolean;
-  isAdmin: boolean;
-  changPassState: boolean;
-  defaultPass: string;
-  schoolName = '';
-  userDonviId: number;
-  subscriptions = new Subscription();
-  role_use :string='';
+  canEdit         : boolean;
+  canAdd          : boolean;
+  canDelete       : boolean;
+  isAdmin         : boolean;
+  changPassState  : boolean;
+  defaultPass     : string;
+  schoolName      : string = '';
+  subscriptions   : Subscription = new Subscription();
+  role_use        : string='';
 
-  currentRoute = 'quan-ly-tai-khoan/thi-sinh';
+  currentRoute    : string = 'quan-ly-tai-khoan/diem-du-thi';
+
   private _reloadData$ = new Subject<any>();
 
   constructor(
@@ -198,11 +216,10 @@ export class DoiTacComponent implements OnInit {
     private modalService: NgbModal,
     private profileService: ProfileService,
     private auth: AuthService,
-    private themeSettingsService: ThemeSettingsService,
     private registerUserService : RegisterUserService,
-    // private registerUserService : RegisterUserService
     private registerAccountService :RegisterAccountService,
-    private router :Router
+    private router :Router,
+    private donViService:DonViService
 
   ) {
     this.formSave = this.fb.group({
@@ -211,9 +228,9 @@ export class DoiTacComponent implements OnInit {
       username: ['', [Validators.required]],
       phone: ['', [Validators.required,PhoneNumberValidator]],
       // email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$')]],
-      email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@gmail\\.com$')]],
+      email: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6),customInputValidator()]],
-      donvi_id: [''],
+      donvi_id: ['',Validators.required],
       role_ids: [[], Validators.required],
       status: [1, Validators.required],
       verified:[0]
@@ -231,18 +248,25 @@ export class DoiTacComponent implements OnInit {
     this.canEdit = this.auth.userCanEdit(this.currentRoute);
     this.canAdd = this.auth.userCanAdd(this.currentRoute);
     this.canDelete = this.auth.userCanDelete(this.currentRoute);
-    this.isAdmin = this.auth.userHasRole('admin_thithpt');
-    this.userDonviId = this.auth.user.donvi_id;
-    this.f['donvi_id'].setValue(this.userDonviId);
-    this.roleService.getRoles('id,description,name,ordering,title').subscribe({
-      next:(data)=>{
+    this.isAdmin = this.auth.userHasRole('admin');
+
+
+    // this.roleService.getRoles('id,description,name,ordering,title')
+    forkJoin([
+      this.roleService.getRoles('id,description,name,ordering,title'),
+      this.donViService.getChildren(this.auth.user.donvi_id)
+    ])
+      .subscribe({
+      next:([data,dataDonvi])=>{
+        console.log(dataDonvi);
+        this.dataDonvi=dataDonvi.length > 0 ? dataDonvi.filter(f=>f.id !== this.auth.user.donvi_id): [];
         this.dsNhomQuyen = data;
         this.dataRoles = [].concat(data, this.auth.roles).map(m=>{
           m['__roles_ids_covert'] = m.id.toString();
           return m;
         });
 
-        this.role_use = data.find(f=>f.name === 'doitac_hsk')? data.find(f=>f.name === 'doitac_hsk').id.toString() :null;
+        this.role_use = data.find(f=>f.name === 'diem-du-thi')? data.find(f=>f.name === 'diem-du-thi').id.toString() :null;
         // console.log(this.role_use);
         if(this.dataRoles){
           this.loadData()
@@ -264,7 +288,7 @@ export class DoiTacComponent implements OnInit {
   loadData() {
     this.notificationService.isProcessing(true)
     const userCanLoad: boolean = this.canEdit || this.canAdd || this.canDelete;
-    this.userService.getListUser(this.themeSettingsService.settings.rows, this.page, this.search,this.role_use).subscribe({
+    this.userService.getListUser(this.rows, this.page, this.search,this.role_use).subscribe({
       next: ({recordsTotal,data}) => {
         this.recordTotal =recordsTotal;
 
@@ -423,7 +447,6 @@ export class DoiTacComponent implements OnInit {
   }
 
   taoTaiKhoan(form: FormGroup) {
-    form.get('donvi_id').setValue(this.userDonviId);
     form.get('role_ids').setValue([this.role_use]);
     if (form.valid) {
       const data = {...form.value};
@@ -443,6 +466,8 @@ export class DoiTacComponent implements OnInit {
           {
             next: () => {
               this.resetForm(this.formSave);
+              this.loadData();
+
               this.notificationService.toastSuccess('Thêm mới tài khoản thành công');
               this.notificationService.isProcessing(false);
             },
@@ -458,8 +483,8 @@ export class DoiTacComponent implements OnInit {
               errorMessage = errorMessage.slice(0, -2);
               this.notificationService.toastError(errorMessage);
               this.notificationService.isProcessing(false);
-              this.resetForm(this.formSave);
-              this.loadData();
+              // this.resetForm(this.formSave);
+              // this.loadData();
             }
           });
       } else {
@@ -468,6 +493,8 @@ export class DoiTacComponent implements OnInit {
         this.userService.creatUser(data).subscribe({
           next: () => {
             this.resetForm(this.formSave);
+            this.loadData()
+            this.modalService.dismissAll('');
             this.notificationService.toastSuccess('Thêm mới tài khoản thành công')
           },
           error: (e) => {
@@ -481,8 +508,7 @@ export class DoiTacComponent implements OnInit {
             }
             errorMessage = errorMessage.slice(0, -2);
             this.notificationService.toastError(errorMessage);
-            this.resetForm(this.formSave);
-            this.loadData()
+
           }
         });
       }

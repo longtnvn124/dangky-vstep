@@ -17,3 +17,26 @@
 .in_table:focus{
   box-shadow: none;
 }
+
+/*---------------------dialog-------------------------*/
+.ctn-notifi{
+  padding: 10px 15px;
+  border: 2px dashed #ff0f0f;
+  background: #fbfbfb;
+}
+
+.ctn-notifi_header{
+  font-size:18px;
+  font-weight:700;
+  color:#ff0f0f
+}
+.ctn-notifi_body{
+
+}
+.ctn-notifi_count{
+  padding: 10px 0;
+  border-top: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

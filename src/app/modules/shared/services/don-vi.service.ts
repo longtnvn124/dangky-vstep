@@ -9,6 +9,7 @@ import {Dto, OvicQueryCondition} from '@core/models/dto';
 import {map} from 'rxjs/operators';
 import {AuthService} from '@core/services/auth.service';
 import {DonVi} from "@shared/models/danh-muc";
+import {ConditionOption} from "@shared/models/condition-option";
 
 export interface QueryChildrenParam {
   limit?: number,
@@ -159,5 +160,18 @@ export class DonViService {
     }];
     const params = this.httpParamsHelper.paramsConditionBuilder(conditions, new HttpParams({ fromObject }));
     return this.http.get<Dto>(this.api, { params }).pipe(map(res => ({ recordsTotal: res.recordsFiltered, data: res.data })));
+  }
+
+  getDataByPageNew(option: ConditionOption): Observable<{ data: DonVi[], recordsFiltered: number }> {
+    let filter = option.page ? this.httpParamsHelper.paramsConditionBuilder(option.condition).set("paged", option.page) : this.httpParamsHelper.paramsConditionBuilder(option.condition);
+    if (option.set && option.set.length)
+      option.set.forEach(f => {
+        filter = filter.set(f.label, f.value);
+      })
+    return this.http.get<Dto>(this.api, {params: filter}).pipe(
+      map(res => {
+        return {data: res.data, recordsFiltered: res.recordsFiltered}
+      })
+    );
   }
 }

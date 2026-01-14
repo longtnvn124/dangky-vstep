@@ -38,7 +38,6 @@ import {CalendarModule} from "primeng/calendar";
 import {ChartModule} from "primeng/chart";
 import {TableModule} from "primeng/table";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
-import { ThongKeDuLieuComponent } from './features/thong-ke-du-lieu/thong-ke-du-lieu.component';
 import {CheckboxModule} from "primeng/checkbox";
 import {MatMenuModule} from "@angular/material/menu";
 import { CardCountComponent } from './features/home/widgets/card-count/card-count.component';
@@ -60,12 +59,8 @@ import {FocusInputPipe} from "@shared/pipes/focus-input.pipe";
     HomeEducationComponent,
     HomeSampleComponent,
     CardWidgetComponent,
-
-    ThongKeDuLieuComponent,
     CardCountComponent,
     MailCheckComponent,
-
-
   ],
   exports: [
 

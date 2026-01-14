@@ -1,9 +1,9 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {Paginator, PaginatorModule} from "primeng/paginator";
 import {ThiSinhInfo} from "@shared/models/thi-sinh";
 import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {debounceTime, forkJoin, Subject, Subscription} from "rxjs";
+import {debounceTime, Subject, Subscription} from "rxjs";
 import {TableModule} from "primeng/table";
 import {InputSwitchModule} from "primeng/inputswitch";
 import {TooltipModule} from "primeng/tooltip";
@@ -15,17 +15,17 @@ import {RippleModule} from "primeng/ripple";
 import {SharedModule} from "@shared/shared.module";
 import {CheckboxModule} from "primeng/checkbox";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
-import {DanhMucDoiTuong, DanhMucDoituongUutienService} from "@shared/services/danh-muc-doituong-uutien.service";
 import {DiaDanh} from "@shared/models/location";
 import {DanToc} from "@shared/utils/syscat";
 import {NotificationService} from "@core/services/notification.service";
 import {ThisinhInfoService} from "@shared/services/thisinh-info.service";
-import {ThemeSettingsService} from "@core/services/theme-settings.service";
 import {LocationService} from "@shared/services/location.service";
 import {DDMMYYYYDateFormatValidator, PhoneNumberValidator} from "@core/utils/validators";
 import {NgPaginateEvent} from "@shared/models/ovic-models";
 import {OvicInputAddressNewComponent} from "@shared/components/ovic-input-address-new/ovic-input-address-new.component";
 import {AuthService} from "@core/services/auth.service";
+import {ConditionOption} from "@shared/models/condition-option";
+import {OvicQueryCondition} from "@core/models/dto";
 
 @Component({
   selector: 'app-thongtin-thisinh',
@@ -39,44 +39,38 @@ export class ThongtinThisinhComponent implements OnInit {
   @ViewChild('fromUpdate', {static: true}) template: TemplateRef<any>;
   @ViewChild('formAcount', {static: true}) formAcount: TemplateRef<any>;
   @ViewChild(Paginator) paginator: Paginator;
-  listData: ThiSinhInfo[];
-  page = 1;
-  index = 1;
-  recordsTotal: number = 0;
-  formSave: FormGroup;
-  search: string = '';
-  menuName = 'thi-sinh';
-  subscription = new Subscription();
-  sizeFullWidth = 1024;
-  rows = this.themeSettingsService.settings.rows;
-  isLoading: boolean = true;
-  private inputChanged: Subject<string> = new Subject<string>();
-  thissinhSelect: ThiSinhInfo;
-  provinceOptions:DiaDanh[];
-  danhMucDoiTuong:DanhMucDoiTuong[];
-  protected readonly dantoc = DanToc;
+  listData              : ThiSinhInfo[];
+  page                  : number = 1;
+  index                 : number = 1;
+  recordsTotal          : number = 0;
+  formSave              : FormGroup;
+  search                : string = '';
+  menuName              : string = 'thi-sinh';
+  subscription          : Subscription = new Subscription();
+  sizeFullWidth         : number = 1024;
+  rows                  : number = 20;
+  isLoading             : boolean = true;
+  private inputChanged  : Subject<string> = new Subject<string>();
+  thissinhSelect        : ThiSinhInfo;
+  provinceOptions       : DiaDanh[];
+  thisinh_user_id       : number = 0;
+  file_name             : string = '';
 
+  protected readonly dantoc = DanToc;
 
   sex: { name: string, code: string }[] = [
     {name: 'Nữ', code: 'nu'},
     {name: 'Nam', code: 'nam'}
   ];
 
+  isTramthi : boolean = false;
 
-  thisinh_user_id:number = 0;
-
-
-
-
-  file_name:string = '';
   constructor
   (
     private notificationService: NotificationService,
     private thisinhInfoService: ThisinhInfoService,
     private fb: FormBuilder,
-    private themeSettingsService: ThemeSettingsService,
     private locationService: LocationService,
-    private danhMucDoituongUutienService: DanhMucDoituongUutienService,
     private auth: AuthService
   ) {
     const observerOnResize = this.notificationService.observeScreenSize.subscribe(size => this.sizeFullWidth = size.width)
@@ -100,9 +94,9 @@ export class ThongtinThisinhComponent implements OnInit {
       status: [0],
       camket: [0, Validators.required],
       email: ['', Validators.required],
-
-
     });
+
+    this.isTramthi = this.auth.userHasRole('diem-du-thi')
   }
 
   ngOnInit(): void {
@@ -118,13 +112,11 @@ export class ThongtinThisinhComponent implements OnInit {
   }
 
   getDataCitis() {
-    forkJoin<[DiaDanh[], DanhMucDoiTuong[]]>(
-      this.locationService.listProvinces(),
-      this.danhMucDoituongUutienService.getdataUnlimit(),
-    ).subscribe({
-      next: ([diadanh, doituong]) => {
-        this.provinceOptions = diadanh;
-        this.danhMucDoiTuong = doituong;
+    this.locationService.getListByIdAndKey(null,'regions').subscribe({
+      next:(data)=>{
+        this.provinceOptions = data;
+        console.log(data);
+      },error:()=>{
 
       }
     })
@@ -132,14 +124,42 @@ export class ThongtinThisinhComponent implements OnInit {
   }
 
   loadData(page: number, search ?: string) {
-    const limit = this.themeSettingsService.settings.rows;
-    this.index = (page * limit) - limit + 1;
+
     this.isLoading = true;
     this.page = page;
     this.notificationService.isProcessing(true);
-    this.thisinhInfoService.load(page, search).subscribe({
-      next: ({recordsTotal, data}) => {
-        this.recordsTotal = recordsTotal;
+
+    const conddition:ConditionOption = {
+      condition:[
+
+      ],
+      page:page.toString(),
+      set:[
+        {
+          label:'limit',value: this.rows.toString(),
+        },
+        {
+          label:'order',value: this.rows.toString(),
+        }
+      ]
+    };
+    if(search){
+      conddition.condition.push({
+        conditionName:'hoten',
+        condition:OvicQueryCondition.like,
+        value:`%${search}%`
+      })
+    }
+    if(this.isTramthi){
+      conddition.condition.push({
+        conditionName:'created_by',
+        condition:OvicQueryCondition.equal,
+        value:this.auth.user.id.toString()
+      })
+    }
+    this.thisinhInfoService.getDataByPageNew(conddition).subscribe({
+      next: ({data, recordsFiltered}) => {
+        this.recordsTotal = recordsFiltered;
         this.listData = data.map((m, index) => {
           m['_indexTable'] = this.rows * (page - 1) + index + 1;
           m['_gioitinh'] = m.gioitinh === 'nam' ? 'Nam' : "Nữ";
@@ -155,6 +175,8 @@ export class ThongtinThisinhComponent implements OnInit {
         this.notificationService.toastError('Load dữ liệu không thành công');
       }
     })
+
+
   }
 
   paginate({page}: NgPaginateEvent) {

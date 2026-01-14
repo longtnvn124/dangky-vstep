@@ -1,3 +1,10 @@
+.text_in_line{
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 /*------------------old css------------------*/
 .dk-container{
   width:100%;

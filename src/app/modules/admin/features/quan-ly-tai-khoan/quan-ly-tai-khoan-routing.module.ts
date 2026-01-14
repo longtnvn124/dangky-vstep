@@ -7,15 +7,18 @@ import {
 
 const routes: Routes = [
 
-  {
-    path:'doi-tac',
-    component: DoiTacComponent,
-
-  },
+  // {
+  //   path:'doi-tac',
+  //   component: DoiTacComponent,
+  //
+  // },
   {
     path:'thi-sinh',
     component: TaiKhoaThiSinhComponent,
-
+  },
+  {
+    path:'diem-du-thi',
+    component: DoiTacComponent,
   },
 ];
 

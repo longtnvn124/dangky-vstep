@@ -17,7 +17,7 @@ import {ConditionOption} from "@shared/models/condition-option";
 import {OvicQueryCondition} from "@core/models/dto";
 import {map} from "rxjs/operators";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
-import {NgClass, NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
+import {NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
 import {SharedModule} from "@shared/shared.module";
 import {CheckboxModule} from "primeng/checkbox";
 import {TableModule} from "primeng/table";
@@ -32,6 +32,11 @@ import {
 import {
   ThongTinThiSinhComponent
 } from "@modules/admin/features/danh-sach-du-thi/thi-sinh-du-thi/thong-tin-thi-sinh/thong-tin-thi-sinh.component";
+import {DonViService} from "@shared/services/don-vi.service";
+import {AuthService} from "@core/services/auth.service";
+import {DonviComponent} from "@modules/admin/features/danh-muc/donvi/donvi.component";
+import {DonVi} from "@shared/models/danh-muc";
+import {ExpThisinhDuthiService} from "@shared/services/export/exp-thisinh-duthi.service";
 
 @Component({
   selector: 'app-thi-sinh-du-thi',
@@ -41,7 +46,7 @@ import {
   imports: [
     MatProgressBarModule,
     PaginatorModule,
-    NgClass,
+
     SharedModule,
     NgSwitch,
     NgSwitchCase,
@@ -74,6 +79,8 @@ export class ThiSinhDuThiComponent implements OnInit {
   page          : number = 1;
   kehoach_id    : number = 0;
 
+  dataDonvi     : DonVi[] = []
+
 
   rows          : number = 20;
   menuName      : string = 'thisinhduthi';
@@ -89,6 +96,24 @@ export class ThiSinhDuThiComponent implements OnInit {
 
   ]
 
+  headerExport: string[] =  [
+      "STT",
+      "MADK",
+      "Trạng thái",
+      "Họ và tên",
+      "Ngày sinh",
+      "Giới tính",
+      "CCCD/CMND",
+      "Email",
+      "Điện thoại",
+      "Điểm dự thi",
+      "Ghi chú",
+      "Thời gian thanh toán"
+    ];
+
+  isAdmin:boolean = false;
+  isTramThi:boolean =false;
+
   constructor(
 
     private ordersService:VstepOrdersService,
@@ -98,13 +123,19 @@ export class ThiSinhDuThiComponent implements OnInit {
     private kehoachthiVstepService : KehoachthiVstepService,
 
     private modalService: NgbModal,
-    private exportThiSinhDuThiService: ExportThiSinhDuThiService
+    private expThisinhDuthiService: ExpThisinhDuthiService,
+    private donViService:DonViService,
+    private auth: AuthService
   ) {
 
     const observeProcessCloseForm = this.notifi.onSideNavigationMenuClosed().pipe(filter(menuName => menuName === this.menuName && this.needUpdate)).subscribe(() => this.loadData(this.page));
     this.subscription.add(observeProcessCloseForm);
     const observerOnResize = this.notifi.observeScreenSize.subscribe(size => this.sizeFullWidth = size.width)
     this.subscription.add(observerOnResize);
+
+    this.isAdmin = this.auth.userHasRole('admin')
+    this.isTramThi = this.auth.userHasRole('diem-du-thi')
+
   }
 
   ngOnInit(): void {
@@ -123,10 +154,15 @@ export class ThiSinhDuThiComponent implements OnInit {
       ]
     }
 
+    forkJoin([
+      this.kehoachthiVstepService.getDataByPageNew(conditionKehoach),
+      this.donViService.getChildren(this.auth.user.donvi_id)
+    ]).subscribe({
+      next:([kehoach,donvi])=>{
+        this.dsKehoachthi = kehoach.data;
+        this.dataDonvi = donvi;
+        console.log(donvi)
 
-    this.kehoachthiVstepService.getDataByPageNew(conditionKehoach).subscribe({
-      next:({data})=>{
-        this.dsKehoachthi = data;
         if (this.dsKehoachthi) {
           this.loadData(1);
         }
@@ -135,6 +171,18 @@ export class ThiSinhDuThiComponent implements OnInit {
         this.notifi.toastError('Load dữ liệu không thành công');
       }
     })
+
+    // this.kehoachthiVstepService.getDataByPageNew(conditionKehoach).subscribe({
+    //   next:({data})=>{
+    //     this.dsKehoachthi = data;
+    //     if (this.dsKehoachthi) {
+    //       this.loadData(1);
+    //     }
+    //   },error:()=>{
+    //     this.notifi.isProcessing(false);
+    //     this.notifi.toastError('Load dữ liệu không thành công');
+    //   }
+    // })
 
   }
 
@@ -145,11 +193,7 @@ export class ThiSinhDuThiComponent implements OnInit {
 
     const condition :ConditionOption = {
       condition:[
-        {
-          conditionName:'diemduthi_id',
-          condition:OvicQueryCondition.notEqual,
-          value: '0'
-        }
+
       ],
       page: page.toString(),
       set:[
@@ -160,6 +204,21 @@ export class ThiSinhDuThiComponent implements OnInit {
         { label: 'with', value: 'thisinh,user'},
       ]
     }
+    if(this.isAdmin){
+      condition.condition.push({
+        conditionName:'diemduthi_id',
+        condition:OvicQueryCondition.notEqual,
+        value: '0'
+      })
+    }
+    if(this.isTramThi){
+      condition.condition.push({
+        conditionName:'diemduthi_id',
+        condition:OvicQueryCondition.equal,
+        value: this.auth.user.donvi_id.toString()
+      })
+    }
+
     if(this.kehoach_id){
       condition.condition.push({
         conditionName:'kehoach_id',
@@ -185,16 +244,6 @@ export class ThiSinhDuThiComponent implements OnInit {
       const diemduthi_ids = Array.from(new Set(m.data.map(a=>a.diemduthi_id)));
       const parent_ids = Array.from(new Set(m.data.map(a=>a.parent_id).filter(f=>f !== 0)));
 
-      const conditionDdiemduthi:ConditionOption = {
-        condition : [
-          { conditionName: 'id',condition: OvicQueryCondition.equal, value:diemduthi_ids.toString(),orWhere:'in' }
-        ],
-        page:'1',
-        set:[{
-          label:'limit',value:diemduthi_ids.length.toString(),
-        }]
-      }
-
       const conditionOrderParent :ConditionOption = {
         condition : [
           { conditionName: 'id',condition: OvicQueryCondition.equal, value:parent_ids.toString(),orWhere:'in' }
@@ -211,12 +260,11 @@ export class ThiSinhDuThiComponent implements OnInit {
       }
       return forkJoin([
         of(m),
-        this.dmDiemDuThiService.getDataByPageNew(conditionDdiemduthi).pipe(map(n=>n.data)),
         this.ordersService.getDataByPageNew(conditionOrderParent).pipe(map(m=>m.data))
       ])
 
     })).subscribe({
-      next:([{data,recordsFiltered},diemduthi,orderParent])=>{
+      next:([{data,recordsFiltered},orderParent])=>{
         this.recordsTotal = recordsFiltered;
 
         this.listData = data.length > 0 ? data.map((m,index)=>{
@@ -236,7 +284,7 @@ export class ThiSinhDuThiComponent implements OnInit {
           m['__status_converted'] = m.trangthai_thanhtoan ;
 
           m['__time_thanhtoan'] =m['thoigian_thanhtoan'] ? this.formatSQLDateTime( new Date(m['thoigian_thanhtoan'])):'';
-          m['__diemthi_convenrtd'] = diemduthi.length>0 && diemduthi.find(f=>f.id === m.diemduthi_id) ? diemduthi.find(f=>f.id === m.diemduthi_id).title : '';
+          m['__diemthi_convenrtd'] = this.dataDonvi.length>0 && this.dataDonvi.find(f=>f.id === m.diemduthi_id) ? this.dataDonvi.find(f=>f.id === m.diemduthi_id).title : '';
           m['__ghichu'] = parent && parent['user'] && parent['user']['name'] ? (parent['user']['name'] + ' đăng ký' ):'';
           return m;
         }) : [];
@@ -385,24 +433,25 @@ export class ThiSinhDuThiComponent implements OnInit {
   btnExportExcelV2Hsk(){
 
     if (this.kehoach_id !== 0) {
+
+      if(!this.statusSelect){
+        return this.notifi.toastWarning('Vui lòng chọn trạng thái thanh toán');
+      }
       this.notifi.isProcessing(true);
       this.modalService.open(this.templateWaiting, WAITING_POPUP);
 
       // this.ordersService.getDataBykehoachIdAndSelectforThongke(this.kehoach_id,'id,kehoach_id,caphsk_id,lephithi,trangthai_thanhtoan,user_id,parent_id,created_by,updated_by')
-      this.loopGetOrderBy(1,200,this.kehoach_id,[],1,'id,kehoach_id,caphsk_id,lephithi,trangthai_thanhtoan,thoigian_thanhtoan,user_id,parent_id,created_by,updated_by',this.statusSelect.toString())
-        .pipe(switchMap(m=>{
+      this.loopGetOrderBy(1, 200, this.kehoach_id, [], 1,
+        'id,kehoach_id,diemduthi_id,lephithi,trangthai_thanhtoan,thoigian_thanhtoan,user_id,parent_id,created_by,updated_by', this.statusSelect.toString())
+        .pipe(switchMap(m => {
           const idsParent = Array.from(new Set(m.filter(a => a.parent_id !== 0).map(a => a.parent_id)));
-          const conditionDiemduthi : ConditionOption = {
-            condition: [
 
-            ],page:'1',
-            set:[{ label: 'limit',value : '-1'}, ]
-          }
 
           return forkJoin([
             of(m),
-            idsParent.length> 0? this.loopGetOrderByParentId(1,200,idsParent,[],'id,kehoach_id,diemduthi,lephithi,trangthai_thanhtoan,thoigian_thanhtoan,user_id,parent_id,created_by,updated_by'):of([]),
-            this.dmDiemDuThiService.getDataByPageNew(conditionDiemduthi).pipe(map(a=>a.data))
+            idsParent.length > 0 ? this.loopGetOrderByParentId(1, 200, idsParent, [],
+              'id,kehoach_id,diemduthi_id,lephithi,trangthai_thanhtoan,thoigian_thanhtoan,user_id,parent_id,created_by,updated_by') : of([]),
+            this.donViService.getChildren(this.auth.user.id)
           ]);
         }))
         .subscribe({
@@ -412,7 +461,7 @@ export class ThiSinhDuThiComponent implements OnInit {
               const thisinh:ThiSinhInfo = m['thisinh'];
               const parent:OrdersVstep = m.parent_id === 0 ? null : dataParent.find(f=>f.id === m.parent_id);
               m['__index'] = index + 1;
-              m['__madk'] = 'hsk' + m.id;
+              m['__madk'] = m.id;
               m['__status_converted'] = m.trangthai_thanhtoan === 1 ? 'Thanh toán thành công': (  m.trangthai_thanhtoan === 0 ? 'Chưa thanh toán' : (m.trangthai_thanhtoan === 2 ? 'Giao dịch đang sử lý' : ''));
               m['__capthi_converted'] = diemduthi.length>0 && diemduthi.find(f=>f.id === m.diemduthi_id) ? diemduthi.find(f=>f.id === m.diemduthi_id).title : '';
               m['__hoten']= user ? user['name'] :(thisinh ? thisinh.hoten : '');
@@ -452,7 +501,7 @@ export class ThiSinhDuThiComponent implements OnInit {
 
             if (dataMap) {
               this.modalService.dismissAll();
-              this.exportThiSinhDuThiService.exportToLongHsk(dataMap, this.dsKehoachthi.find(f => f.id === this.kehoach_id).title);
+              this.expThisinhDuthiService.export(dataMap, this.dsKehoachthi.find(f => f.id === this.kehoach_id).title,'vstep',[this.headerExport],'Trạng thái thanh toán ');
             }
 
 
@@ -505,6 +554,11 @@ export class ThiSinhDuThiComponent implements OnInit {
           {label:'select', value:select}
         ]
       }
+
+      if(this.isAdmin){
+
+      }
+
       if(trangthai_thanhtoan == '1'){
         conditon.condition.push({
           conditionName:'trangthai_thanhtoan',

@@ -29,7 +29,7 @@
                          (input)="onInputChange($event.target['value'])"/>
                 </span>
               </div>
-              <div class="">
+              <div *ngIf="isAdmin" class="">
                 <button pButton pRipple icon="pi pi-bars" style="height:42px;width: 41px;"
                         [matMenuTriggerFor]="menu"></button>
                 <mat-menu #menu="matMenu" class="d-flex flex-column w-100 h-100">

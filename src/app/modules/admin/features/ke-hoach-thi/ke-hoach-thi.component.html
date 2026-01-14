@@ -171,7 +171,31 @@
               class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
     </div>
     <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style">
-      <app-kehoachthi-diemthi [kehoachthi]="kehoach_select"></app-kehoachthi-diemthi>
+<!--      <app-kehoachthi-diemthi [kehoachthi]="kehoach_select"></app-kehoachthi-diemthi>-->
+      <app-kehoachthi-diemthi-v2 [kehoachthi]="kehoach_select"></app-kehoachthi-diemthi-v2>
     </div>
   </div>
 </ng-template>
+
+<p-dialog class="dal-dk-custome" [header]="'Cập nhật số lượng thi sinh theo điểm thi'" [(visible)]="displayModal" [modal]="true"
+          [style]="{'max-width': '500px'}" [draggable]="false" [resizable]="false">
+  <div class="ctn-notifi">
+    <div class="ctn-notifi_header">
+      Lưu ý:
+    </div>
+    <div class="ctn-notifi_body">
+      <p>1. Để đăng ký số lượng thí sinh theo điểm thi vui lòng nhập <strong>số lượng thí sinh</strong> dự thi rồi bấm <strong>xác nhận</strong>.</p>
+      <p>2. Với mỗi điểm dự thi chỉ đăng ký số lượng duy nhất 1 lần. Trường hợp có sai sót vui lòng liên hệ với quản trị viên.</p>
+    </div>
+
+    <div class="ctn-notifi_count">
+      <span> Số lượng thí sinh:</span>
+      <input pInputText class="text-center" type="number" minlength="1" [(ngModel)]="soluongDkByDiemduthi" [disabled]="typeDkByDiemduthi">
+    </div>
+
+    <div class="text-center" *ngIf="!typeDkByDiemduthi">
+      <button pRipple pButton label="Xác nhận" class="p-button-success" icon="pi pi-check-square" (click)="btnAcceptDiemduthi()"></button>
+    </div>
+  </div>
+
+</p-dialog>

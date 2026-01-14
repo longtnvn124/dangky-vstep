@@ -44,7 +44,7 @@
               <th class="text-center"> Đợt thi</th>
               <th class="text-center"> Ngày thi</th>
               <th class="ovic-w-85px text-center">Trạng thái</th>
-              <th class="ovic-w-85px text-center">Tổng thí sinh</th>
+<!--              <th class="ovic-w-85px text-center">Tổng thí sinh</th>-->
               <!--              <th class="ovic-w-85px text-center">Toán</th>-->
               <!--              <th class="ovic-w-85px text-center">Vật lí </th>-->
               <!--              <th class="ovic-w-85px text-center">Hóa học </th>-->
@@ -52,9 +52,9 @@
               <!--              <th class="ovic-w-85px text-center">Lịch sử</th>-->
               <!--              <th class="ovic-w-85px text-center">Địa lí</th>-->
               <!--              <th class="ovic-w-85px text-center">Tiếng Anh</th>-->
-<!--              <th class="ovic-w-85px text-center" *ngFor="let item of dmMon">-->
-<!--                {{item.tenmon}}-->
-<!--              </th>-->
+              <!--              <th class="ovic-w-85px text-center" *ngFor="let item of dmMon">-->
+              <!--                {{item.tenmon}}-->
+              <!--              </th>-->
             </tr>
           </ng-template>
 
@@ -72,41 +72,40 @@
                 <div class="d-flex justify-content-between p-1">
                   <span class="d-block --fs-14 font-weight-bold">{{ item.title }}</span>
                   <div class="d-flex flex-row">
-                    <i *ngIf="item['lock'] === 0" class="mx-2 pi pi-lock d-flex align-items-center font-weight-bold" tooltipPosition="left" pTooltip="Khoá hội đồng" style="padding:4px;" (click)="btnLockData(item)"></i>
+                    <ng-container *ngIf="isAdmin">
+                      <i *ngIf="item['lock'] === 0" class="mx-2 pi pi-lock d-flex align-items-center font-weight-bold"
+                         tooltipPosition="left" pTooltip="Khoá hội đồng" style="padding:4px;"
+                         (click)="btnLockData(item)"></i>
+
+                    </ng-container>
                     <!--                    <i *ngIf="item['lock'] !== 0" class="disabled mx-2 pi pi-lock d-flex align-items-center font-weight-bold" style="padding:4px;" ></i>-->
                     <i class="d-flex align-items-center pi pi-ellipsis-v" style="padding:4px;"
                        [matMenuTriggerFor]="menu"></i>
                   </div>
                   <mat-menu #menu="matMenu" class="d-flex flex-column w-100 h-100">
-                    <button *ngIf="item['lock'] === 0" class="btn-menu-material cancel" (click)="btnAddThisinh(item)">
-                      <i class="pi pi-user-plus"></i>
-                      <span>Thêm thí sinh vào hội đồng</span>
-                    </button>
+                    <ng-container *ngIf="isAdmin">
+                      <button *ngIf="item['lock'] === 0" class="btn-menu-material cancel" (click)="btnAddThisinh(item)">
+                        <i class="pi pi-user-plus"></i>
+                        <span>Thêm thí sinh vào hội đồng</span>
+                      </button>
+                    </ng-container>
                     <button *ngIf="item['lock'] === 0" class="btn-menu-material excel" (click)="btnViewPhongthi(item)">
-                      <i class="pi pi-chart-bar"></i>
-                      <span>Cài đặt phòng thi</span>
+                      <i class="pi pi-sliders-h"></i>
+                      <span>Khai báo phòng thi</span>
                     </button>
-<!--                    <button *ngIf="item['lock'] === 0" class="btn-menu-material excel" (click)="btnViewPhongthiThisinh(item)">-->
-<!--                    <i class="pi pi-chart-bar"></i>-->
-<!--                    <span>Cài đặt phòng thi</span>-->
-<!--                    </button>-->
-<!--                    <button *ngIf="item['lock'] === 0" class="btn-menu-material excel" (click)="btnKetquathi(item)">-->
-<!--                      <i class="pi pi-file-import"></i>-->
-<!--                      <span>Kết quả dự thi của thí sinh</span>-->
-<!--                    </button>-->
 
-<!--                    <button *ngIf="item['lock'] === 0" class="btn-menu-material excel" (click)="btnViewPhongthi(item)">-->
-<!--                      <i class="pi pi-chart-bar"></i>-->
-<!--                      <span>Danh sách biểu mẫu</span>-->
-<!--                    </button>-->
-                    <button *ngIf="item['lock'] === 0" class="btn-menu-material warning" (click)="btnAddNew('update' , item)">
-                      <i class="pi pi-file-edit"></i>
-                      <span> Cập nhật </span>
-                    </button>
-                    <button *ngIf="item['lock'] === 0 " class="btn-menu-material delete" (click)="btnDelete(item)">
-                      <i class="pi pi-trash"></i>
-                      <span>Xóa hội đồng</span>
-                    </button>
+
+                    <ng-container *ngIf="isAdmin" >
+                      <button *ngIf="item['lock'] === 0" class="btn-menu-material warning"
+                              (click)="btnAddNew('update' , item)">
+                        <i class="pi pi-file-edit"></i>
+                        <span> Cập nhật </span>
+                      </button>
+                      <button *ngIf="item['lock'] === 0 " class="btn-menu-material delete" (click)="btnDelete(item)">
+                        <i class="pi pi-trash"></i>
+                        <span>Xóa hội đồng</span>
+                      </button>
+                    </ng-container>
                   </mat-menu>
                 </div>
               </td>
@@ -115,23 +114,16 @@
                 <div class="d-block --fs-14" [innerHTML]="item['__kehoach_coverted']"></div>
               </td>
               <td class="text-center ovic-w-260px">
-                {{item['__ngaythi']}}
+                {{ item['__ngaythi'] }}
               </td>
               <td class="ovic-w-150px">
-                <div *ngIf="item['lock'] === 0" class="d-block --fs-14" [innerHTML]="item['__status_converted'] | htmlDecode"></div>
-                <div *ngIf="item['lock'] !== 0" class="d-block --fs-14" ><span class="badge badge--size-normal badge-success w-100"><i class="mx-1 pi pi-lock"></i> Đã hoàn thành </span></div>
+                <div *ngIf="item['lock'] === 0" class="d-block --fs-14"
+                     [innerHTML]="item['__status_converted'] | htmlDecode"></div>
+                <div *ngIf="item['lock'] !== 0" class="d-block --fs-14"><span
+                  class="badge badge--size-normal badge-success w-100"><i
+                  class="mx-1 pi pi-lock"></i> Đã hoàn thành </span></div>
               </td>
-              <td class="text-center" [innerHTML]="item['__total']"></td>
-              <!--              <td class="text-center" >{{item['__mon_th']}}</td>-->
-              <!--              <td class="text-center" >{{item['__mon_vl']}}</td>-->
-              <!--              <td class="text-center" >{{item['__mon_hh']}}</td>-->
-              <!--              <td class="text-center" >{{item['__mon_sh']}}</td>-->
-              <!--              <td class="text-center" >{{item['__mon_ls']}}</td>-->
-              <!--              <td class="text-center" >{{item['__mon_dl']}}</td>-->
-              <!--              <td class="text-center" >{{item['__mon_ta']}}</td>-->
-<!--              <td class="text-center" *ngFor="let mon of dmMon">-->
-<!--                {{item['__mon_'+ mon.kyhieu.toLowerCase()]}}-->
-<!--              </td>-->
+<!--              <td class="text-center" [innerHTML]="item['__total']"></td>-->
 
             </tr>
           </ng-template>
@@ -212,11 +204,7 @@
     </div>
   </div>
 </ng-template>
-
-
-
 <ng-template #phongthi>
-
   <div class="ovic-side-navigation-content">
     <div class="ovic-side-navigation-content__head">
       <h4 class="ovic-side-navigation-content__head__title">Quản lý phòng thi</h4>
@@ -224,18 +212,16 @@
               class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
     </div>
     <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style ">
-<!--      <app-phong-thi class="w-100" [hoidong]="hoidong_select"></app-phong-thi>-->
-      <app-hoidongthi-phongthi  class="w-100 h-100 d-block" [hoidong]="hoidong_select" ></app-hoidongthi-phongthi>
-
+      <!--      <app-phong-thi class="w-100" [hoidong]="hoidong_select"></app-phong-thi>-->
+      <app-hoidongthi-phongthi class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-hoidongthi-phongthi>
     </div>
-
   </div>
 </ng-template>
 
 <ng-template #addThiSinh>
   <div class="ovic-side-navigation-content">
     <div class="ovic-side-navigation-content__head justify-content-between">
-      <h4 class="ovic-side-navigation-content__head__title">THÊM THÍ SINH VÀO HỘI ĐỒNG > {{hoidong_select.title}}</h4>
+      <h4 class="ovic-side-navigation-content__head__title">THÊM THÍ SINH VÀO HỘI ĐỒNG > {{ hoidong_select.title }}</h4>
       <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
               class="p-button-rounded p-button-danger p-button-text close "></button>
     </div>
@@ -252,14 +238,15 @@
 <ng-template #ketquathi>
   <div class="ovic-side-navigation-content">
     <div class="ovic-side-navigation-content__head justify-content-between">
-      <h4 class="ovic-side-navigation-content__head__title">Kết quả dự thi của thi sinh > {{hoidong_select.title}}</h4>
+      <h4 class="ovic-side-navigation-content__head__title">Kết quả dự thi của thi sinh
+        > {{ hoidong_select.title }}</h4>
 
       <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
               class="p-button-rounded p-button-danger p-button-text close "></button>
     </div>
     <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style ">
 
-<!--      <app-ket-qua-thi class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-ket-qua-thi>-->
+      <!--      <app-ket-qua-thi class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-ket-qua-thi>-->
     </div>
 
   </div>
@@ -270,7 +257,7 @@
 <ng-template #phongthiThisinh>
   <div class="ovic-side-navigation-content">
     <div class="ovic-side-navigation-content__head justify-content-between">
-      <h4 class="ovic-side-navigation-content__head__title">THÊM THÍ SINH VÀO HỘI ĐỒNG > {{hoidong_select.title}}</h4>
+      <h4 class="ovic-side-navigation-content__head__title">THÊM THÍ SINH VÀO HỘI ĐỒNG > {{ hoidong_select.title }}</h4>
       <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
               class="p-button-rounded p-button-danger p-button-text close "></button>
     </div>
