@@ -58,13 +58,13 @@
                          [value]="listKehoachDiemthi" [rowHover]="true">
                   <ng-template pTemplate="body" let-item let-i="rowIndex">
                     <tr >
-                      <td class="font-weight-bold text-left text-uppercase" colspan="5">
+                      <td class="font-weight-bold text-left text-uppercase" colspan="6">
                         <div class="d-flex justify-content-between align-items-center">
                           <div>
-                            {{ (i + 1 ) + '. ' + item['__diemduthi_title'] }}
+                            {{ (i + 1 ) + '. ' + item['__diemduthi_title']  + ' [ SỐ lượng tối đa: ' + item['soluong'] + ']' }}
                           </div>
-                          <div *ngIf="isAdmin">
-                            <button pButton pRipple icon="pi pi-trash" class="p-button-danger" (click)="btnDeleteByDiemduthi(item)"></button>
+                          <div *ngIf="isAdmin && item['__hoidongPhongthi'].length > 0">
+                            <button  pButton pRipple icon="pi pi-trash" class="p-button-danger" (click)="btnDeleteByDiemduthi(item)"></button>
                           </div>
                         </div>
                       </td>
@@ -73,7 +73,9 @@
                       <td class="font-weight-bold text-center">STT</td>
                       <td class="font-weight-bold text-center">Phòng thi</td>
                       <td class="font-weight-bold text-center">Số lượng thí sinh</td>
-                      <td class="font-weight-bold text-center">Giảng viên coi thi</td>
+                      <td class="font-weight-bold text-center">ngày thi</td>
+                      <td class="font-weight-bold text-center">Địa điểm dự thi</td>
+                      <td class="font-weight-bold text-center">Thao tác</td>
                     </tr>
                     <ng-container *ngIf="item['__hoidongPhongthi'].length> 0 else notPhongthi">
 
@@ -81,12 +83,16 @@
                         <td class="text-center">{{ i + 1 }}</td>
                         <td class="text-center">{{ item2['phongthi'] }}</td>
                         <td class="text-center">{{ item2['soluong'] }}</td>
-                        <td class="text-center">{{ item2['giangvien'] }}</td>
+                        <td class="text-center">{{ convertDateTimeByPhong(item2['ngaythi'],item2['thoigian_duthi'])  }}</td>
+                        <td class="text-center">{{ item2['diadiem_duthi'] }}</td>
+                        <td class="text-center">
+                          <button pButton pRipple icon="pi pi-users" (click)="btnViewThisinhByPhongthi(item,item2)"></button>
+                        </td>
                       </tr>
                     </ng-container>
                     <ng-template #notPhongthi>
                       <tr>
-                        <td colspan="5"> Chưa có dữ liệu phòng thi của điểm thi.</td>
+                        <td colspan="6"> Chưa có dữ liệu phòng thi của điểm thi.</td>
                       </tr>
                     </ng-template>
                   </ng-template>
@@ -147,7 +153,9 @@
                   <th style="min-width: 150px;" class="text-center">Điểm dự thi</th>
                   <th style="min-width: 150px;" class="text-center">Phòng thi</th>
                   <th style="min-width: 150px;" class="text-center">Số lượng</th>
-                  <th style="min-width: 150px;" class="text-center">Giảng viên coi thi</th>
+                  <th style="min-width: 150px;" class="text-center">Ngày thi</th>
+                  <th style="min-width: 150px;" class="text-center">Địa điểm dự thi</th>
+<!--                  <th style="min-width: 150px;" class="text-center">Thao tác </th>-->
 
                 </tr>
               </ng-template>
@@ -157,7 +165,11 @@
                   <td pFrozenColumn class="text-center" [pTooltip]="!checkDiemduthi(item['diemduthi_id']) ? 'Điểm dự thi ko hợp lệ' :'' " > <div [ngClass]="!checkDiemduthi(item['diemduthi_id']) ? 'div-error' :'' ">{{ item['diemduthi_id'] }}</div></td>
                   <td pFrozenColumn class="text-center">{{ item['phongthi'] }}</td>
                   <td pFrozenColumn class="text-center">{{ item['soluong'] }}</td>
-                  <td pFrozenColumn class="text-center">{{ item['giangvien'] }}</td>
+                  <td pFrozenColumn class="text-center">{{ item['ngaythi'] + ' ' + item['thoigian_duthi'] }}</td>
+                  <td pFrozenColumn class="text-center">{{ item['diadiem_duthi'] }}</td>
+                  <td pFrozenColumn class="text-center">
+<!--                    <button pRipple pButton icon="pi pi-users" (click)="btnViewThisinh"></button>-->
+                  </td>
 
 
                 </tr>
@@ -235,6 +247,52 @@
     </div>
 
   </ng-container>
+
+  <ng-container *ngSwitchCase="4">
+    <div class="phongthi-container">
+      <div class="phongthi-h">
+        <div class="phongthi-h_title">
+          <button pButton pRipple icon="pi pi-angle-left" class="p-button-secondary p-button-icon" (click)="returnList()"></button>
+          <div>{{diemduthiSelect['__diemduthi_title'] + ' > Phòng ' + hoidongPhongthiSelect.phongthi + ' > Danh sách thí sinh' }}</div>
+        </div>
+
+      </div>
+      <div class="phongthi-body overflow-y-auto">
+        <app-hoidongthi-phongthi-thisinh [hoidongPhongthi]="hoidongPhongthiSelect"></app-hoidongthi-phongthi-thisinh>
+
+
+      </div>
+
+    </div>
+  </ng-container>
 </ng-container>
 
 
+<p-dialog class="dal-dk-custome" [header]="'Sắp xếp phòng thi'" [(visible)]="viewResultCheck" [modal]="true"
+          [style]="{'max-width': '800px'}" [draggable]="false" [resizable]="false">
+  <div class="ctn-notifi">
+    <div class="ctn-notifi_header">
+      Lưu ý:
+    </div>
+    <div class="ctn-notifi_body" *ngIf="dataPhonthiDiemthi">
+      <p>- Thao tác này sẽ thực hiện sắp sếp phòng thi cho thí sinh dự thi .</p>
+      <p>- Khi thực hiện sắp xếp phòng thi cho thí sinh, vui lòng <strong>không đóng tab, trình duyệt, kết nối mạng hoặc tắt thiết bị.</strong></p>
+      <p>- Có <strong style="color:#0B9419">{{dataPhonthiDiemthi.diemduthi.length}}</strong> điểm thi,
+        <strong style="color:#0B9419">{{dataPhonthiDiemthi.phongthi.length}} phòng thi</strong> và <strong style="color:#0B9419">{{dataPhonthiDiemthi.thisinh.length}}</strong> Thí sinh</p>
+      <p>- Có <strong style="color: #0B9419">{{getTotalCheck(dataPhonthiDiemthi.diemduthi,true)}}</strong> điểm thi có phòng thi và thí sinh hợp lệ</p>
+      <p>- Có <strong style="color: #b21f2d;">{{getTotalCheck(dataPhonthiDiemthi.diemduthi,false)}}</strong> điểm thi có phòng thi và thí sinh không hợp lệ</p>
+      <p>- Bấm <strong>"Xác nhận"</strong> để thực hiện sắp xếp phòng thi cho thí sinh dự thi, thao tác này chỉ thực hiện sắp xếp phòng thi tại điểm thi có phòng thi vào số lượng thí sinh hợp lệ</p>
+
+    </div>
+
+<!--    <div class="ctn-notifi_count">-->
+<!--      <span> Số lượng thí sinh:</span>-->
+<!--      <input pInputText class="text-center" type="number" minlength="1" [(ngModel)]="soluongDkByDiemduthi" [disabled]="typeDkByDiemduthi">-->
+<!--    </div>-->
+
+    <div class="text-center" >
+      <button pRipple pButton label="Xác nhận" class="p-button-success" icon="pi pi-check-square" (click)="btnAcceptDiemduthi()"></button>
+    </div>
+  </div>
+
+</p-dialog>

@@ -115,7 +115,6 @@ export class ThongtinThisinhComponent implements OnInit {
     this.locationService.getListByIdAndKey(null,'regions').subscribe({
       next:(data)=>{
         this.provinceOptions = data;
-        console.log(data);
       },error:()=>{
 
       }

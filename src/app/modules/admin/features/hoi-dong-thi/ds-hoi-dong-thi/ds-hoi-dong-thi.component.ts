@@ -29,6 +29,9 @@ import {
 } from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/hoidongthi-phongthi/hoidongthi-phongthi.component";
 import {Auth} from "@core/models/auth";
 import {AuthService} from "@core/services/auth.service";
+import {
+  HoidongthiBieumauComponent
+} from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/hoidongthi-bieumau/hoidongthi-bieumau.component";
 
 interface FormHoiDong extends OvicForm {
   object: HskHoidongthi;
@@ -52,6 +55,7 @@ interface FormHoiDong extends OvicForm {
     CalendarModule,
     AddThiSinhComponent,
     HoidongthiPhongthiComponent,
+    HoidongthiBieumauComponent,
 
   ],
   standalone: true
@@ -59,13 +63,12 @@ interface FormHoiDong extends OvicForm {
 export class DsHoiDongThiComponent implements OnInit {
 
   @ViewChild(Paginator) paginator: Paginator;
-  @ViewChild('fromUpdate', {static: true}) template: TemplateRef<any>;
-  @ViewChild('phongthi', {static: true}) phongthi: TemplateRef<any>;
-  @ViewChild('phongthiThisinh', {static: true}) phongthiThisinh: TemplateRef<any>;
-  @ViewChild('addThiSinh', {static: true}) addThiSinh: TemplateRef<any>;
-  @ViewChild('ketquathi', {static: true}) ketquathi: TemplateRef<any>;
-  // @ViewChild(AddThiSinhComponent) addThisinhComponent: AddThiSinhComponent;
-  // @ViewChild('thiSinhInPhongThi', {static: true}) thiSinhInPhongThi: TemplateRef<any>;
+  @ViewChild('fromUpdate', {static: true}) template             : TemplateRef<any>;
+  @ViewChild('phongthi', {static: true}) phongthi               : TemplateRef<any>;
+  @ViewChild('phongthiThisinh', {static: true}) phongthiThisinh : TemplateRef<any>;
+  @ViewChild('addThiSinh', {static: true}) addThiSinh           : TemplateRef<any>;
+  @ViewChild('ketquathi', {static: true}) ketquathi             : TemplateRef<any>;
+  @ViewChild('dsBieumau', {static: true}) dsBieumau             : TemplateRef<any>;
   // @ViewChild('capnhatCathi', {static: true}) capnhatCathi: TemplateRef<any>;
   // @ViewChild('ViewThongKe', {static: true}) viewThongKe: TemplateRef<any>;
 
@@ -101,16 +104,15 @@ export class DsHoiDongThiComponent implements OnInit {
   btn_checkAdd      : 'Lưu lại' | 'Cập nhật';
   _kehoach_id       : number;
   private OBSERVE_PROCESS_FORM_DATA = new Subject<FormHoiDong>();
-  hoidong_id: number;
-  listData: Hoidongthi[];
-  kehoach_id_param: number;
-
-  hoidong_select: Hoidongthi;
+  hoidong_id        : number;
+  listData          : Hoidongthi[];
+  kehoach_id_param  : number;
+  hoidong_select    : Hoidongthi;
 
   private inputChanged: Subject<string> = new Subject<string>();
 
-  isAdmin   : boolean = false;
-  isTramthi : boolean = false;
+  isAdmin           : boolean = false;
+  isTramthi         : boolean = false;
 
 
   constructor(
@@ -430,13 +432,13 @@ export class DsHoiDongThiComponent implements OnInit {
       offsetTop: '0px'
     });
   }
-  btnViewPhongthiThisinh(item: Hoidongthi){
+  btnViewBieumau(item: Hoidongthi){
     this.notifi.isProcessing(false);
     this.hoidong_select = {...item};
     this.hoidong_id = item.id;
     this.kehoach_id_param = item.kehoach_id;
     this.notifi.openSideNavigationMenu({
-      template: this.phongthiThisinh,
+      template: this.dsBieumau,
       size: this.sizeFullWidth,
       offsetTop: '0px'
     });

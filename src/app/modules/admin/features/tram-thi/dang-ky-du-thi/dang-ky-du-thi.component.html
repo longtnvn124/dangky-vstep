@@ -1,0 +1,331 @@
+<ng-container [ngSwitch]="ngView">
+  <ng-container *ngSwitchCase="'0'">
+    <div class=" d-flex flex-column justify-content-center align-items-center"
+         style="background:#ededed;height:calc(100vh - 90px);">
+      <div class=" text-center"
+           style="font-size: 15px;background: #d6def7;padding: 14px 20px;border-radius: 10px;border: 1px solid #ccc;">
+        <p>Đang tải dữ liệu, vui lòng chờ</p>
+        <div style=" width: 300px">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase="'-1'">
+    <div class="d-flex flex-column justify-content-center align-items-center"
+         style="background:#ededed; height:calc(100vh - 90px);">
+      <div class=" text-center"
+           style="font-size: 15px;background: #d6def7;padding: 14px 20px;border-radius: 10px;border: 1px solid #ccc;">
+        <div >Mất kết nối với máy chủ vui lòng bấm 'Tải lại'</div>
+        <button pButton pRipple label="Tải lại" icon="pi pi-sync" (click)="reLoad()"></button>
+      </div>
+    </div>
+
+  </ng-container>
+  <ng-container *ngSwitchCase="'1'">
+    <div class="dk-container">
+      <div class="dk-head">
+        <div class="dk-head_l">
+          Danh sách đăng ký
+        </div>
+        <div class="dk-head_r">
+          <div><ovic-dropdown [options]="listKehoachClone" placeholder="Chọn..." filterBy="title" [filter]="true"
+            optionLabel="title" optionId="id"
+          ></ovic-dropdown></div>
+          <button pRipple pButton icon="pi pi-plus" label="Thêm mới" (click)="btnViewFormAdd()"></button>
+        </div>
+      </div>
+      <div class="dk-body">
+        <div class="ovic-wrap-table-rps ovic-scroll-style overflow-hidden overflow-y-auto"
+             style="height:100%;background: #dedede;">
+          <div class="ovic-wrap-table-rps__inner">
+            <p-table styleClass="p-datatable-gridlines" [value]="listOrder"
+                     [rowHover]="true"
+                     [rows]="limit" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]"
+                     >
+              <ng-template pTemplate="header" class="d-bock">
+                <tr>
+                  <th class="ovic-w-40px text-center ">STT</th>
+                  <th class=" text-center ">Đợt đăng ký</th>
+                  <th class="ovic-w-180px text-center">Ngày đăng ký</th>
+                  <th class="ovic-w-180px text-center">Ngày thanh toán</th>
+                  <th class="ovic-w-120px text-center">Số lượng đăng ký</th>
+                  <th class="ovic-w-120px text-center">Tổng tiền</th>
+                  <th class="ovic-w-200px text-center">Trạng thái thanh toán</th>
+                  <th class="ovic-w-200px text-center">Thao tác</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-item >
+                <tr>
+                  <td class="text-center">{{ item['_index'] }}</td>
+                  <td class="text-left">{{ item['_kehoach_title'] }}</td>
+                  <td class="text-center">{{ item['__ngay_dangky'] }}</td>
+                  <td class="text-center">{{ item['__ngay_thanhtoan'] }}</td>
+                  <td class="text-center">{{ item['_total'] }}</td>
+                  <td class="text-right">{{ item.lephithi | numberToVndCurrencuy }}</td>
+                  <td class="text-center">
+                    <ng-container [ngSwitch]="item['trangthai_thanhtoan']">
+                      <ng-container *ngSwitchCase="0">
+                        <div class="chuathanhtoan">Chưa thanh toán</div>
+                      </ng-container>
+                      <ng-container *ngSwitchCase="1">
+                        <div class="dathanhtoan">Đã thanh toán</div>
+                      </ng-container>
+                      <ng-container *ngSwitchCase="2">
+                        <div class="chothanhtoan">Chờ thanh toán</div>
+                      </ng-container>
+                    </ng-container>
+                  </td>
+
+                  <td class="text-center">
+                    <ng-container *ngIf="item.trangthai_thanhtoan ===1 else chuathanhtoan">
+                      <button pRipple pButton [pTooltip]="'Danh sách thí sinh đăng ký'" [tooltipPosition]="'top'" icon="pi pi-users" class=" ml-1" (click)="btnViewThisinhBydangky(item)"></button>
+                    </ng-container>
+                    <ng-template #chuathanhtoan>
+                      <button pRipple pButton [pTooltip]="'Danh sách thí sinh đăng ký'" [tooltipPosition]="'top'" icon="pi pi-users" class=" ml-1" (click)="btnViewThisinhBydangky(item)"></button>
+                      <button pRipple pButton [pTooltip]="'Thực hiện thanh toán'" [tooltipPosition]="'top'" icon="pi pi-credit-card" class="p-button-warning ml-1" (click)="btnItemPayment(item)"></button>
+                      <button pRipple pButton [pTooltip]="'Xoá đăng ký'" [tooltipPosition]="'top'" icon="pi pi-trash" class="p-button-danger ml-1" (click)="btnDeleteItem(item)"></button>
+                    </ng-template>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="14">
+                    Không có dữ liệu thí sinh!
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+      <div class="dk-bottom">
+        <div></div>
+        <div><p-paginator [totalRecords]="recordTotal" [rows]="limit" [showCurrentPageReport]="true"></p-paginator></div>
+      </div>
+    </div>
+
+
+  </ng-container>
+  <ng-container *ngSwitchCase="'2'">
+    <div class="dk-container">
+      <div class="dk-head">
+        <div class="dk-head_l">
+          <button pButton pRipple icon="pi pi-angle-left" class="p-button-secondary" (click)="closeForm()"></button>
+        </div>
+        <div class="dk-head_r">
+
+          <a href="assets/files/dkVstep/mau-imoport-duthi-tram.xlsx" download="mau-imoport-duthi-tram.xlsx">
+            <button pRipple pButton class="border-radius-0" label="Tải file mẫu" icon="pi pi-download">
+            </button>
+          </a>
+          <button class="btn_upload_excel" (click)="inputFile()">
+            <span class="text_in_line" *ngIf="file_name else notFile">{{ file_name }}</span>
+            <ng-template #notFile>
+              <i class="fi fa fa-paperclip" aria-hidden="true"> Upload file</i>
+            </ng-template>
+          </button>
+
+          <button pButton pRipple icon="pi pi-wallet" label="Thực hiện đăng ký" class="p-button-success h-100 border-radius-0"
+                  (click)="btnSubmitData()"></button>
+          <!--      <button pButton pRipple icon="pi pi-save" label="Ghi đè dữ liệu " class="p-button-success h-100 border-radius-0"></button>-->
+          <button pButton pRipple icon="pi pi-times" label="Reset" class="p-button-secondary h-100 border-radius-0"
+                  (click)="btnResetForm()"></button>
+
+        </div>
+      </div>
+      <div class="dk-body">
+        <div class="ovic-wrap-table-rps ovic-scroll-style overflow-hidden overflow-y-auto"
+             style="height:100%;background: #dedede;">
+          <div class="ovic-wrap-table-rps__inner">
+            <p-table styleClass="p-datatable-gridlines" [value]="dataUpload"
+                     [rowHover]="true"
+                     [rows]="limit" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]"
+            >
+              <ng-template pTemplate="header" class="d-bock">
+                <tr>
+                  <th class="ovic-w-40px text-center ">STT</th>
+                  <th class=" text-center ">họ đệm</th>
+                  <th class="ovic-w-180px text-center">Tên</th>
+                  <th class="ovic-w-180px text-center">Ngày sinh</th>
+                  <th class="ovic-w-120px text-center">Dân tộc</th>
+                  <th class="ovic-w-120px text-center">Nơi sinh</th>
+                  <th class="ovic-w-200px text-center">Số CCCD(Hộ chiếu)</th>
+                  <th class="ovic-w-140px text-center">Số điện thoại</th>
+                  <th class="ovic-w-140px text-center">Email</th>
+                  <th class="ovic-w-350px text-center">Địa chỉ học tập/công tác/liên hệ</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-item let-i="rowIndex">
+                <tr>
+                  <td class="text-center">{{ i + 1 }}</td>
+                  <td class="text-left">{{ item['hodem'] }}</td>
+                  <td class="text-center">{{ item['ten'] }}</td>
+                  <td class="text-center">{{ item['ngaysinh'] }}</td>
+                  <td class="text-left">{{ item['dantoc'] }}</td>
+                  <td class="text-left">{{ item['noisinh'] }}</td>
+                  <td class="text-center" [ngClass]="checkDuplicate(dataUpload,item,'cccd_so') ? 'tb-duplicate':''">{{ item['cccd_so'] }}</td>
+                  <td class="text-center" [ngClass]="checkDuplicate(dataUpload,item,'phone')  ?'tb-duplicate':'' ">{{ item['phone'] }}</td>
+                  <td class="text-left" [ngClass]="checkDuplicate(dataUpload,item,'email')  ?'tb-duplicate':'' ">{{ item['email'] }}</td>
+                  <td class="text-left" >{{ item['diachi_congtac'] }}</td>
+
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="14">
+                    Không có dữ liệu thí sinh!
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+      <div class="dk-bottom">
+        <div class="dk-bottom_err">
+          <span *ngIf="countDuplicateValues(dataUpload,'cccd_so') > 0">{{countDuplicateValues(dataUpload,'cccd_so') + ' lượt đăng ký trùng số cccd'}}</span>
+          <span *ngIf="countDuplicateValues(dataUpload,'phone') > 0">{{countDuplicateValues(dataUpload,'phone') + ' lượt đăng ký trùng số điện thoại' }}</span>
+          <span *ngIf="countDuplicateValues(dataUpload,'email') > 0">{{countDuplicateValues(dataUpload,'email') + ' lượt đăng ký trùng email' }}</span>
+
+        </div>
+      </div>
+    </div>
+
+
+
+  </ng-container>
+</ng-container>
+
+
+<p-dialog header="Thông báo" [(visible)]="modalAddOrder" [modal]="true" [style]="{width: '80vw', height:'80vh'}"
+          [draggable]="false" [resizable]="false">
+  <div class="content ovic-scroll-style">
+    <div class="notifi">
+      <div class="notifi-title">
+        Bạn đang đăng ký cho {{dataUpload.length}} thí sinh, vui lòng thực hiện thanh toán để hoàn thành đăng ký thi
+      </div>
+
+      <div class="notifi-toast">
+        <div>
+          <p><strong>Lưu ý:</strong></p>
+          <p>- Khi thực hiện đăng ký vui lòng đảm bảo rằng thiết bị sử dụng có kết nối mạng, điện ổn định. Mọi trường hợp tắt máy tính, ngắt kết nối mạng, tắt điện, tắt trình duyệt... sẽ dẫn đến đăng ký không thành công.</p>
+          <p>- sau hệ thống thực hiện đăng ký thông tin cho thí sinh trên hệ thống xong, vui lòng thực hiện thanh toán ngay để giữ chỗ cho thí sinh.</p>
+        </div>
+      </div>
+
+      <div class="notifi-line">
+        <div class="line"></div>
+        <div class="title"> Kiểm tra dữ liệu </div>
+      </div>
+      <div class="notifi-check">
+        <div class="d-flex justify-content-center align-items-center" style="gap:10px">
+          <button pButton pRipple [loading]="notifi_loadding" icon="pi pi-check-square" label="Kiểm tra dữ liệu" (click)="checkthisinhAffterImport()"></button>
+          <div class="drd">
+            <p-dropdown class="capdo-hsk bd-rd-0 ovic-w-150px" placeholder="Chọn đợt thi đăng ký" [options]="listKehoach" optionLabel="title"
+                        optionValue="id" (onChange)="changeKehoachthi($event)"></p-dropdown>
+          </div>
+        </div>
+        <div class="view-list-check" *ngIf="listCheckResult.length>0">
+          <span>Hệ thống ghi nhận có <strong style="color: #0ba50b">{{listCheckResult.length }} </strong> thông tin đăng ký phù hợp, <strong style="color: #d61919">{{((this.dataUpload.length - listCheckResult.length) >= 0 ? (this.dataUpload.length - listCheckResult.length) : 0 )}}</strong> thông tin không phù hợp</span>
+        </div>
+        <div class="view-table mt-2" *ngIf="tableDiemduthi">
+<!--          <div class="title"> SỐ lượng được phép đăng ký còn lại</div>-->
+          <table class="site-hsk">
+            <tr >
+              <th class="text-center font-weight-bold"  style="font-size:18px;">Số lượng được phép đăng ký còn lại</th>
+
+            </tr>
+            <tr>
+              <td class="text-center " [ngClass]="tableDiemduthi['_soluong_conlai'] > 0 ? 'view-true' : 'view-false' " >{{ tableDiemduthi['_soluong_conlai'] }}</td>
+            </tr>
+
+          </table>
+          <div *ngIf="!checkTabelDiemduth" class="text-center p-4" ><span style="color:red"><strong>Lưu ý: </strong></span> Danh sách thí sinh bạn import có số lượng đăng ký không phù hợp, vui lòng kiểm tra lại file trước khi import vào phần mềm </div>
+        </div>
+      </div>
+
+
+      <div *ngIf="checkTabelDiemduth && listCheckResult.length>0" class="notifi-view-payment">
+        <!--      <div *ngIf="listCheckResult.length>0" class="notifi-view-payment">-->
+        <div class="notifi-line">
+          <div class="line"></div>
+          <div class="title"> Thực hiện thanh toán </div>
+        </div>
+        <div class="notifi-payment">
+          <div class="notifi-payment_left" >
+            <div class="table-payment">
+              <table class="w-100 site-hsk" style="max-width: 100%">
+                <tr>
+
+                  <th class="text-center ovic-w-100px">Số lượng </th>
+                  <th class="text-center ovic-w-140px">Đơn giá </th>
+                  <th class="text-center ovic-w-140px">Thành tiền </th>
+                </tr>
+                <tr >
+
+                  <td class="text-center">{{listCheckResult.length}}</td>
+                  <td class="text-right">{{getDongia(kehoach_id_select) |numberToVndCurrencuy}}</td>
+                  <td class=" text-right">{{getTongDongia(listCheckResult.length,kehoach_id_select) |numberToVndCurrencuy}}</td>
+                </tr>
+
+              </table>
+            </div>
+
+          </div>
+          <div class="notifi-payment_right">
+            <!--            <div class="drd">-->
+            <!--              <p-dropdown class="capdo-hsk bd-rd-0 ovic-w-150px" placeholder="Chọn đợt thi đăng ký" [options]="kehoanhThi" optionLabel="dotthi"-->
+            <!--                          optionValue="id" (onChange)="changeKehoachthi($event)"></p-dropdown>-->
+            <!--            </div>-->
+            <div class="checkbox">
+              <div>
+                <div class="field-checkbox">
+                  <p-checkbox [(ngModel)]="check_accept" [binary]="true" inputId="binary" ></p-checkbox>
+                  <label class="m-0 pl-1">Xác nhận thanh toán</label>
+                </div>
+              </div>
+              <ng-container *ngIf="check_accept else patmentTemPlace">
+                <button pButton pRipple label="Xác nhận" (click)="btnPayment()" class="p-button-success"></button>
+              </ng-container>
+              <ng-template #patmentTemPlace>
+                <button pButton pRipple label="Xác nhận"  class="p-button-success p-disabled"></button>
+              </ng-template>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div >
+
+    </div>
+  </div>
+</p-dialog>
+
+
+
+<p-dialog class="dal-dk-custome" [header]="'THANH TOÁN'" [(visible)]="displayModalThanhtoan" [modal]="true"
+          [style]="{width: '50vw', height:'80vh'}" [draggable]="false" [resizable]="false" (onHide)="closeDialogThanhtoan()" >
+  <ng-container *ngIf="order_select && displayModalThanhtoan">
+    <app-thanhtoan-by-qr [content]="'DK HSK'" [order]="order_select" [type]="'doitac'" ></app-thanhtoan-by-qr>
+  </ng-container>
+</p-dialog>
+
+<ng-template  #fromViewRegiter>
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head">
+      <h4 class="ovic-side-navigation-content__head__title">DANH SÁCH THÍ SINH</h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
+    </div>
+    <div class="ovic-side-navigation-content__body ovic-scroll-style --no-footer">
+      <app-duthi-thisinh [orderParent]="order_select"></app-duthi-thisinh>
+    </div>
+  </div>
+</ng-template>

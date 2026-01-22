@@ -122,12 +122,7 @@ export class KeHoachThiComponent implements OnInit {
   ];
 
   headButtons = [
-    {
-      label: 'Thêm mới ',
-      name: 'BUTTON_ADD_NEW',
-      icon: 'pi-plus pi',
-      class: 'p-button-rounded p-button-success ml-3 mr-2'
-    },
+
   ];
   listForm = {
     [FormType.ADDITION]: {type: FormType.ADDITION, title: 'Thêm mới đợt thi', object: null, data: null},
@@ -163,10 +158,6 @@ export class KeHoachThiComponent implements OnInit {
     private auth: AuthService,
     private kehoachthiDiemthiVstepService: KehoachthiDiemthiVstepService,
   ) {
-
-    console.log(this.auth.roles);
-
-
     const roleAdmin =  this.auth.roles.map(m=>m.name).includes('admin')
 
     if(roleAdmin){
@@ -209,7 +200,14 @@ export class KeHoachThiComponent implements OnInit {
             cssClass: 'btn-danger rounded'
           }
         ]
-      })
+      });
+      this.headButtons.push( {
+        label: 'Thêm mới ',
+        name: 'BUTTON_ADD_NEW',
+        icon: 'pi-plus pi',
+        class: 'p-button-rounded p-button-success ml-3 mr-2'
+      },);
+
     }else{
       this.tblStructure.push({
         tooltip: '',

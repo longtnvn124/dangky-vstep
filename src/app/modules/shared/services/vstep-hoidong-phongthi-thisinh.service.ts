@@ -2,31 +2,29 @@ import { Injectable } from '@angular/core';
 import {getRoute} from "@env";
 import {HttpClient} from "@angular/common/http";
 import {HttpParamsHeplerService} from "@core/services/http-params-hepler.service";
-import {ThemeSettingsService} from "@core/services/theme-settings.service";
 import {map, Observable} from "rxjs";
 import {Dto} from "@core/models/dto";
 import {ConditionOption} from "@shared/models/condition-option";
-import {Hoidongthi} from "@shared/services/vstep-hoidong-thi.service";
 
-export interface HoidongPhongthi {
-  id?:number,
-  hoidong_id,
-  diemduthi_id:number,
-  soluong:number,
-  giangvien:string,
-  phongthi:string,
 
+export interface HoidongPhongthiThisinh {
+  id                  ?: number;
+  hoidong_id          : number;
+  kehoach_id          : number;
+  hoidong_phongthi_id : number;
+  diemduthi_id        : number;
+  thisinh_id          : number;
+  user_id             : number;
 }
 @Injectable({
   providedIn: 'root'
 })
-export class VstepHoidongPhongthiService {
-  private readonly api = getRoute('hoidongthi-phongthi/');
+export class VstepHoidongPhongthiThisinhService {
+  private readonly api = getRoute('hoidongthi-phongthi-thisinh/');
 
   constructor(
     private http: HttpClient,
     private httpParamsHelper: HttpParamsHeplerService,
-    private themeSettingsService: ThemeSettingsService
   ) {
   }
 
@@ -46,7 +44,7 @@ export class VstepHoidongPhongthiService {
   }
 
 
-  getDataByPageNew(option: ConditionOption): Observable<{ data:HoidongPhongthi [], recordsFiltered: number }> {
+  getDataByPageNew(option: ConditionOption): Observable<{ data:HoidongPhongthiThisinh [], recordsFiltered: number }> {
     let filter = option.page ? this.httpParamsHelper.paramsConditionBuilder(option.condition).set("paged", option.page) : this.httpParamsHelper.paramsConditionBuilder(option.condition);
     if (option.set && option.set.length)
       option.set.forEach(f => {
@@ -58,8 +56,8 @@ export class VstepHoidongPhongthiService {
       })
     );
   }
-  deleltePhongthi(hoidong_id:number,diemduthi_id:number): Observable<any>{
-
-    return this.http.delete(''.concat(this.api,'xoa-phongthi/',hoidong_id.toString(),'/' ,diemduthi_id.toString()))
-  }
+  // deleltePhongthi(hoidong_id:number,diemduthi_id:number): Observable<any>{
+  //
+  //   return this.http.delete(''.concat(this.api,'xoa-phongthi/',hoidong_id.toString(),'/' ,diemduthi_id.toString()))
+  // }
 }

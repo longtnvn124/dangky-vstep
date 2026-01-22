@@ -56,11 +56,6 @@ const routes : Routes = [
         path         : 'hoidong-thi' ,
         loadChildren : () => import('@modules/admin/features/hoi-dong-thi/hoi-dong-thi.module').then( m => m.HoiDongThiModule )
       } ,
-      // {
-      //   path         : 'hoi-dap' ,
-      //   loadChildren : () => import('@modules/admin/features/hoi-dap/hoi-dap.module').then( m => m.HoiDapModule )
-      // } ,
-
 
       {
         path         : 'thi-sinh' ,
@@ -70,14 +65,11 @@ const routes : Routes = [
         path         : 'quan-ly-thi-sinh' ,
         loadChildren : () => import('@modules/admin/features/danhsach-thisinh/danhsach-thisinh.module').then( m => m.DanhsachThisinhModule )
       } ,
-      // {
-      //   path         : 'tra-ket-qua-thi' ,
-      //   loadChildren : () => import('@modules/admin/features/tra-ket-qua-thi/tra-ket-qua-thi.module').then( m => m.TraKetQuaThiModule )
-      // } ,
-      // {
-      //   path         : 'doi-tac' ,
-      //   loadChildren : () => import('@modules/admin/features/doi-tac/doi-tac.module').then( m => m.DoiTacModule )
-      // } ,
+
+      {
+        path         : 'tram-thi' ,
+        loadChildren : () => import('@modules/admin/features/tram-thi/tram-thi.module').then( m => m.TramThiModule )
+      } ,
       // {
       //   path         : 'duyet-thanh-toan-doi-tac' ,
       //   loadChildren : () => import('@modules/admin/features/duyet-thanh-toan-doi-tac/duyet-thanh-toan-doi-tac.module').then( m => m.DuyetThanhToanDoiTacModule )

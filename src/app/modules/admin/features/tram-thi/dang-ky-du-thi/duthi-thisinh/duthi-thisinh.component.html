@@ -1,0 +1,72 @@
+<div class="row">
+  <div class="col-12 ovic-ui-table site-thpt d-flex flex-column" style="height:calc(100vh - 90px)" [class.ovic-is-loading]="loading">
+    <div class="p-datatable-header" style="height:65px; border-bottom:1px solid #CCC;">
+      <h3 class="tbl-title ">Danh sách thí sinh</h3>
+      <div class="search-block ui-table-globalfilter-container ">
+        <div class="d-flex align-items-center">
+          <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+            <div class="d-flex" style="gap:10px;">
+              <div class="search-block__elm d-flex " style="gap:10px;">
+                <!--                <span class="p-input-icon-right">-->
+                <!--                  <i class="pi pi-search"></i>-->
+                <!--                  <input type="text" pInputText style="height:42px" placeholder="Vd: Trần Văn A..."-->
+                <!--                         (input)="onInputChange($event.target['value'])"/>-->
+                <!--                </span>-->
+<!--                <div>-->
+<!--                  <p-dropdown [options]="dmCapdos" optionValue="id" optionLabel="title" (onChange)="selectCapdo($event.value)" [showClear]="true"-->
+<!--                              placeholder="Cấp hsk đăng ký" ></p-dropdown>-->
+<!--                </div>-->
+<!--                <div class="d-flex">-->
+<!--                  <button pRipple pButton class="p-button-success" icon="pi pi-file-excel" label="Xuất dữ liệu" (click)="btnExportDataV2()"></button>-->
+<!--                </div>-->
+<!--                &lt;!&ndash;                  <button pRipple pButton class="p-button-success" icon="pi pi-file-excel" label="Xuất dữ liệu" (click)="btnExportData()"></button>&ndash;&gt;-->
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ovic-wrap-table-rps ovic-scroll-style" style="flex: 1 1 auto;height: 1%;overflow: hidden;overflow-y: auto;;background: #dedede;">
+      <!--    <div class="ovic-wrap-table-rps ovic-scroll-style overflow-hidden overflow-y-auto" style="height:calc(100% - 65px - 60px);background: #dedede;">-->
+      <div class="ovic-wrap-table-rps__inner">
+        <p-table class="w-100"   styleClass="p-datatable-gridlines" [value]="listChild" [rowHover]="true"
+                 [rows]="row" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="loading">
+          <ng-template pTemplate="header" class="d-bock">
+            <tr>
+              <th class="ovic-w-40px text-center ">STT</th>
+              <th class="ovic-w-250px text-left ">Họ tên</th>
+              <th class="text-center">Email</th>
+              <th class="ovic-w-120px text-center">Số điện thoại</th>
+              <th class="ovic-w-150px text-center">Số CCCD</th>
+              <th class="ovic-w-150px text-center">Lệ phí thi</th>
+
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-item let-i="rowIndex">
+            <tr>
+              <td class="text-center">{{ item['_indexTable'] }}</td>
+              <td class="text-left">{{ item['_hoten'] }}</td>
+              <td class="ovic-w-80px text-center">{{ item['_email'] }}</td>
+              <td class="text-center">{{ item['_phone'] }}</td>
+              <td class="ovic-w-80px text-right">{{ item['_cccd_so'] }}</td>
+              <td class="text-right">{{item['__lephithi'] | numberToVndCurrencuy}} </td>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="10">
+                Không có dữ liệu thí sinh!
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    <p-paginator class="duthi_panigator" [showCurrentPageReport]="true" [rows]="row" [totalRecords]="recordsTotal"
+                 [pageLinkSize]="5"
+                 (onPageChange)="paginate($event)"></p-paginator>
+  </div>
+</div>

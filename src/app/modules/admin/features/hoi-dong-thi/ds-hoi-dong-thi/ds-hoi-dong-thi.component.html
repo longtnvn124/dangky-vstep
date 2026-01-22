@@ -24,9 +24,12 @@
                                     </span>
                 </div>
                 <div class="search-block__elm ml-2">
-                  <button pButton pRipple label="Thêm mới" icon="pi pi-plus" [iconPos]="'right'"
-                          (click)="btnAddNew('add')" class="p-button-success"
-                          style="height:42px;border-radius: 30px;padding: 10px 22px;"></button>
+                  <ng-container *ngIf="isAdmin">
+                    <button pButton pRipple label="Thêm mới" icon="pi pi-plus" [iconPos]="'right'"
+                            (click)="btnAddNew('add')" class="p-button-success"
+                            style="height:42px;border-radius: 30px;padding: 10px 22px;"></button>
+                  </ng-container>
+
                 </div>
               </div>
             </div>
@@ -92,6 +95,11 @@
                     <button *ngIf="item['lock'] === 0" class="btn-menu-material excel" (click)="btnViewPhongthi(item)">
                       <i class="pi pi-sliders-h"></i>
                       <span>Khai báo phòng thi</span>
+                    </button>
+
+                    <button class="btn-menu-material excel" (click)="btnViewBieumau(item)">
+                      <i class="pi pi-book"></i>
+                      <span>Biểu mẫu</span>
                     </button>
 
 
@@ -207,7 +215,7 @@
 <ng-template #phongthi>
   <div class="ovic-side-navigation-content">
     <div class="ovic-side-navigation-content__head">
-      <h4 class="ovic-side-navigation-content__head__title">Quản lý phòng thi</h4>
+      <h4 class="ovic-side-navigation-content__head__title">Khai báo phòng thi</h4>
       <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
               class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
     </div>
@@ -264,6 +272,22 @@
     <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style ">
 
       <app-add-thi-sinh class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-add-thi-sinh>
+    </div>
+
+  </div>
+
+</ng-template>
+
+<ng-template #dsBieumau>
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head justify-content-between">
+      <h4 class="ovic-side-navigation-content__head__title">DANH SÁCH BIỂU MẪU > {{ hoidong_select.title }}</h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger p-button-text close "></button>
+    </div>
+    <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style ">
+
+      <app-hoidongthi-bieumau class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-hoidongthi-bieumau>
     </div>
 
   </div>

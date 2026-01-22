@@ -82,7 +82,6 @@ export class TraCuuKetQuaComponent implements OnInit {
   btnSearchData(){
     this.notifi.isProcessing( true)
     this.isLoadding = true;
-    console.log(this.thisinhInfo.cccd_so)
       this.hskHoidongKetquaService.getdataByCccdSoAndKehoachId(this.thisinhInfo.cccd_so,this.kehoach_id_select).subscribe({
         next:(data)=>{
           this.dsKetqua = data.map((m,index)=>{

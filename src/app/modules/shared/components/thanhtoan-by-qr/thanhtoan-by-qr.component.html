@@ -1,0 +1,121 @@
+
+
+<ng-container [ngSwitch]="ngType">
+  <ng-container *ngSwitchCase="'error'">
+    <div class="h-100 d-flex flex-column justify-content-center align-items-center"
+         style="gap:4px;background:#c1ccd8">
+      <div style="font-size:16px;"></div>
+      <div style="font-size:16px;">Mất kết nối với máy chủ vui lòng bấm 'Tải lại'</div>
+      <button pButton pRipple label="Tải lại" icon="pi pi-sync" (click)="reload()"></button>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase="'loading'">
+    <div class="h-100 d-flex flex-column justify-content-center align-items-center"
+         style="background:#ededed">
+      <div class=" text-center"
+           style="font-size: 15px;background: #d6def7;padding: 14px 20px;border-radius: 10px;border: 1px solid #ccc;">
+        <p>Đang tải dữ liệu, vui lòng chờ</p>
+        <div style=" width: 100%; max-width: 300px;">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'timeUp'">
+    <div class="text-center w-100 h-100 d-flex flex-column align-items-center justify-content-center" style="gap:10px; font-size:17px;font-weight: 400">
+      <div>
+        <i style="font-size: 70px;color:#ef4747;" class="pi pi-stopwatch"></i>
+      </div>
+      <div> Mã Qr đã hết hạn</div>
+      <button pButton pRipple label="Lấy mã Qr mới " (click)="reload()"></button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'result'">
+
+    <ng-container [ngSwitch]="datacheck['status']">
+      <ng-container *ngSwitchCase="3">
+        <div class="result-div " [ngClass]="'result-div-'+check">
+          <div><i class="pi pi-check-circle"></i></div>
+          <div> Đã thanh toán thành công</div>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="4">
+        <div class="result-div " [ngClass]="'result-div-'+check">
+          <div><i class="pi pi-times"></i></div>
+          <div>Giao dịch đã bị hủy</div>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="5">
+        <div class="result-div " [ngClass]="'result-div-'+check">
+          <div><i class="pi pi-sync pi-spin"></i></div>
+          <div>Giao dịch đang chờ duyệt</div>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="6">
+        <div class="result-div " [ngClass]="'result-div-'+check">
+          <div><i class="pi pi-clock"></i></div>
+          <div>Đang hoàn tiền</div>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="7">
+        <div class="result-div " [ngClass]="'result-div-'+check">
+          <div><i class="pi pi-verified"></i></div>
+          <div>Đã hoàn tiền</div>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="12">
+        <div class="result-div " [ngClass]="'result-div-'+check">
+          <div><i class="pi pi-ban"></i></div>
+          <div>Giao dịch thất bại</div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'getQr'">
+    <div class="qr-container">
+
+      <div class="qr-l" >
+        <div class="qr-l_item" *ngIf="type =='thisinh'">
+          <div class="mb-1"><strong>I. THÔNG TIN THÍ SINH </strong></div>
+          <div>Họ và tên: {{userInfo.hoten}}</div>
+          <div>Số CCCD(Hộ chiếu): {{userInfo.cccd_so}}</div>
+          <div>Ngày sinh: {{userInfo.ngaysinh}}</div>
+          <div>Số điện thoại: {{userInfo.phone}}</div>
+          <div>Điạ chỉ: {{userInfo.thuongtru_diachi.fullAddress}}</div>
+        </div>
+
+        <div class="qr-l_item" *ngIf="type =='doitac'">
+          <div class="mb-1"><strong>I. THÔNG TIN đối tác </strong></div>
+          <div>Tên đối tác: {{authInfo.display_name}}</div>
+          <div>Email: {{authInfo.email}}</div>
+          <div>Số điện thoại: {{authInfo.phone}}</div>
+        </div>
+
+        <div class="qr-l_item" >
+          <div class="mb-1"><strong>II. THÔNG TIN ĐĂNG KÝ </strong></div>
+          <div>Đợt thi: {{_order['_kehoach']['title']}}</div>
+          <div>Thời hạn đăng ký : {{_order['_kehoach']['_time_convertd']}}</div>
+          <div>Số tiền thanh toán: {{_order.lephithi | numberToVndCurrencuy}}</div>
+        </div>
+      </div>
+      <div class="qr-r" >
+        <div class="title">Mã Qr thanh toán</div>
+        <div class="qr-body_qr">
+          <img [src]="'data:image/png;base64,'+ resultData.qrcode" alt="">
+          <div class="qr-body_time">
+            {{this.getFormattedTime()}}
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </ng-container>
+
+
+</ng-container>

@@ -161,8 +161,6 @@ export class ThiSinhDuThiComponent implements OnInit {
       next:([kehoach,donvi])=>{
         this.dsKehoachthi = kehoach.data;
         this.dataDonvi = donvi;
-        console.log(donvi)
-
         if (this.dsKehoachthi) {
           this.loadData(1);
         }

@@ -18,7 +18,9 @@ import {OvicQueryCondition} from "@core/models/dto";
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
 import {ThiSinhInfo} from "@shared/models/thi-sinh";
 import {ThisinhInfoService} from "@shared/services/thisinh-info.service";
-import {DmDiemduthi, DmDiemDuThiService} from "@shared/services/dm-diem-du-thi.service";
+import {DonViService} from "@shared/services/don-vi.service";
+import {DonVi} from "@shared/models/danh-muc";
+import {AuthService} from "@core/services/auth.service";
 
 type AOA = any[][];
 
@@ -62,14 +64,15 @@ export class AddThiSinhComponent implements OnInit {
   private inputChanged  : Subject<string> = new Subject<string>();
   rows                  : number = 20;
 
-  dmDiemduthi: DmDiemduthi[]= [];
+  dataDonvi: DonVi[]= [];
 
   constructor(
     private notifi: NotificationService,
     private hoidongThisinhService: VstepHoidongThisinhService,
     private ordersService : VstepOrdersService,
     private thisinhService: ThisinhInfoService,
-    private dmDiemDuThiService: DmDiemDuThiService
+    private donViService:DonViService,
+    private auth : AuthService
 
   ) {
 
@@ -86,9 +89,9 @@ export class AddThiSinhComponent implements OnInit {
     // this.datauploadView = [];
     // this.dataUpload = [];
     this.ngtype = 0;
-    this.loopGetDiemduthi(1,200,[],1).subscribe({
+    this.donViService.getChildren(this.auth.user.donvi_id).subscribe({
       next:(data)=>{
-        this.dmDiemduthi = data;
+        this.dataDonvi = data.filter(f=>f.id !== this.auth.user.donvi_id);
         this.getData();
       },error:()=>{
         this.ngtype = -1;
@@ -148,7 +151,7 @@ export class AddThiSinhComponent implements OnInit {
         this.listData = data.length>0 ? data.map((m,index)=>{
           m['__index'] = (this.page -1)*this.rows +( index + 1);
 
-          m['_diemduthi'] = this.dmDiemduthi.find(f=>f.id == m.diemduthi_id) ? this.dmDiemduthi.find(f=>f.id == m.diemduthi_id).title : '';
+          m['_diemduthi'] = this.dataDonvi.find(f=>f.id == m.diemduthi_id) ? this.dataDonvi.find(f=>f.id == m.diemduthi_id).title : '';
 
           const thisinh = thisinhs.find(f=>f.id === m.thisinh_id)
           m['_thisinh'] = thisinh;
@@ -171,11 +174,15 @@ export class AddThiSinhComponent implements OnInit {
     })
   }
 
-  loopGetDiemduthi(page:number, limit:number,arr:DmDiemduthi[],recor:number):Observable<DmDiemduthi[]>{
+  loopGetDiemduthi(page:number, limit:number,arr:DonVi[],recor:number):Observable<DonVi[]>{
     if(arr.length < recor){
       const condtion :ConditionOption = {
         condition: [
-
+          {
+            conditionName:'parent_id',
+            condition:OvicQueryCondition.equal,
+            value:this.auth.user.donvi_id.toString()
+          }
         ],
         page: this.page.toString(),
         set:[
@@ -183,7 +190,7 @@ export class AddThiSinhComponent implements OnInit {
           {label:'select',value:'id,title'},
         ]
       }
-      return this.dmDiemDuThiService.getDataByPageNew(condtion).pipe(switchMap(m=>{
+      return this.donViService.getDataByPageNew(condtion).pipe(switchMap(m=>{
         return this.loopGetDiemduthi(page+1,limit,[...arr,...m.data],m.recordsFiltered)
       }))
 
@@ -435,7 +442,6 @@ export class AddThiSinhComponent implements OnInit {
       ])
     })).subscribe({
       next:([data,thisinhs])=>{
-        console.log(data);
         this.dataOrders = data.map(m=>{
           m['_thisinh'] = thisinhs.find(f=>f.id == m.thisinh_id);
           m['_hoten'] =  m['_thisinh'] ?  m['_thisinh']['hoten'] : '';

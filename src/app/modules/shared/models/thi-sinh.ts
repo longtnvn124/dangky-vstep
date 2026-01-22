@@ -26,5 +26,6 @@ export interface ThiSinhInfo {
   camket: 0 | 1;
   lock?:number;
   email?:string;
+  diachi_congtac?:string;
 
 }

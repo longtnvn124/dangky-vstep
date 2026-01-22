@@ -141,5 +141,25 @@ export class VstepOrdersService {
     return this.http.post<Dto>(this.api + 'active-order/', {ids: ids});
   }
 
+  // ------------------------------------new --------------------------------------
+  getPaymentV2(id: number): Observable<any> {
+    const conditions: OvicConditionParam[] = [];
+    const fromObject = {
+      // returnUrl: url,
+      // orderDescription: orderDescription
+    }
+    const params = this.httpParamsHelper.paramsConditionBuilder(conditions, new HttpParams({fromObject}));
+    return this.http.get<Dto>(''.concat(this.api, id.toString(10) + '/create-payment-url'), {params}).pipe(map(res => res));
+  }
+  checkPaymentV2(token:string):Observable<any>{
+    const conditions: OvicConditionParam[] = [];
+    const fromObject = {
+      // returnUrl: url,
+      // orderDescription: orderDescription
+    }
+    const params = this.httpParamsHelper.paramsConditionBuilder(conditions, new HttpParams({fromObject}));
+    return this.http.get<Dto>(''.concat(this.api, 'payment-check/',token), {params}).pipe(map(res => res));
+  }
+
 
 }
