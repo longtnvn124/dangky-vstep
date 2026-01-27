@@ -20,7 +20,6 @@ import {BUTTON_CANCEL, BUTTON_NO, BUTTON_YES} from "@core/models/buttons";
 import {
   DanToc,
 } from "@shared/utils/syscat";
-import {DanhMucDoiTuong, DanhMucDoituongUutienService} from "@shared/services/danh-muc-doituong-uutien.service";
 import {NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
 import {ButtonModule} from "primeng/button";
 import {RippleModule} from "primeng/ripple";
@@ -106,10 +105,6 @@ export class ThongTinThiSinhComponent implements OnInit {
 
 
 
-
-  danhMucDoiTuong: DanhMucDoiTuong[];
-
-
   file_name:string = '';
   constructor(
     private fb: FormBuilder,
@@ -117,7 +112,6 @@ export class ThongTinThiSinhComponent implements OnInit {
     private thisinhInfoService: ThisinhInfoService,
     private notifi: NotificationService,
     private locationService: LocationService,
-    private danhMucDoituongUutienService: DanhMucDoituongUutienService,
   ) {
     const observeProcessFormData = this.OBSERVE_PROCESS_FORM_DATA.asObservable().pipe(debounceTime(100)).subscribe(form => this.__processFrom(form));
     this.subscription.add(observeProcessFormData);
@@ -142,6 +136,7 @@ export class ThongTinThiSinhComponent implements OnInit {
       status: [0],
       camket: [0, Validators.required],
       email: [this.auth.user.email, Validators.required],
+      diachi_congtac: [''],
 
     });
     this.file_name = this.replaceHoten(this.auth.user.display_name)+ '_' + this.auth.user.username;
@@ -171,15 +166,12 @@ export class ThongTinThiSinhComponent implements OnInit {
 
   getDataCitis() {
     this.checkdata = 0;
-    forkJoin<[DiaDanh[], DanhMucDoiTuong[]]>(
-      this.locationService.getListByIdAndKey(null, "regions"),
-      this.danhMucDoituongUutienService.getdataUnlimit(),
-    ).subscribe({
-      next: ([diadanh, doituong]) => {
+    this.locationService.getListByIdAndKey(null, "regions").subscribe({
+      next: (diadanh) => {
         this.provinceOptions = diadanh;
-        this.danhMucDoiTuong = doituong;
 
-        if(this.provinceOptions.length>0 && this.danhMucDoiTuong.length>0){
+
+        if(this.provinceOptions.length>0 ){
           this._getDataUserInfo(this.auth.user.id);
         }
       },error:()=>{
@@ -223,6 +215,7 @@ export class ThongTinThiSinhComponent implements OnInit {
             thuongtru_diachi: data.thuongtru_diachi,
             status:data.status,
             camket: data.camket === 1 ? true : false,
+            diachi_congtac: data.diachi_congtac
 
           });
 

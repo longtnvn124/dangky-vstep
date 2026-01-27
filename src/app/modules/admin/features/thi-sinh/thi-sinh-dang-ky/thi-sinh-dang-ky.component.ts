@@ -5,11 +5,10 @@ import {AuthService} from "@core/services/auth.service";
 import {ThiSinhInfo} from "@shared/models/thi-sinh";
 import {NotificationService} from "@core/services/notification.service";
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Router} from "@angular/router";
 import {SenderEmailService} from "@shared/services/sender-email.service";
 import {HelperService} from "@core/services/helper.service";
 import {OrdersHsk} from "@shared/services/hsk-orders.service";
-import {User} from "@core/models/user";
 import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
 import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/kehoachthi-diemthi-vstep.service";
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
@@ -18,9 +17,10 @@ import {ConditionOption} from "@shared/models/condition-option";
 import {OvicQueryCondition} from "@core/models/dto";
 import {map} from "rxjs/operators";
 import {NgPaginateEvent} from "@shared/models/ovic-models";
+import {DonViService} from "@shared/services/don-vi.service";
 
 export interface SumMonThi {
-  caphsk_id: string,
+  diemduthi_id: string,
   total: number,
 }
 
@@ -71,12 +71,10 @@ export class ThiSinhDangKyComponent implements OnInit {
     private notifi: NotificationService,
     private fb: FormBuilder,
     private router: Router,
-    private activeRouter: ActivatedRoute,
     private thisinhInfoService: ThisinhInfoService,
-
     private senderEmailService: SenderEmailService,
-
     private dmDiemDuThiService: DmDiemDuThiService,
+    private donviService: DonViService
   ) {
     this.formSave = this.fb.group({
       user_id: [null, Validators.required],
@@ -90,25 +88,10 @@ export class ThiSinhDangKyComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.activeRouter.queryParams.subscribe(params => {
-      const queryString = this.createQueryString(params);
-      if (queryString) {
-        this.checkCodeParram('?' + queryString);
-      }
-    });
     this.loadInit();
   }
 
-  createQueryString(params: any): string {
-    let queryString = '';
-    Object.keys(params).forEach(key => {
-      if (queryString !== '') {
-        queryString += '&';
-      }
-      queryString += `${key}=${encodeURIComponent(params[key])}`;
-    });
-    return queryString;
-  }
+
 
   loadInit() {
     this.kehoach_select = null;
@@ -122,7 +105,7 @@ export class ThiSinhDangKyComponent implements OnInit {
 
     const conditonKehoach :ConditionOption = {
       condition: [
-        {conditionName: 'status', condition:OvicQueryCondition.equal, value:'1', orWhere: "and"}
+        // {conditionName: 'status', condition:OvicQueryCondition.equal, value:'1', orWhere: "and"}
       ],
       page: '1',
       set:[
@@ -210,7 +193,7 @@ export class ThiSinhDangKyComponent implements OnInit {
       }
       return forkJoin(
         of(m),
-        this.dmDiemDuThiService.getDataByPageNew(condionDiemduthi).pipe(map(a=>a.data))
+        this.donviService.getDataByPageNew(condionDiemduthi).pipe(map(a=>a.data))
       )
     })).subscribe({
       next: ([{data,recordsFiltered}, datadm],) => {
@@ -219,8 +202,9 @@ export class ThiSinhDangKyComponent implements OnInit {
         this.dataOrders = data.map(m => {
 
           m['_indexTable'] = i++;
-          m['__kehoach_thi'] = this.keHoachThi && this.keHoachThi.find(f => f.id === m.kehoach_id).title ? this.keHoachThi.find(f => f.id === m.kehoach_id).title : '';
-          m['__kehoach_thi_status'] = this.keHoachThi && this.keHoachThi.find(f => f.id === m.kehoach_id) ? this.keHoachThi.find(f => f.id === m.kehoach_id).status : 0;
+          m['_kehoach'] = this.keHoachThi && this.keHoachThi.find(f => f.id === m.kehoach_id) ? this.keHoachThi.find(f => f.id === m.kehoach_id) : null;
+          m['__kehoach_thi'] = this.keHoachThi && this.keHoachThi.find(f => f.id === m.kehoach_id) ? this.keHoachThi.find(f => f.id === m.kehoach_id).title : '';
+          m['__kehoach_status'] = this.keHoachThi && this.keHoachThi.find(f => f.id === m.kehoach_id) ? this.keHoachThi.find(f => f.id === m.kehoach_id).status : 0;
           m['__lephithi_covered'] = m.lephithi;
           const parent = m['parent'];
 
@@ -261,10 +245,14 @@ export class ThiSinhDangKyComponent implements OnInit {
   }
 
   resetForm() {
+    this.kehoach_select= null;
+    this.kehoach_diemduthi_select= null;
+    this.f['diemduthi_id'].setValue(null);
+    this.f['kehoach_id'].setValue(null);
     this.formSave.reset({
       user_id: this.auth.user.id,
       kehoach_id: null,
-      caphsk_id: null,
+      diemduthi_id: null,
     })
   }
 
@@ -344,34 +332,25 @@ export class ThiSinhDangKyComponent implements OnInit {
           }
         })
     }else{
+
+      this.isLoading = false;
       this.notifi.toastError('Vui lòng chọn đủ thông tin');
     }
   }
 
-  getPayment(item: OrdersHsk) {
+  getPayment(item: OrdersVstep) {
     const kehoachSelect = this.keHoachThi.find(f => f.id === item.kehoach_id)
+
+
     if (item.parent_id === 0) {
       if (kehoachSelect.status === 1) {
         this.isLoading = true;
         if (this.helperService.formatSQLDate(new Date()) <= this.helperService.formatSQLDate(new Date(kehoachSelect.ngayketthuc))) {
-          const fullUrl: string = `${location.origin}${this.router.serializeUrl(this.router.createUrlTree(['admin/thi-sinh/dang-ky/']))}`;
 
-          const content = 'VSTEP' + item.id + '-' + item['__kehoach_thi'];
-          this.ordersService.getPayment(item.id, fullUrl, content).subscribe({
-            next: (res) => {
-              console.log(res);
-              window.location.assign(res['data']);
-              this.ngType = 0;
-              this.notifi.isProcessing(false);
-              this.isLoading = false;
-              // this.notifi.toastWarning(res['message']);
 
-            }, error: (err) => {
-              this.isLoading = false;
-              this.notifi.isProcessing(false);
-              this.notifi.toastWarning(err['error']['message']);
-            }
-          })
+          this.order_select = item;
+          this.displayModalThanhtoan= true;
+
         } else {
           this.isLoading = false;
           this.notifi.toastError('Đã hết thời hạn đăng ký môn trong đợt thi này');
@@ -433,7 +412,7 @@ export class ThiSinhDangKyComponent implements OnInit {
 
 
   sendEmail(thiSinh: ThiSinhInfo, order:any):Observable<any> {
-
+    console.log(this.kehoach_diemduthi_select);
     let message = `
 
         <p>Bạn đã đăng ký thi Vstep Đại học Thái Nguyên (TNU-VSTEP):</p>
@@ -448,50 +427,57 @@ export class ThiSinhDangKyComponent implements OnInit {
                 <td style="width:250px;">CCCD (Hoặc hộ chiếu):</td>
                 <td style="font-weight:600">${thiSinh.cccd_so}</td>
             </tr>
+             <tr>
+                <td style="width:250px;">Số điện thoại:</td>
+                <td style="font-weight:600">${thiSinh.phone}</td>
+            </tr>
+            <tr>
+                <td style="width:250px;">Email:</td>
+                <td style="font-weight:600">${thiSinh.email}</td>
+            </tr>
         </table>
 
         <p>THÔNG TIN ĐĂNG KÝ</p>
         <table style=" border: 1px solid black;border-collapse: collapse;">
           <tr style="border: 1px solid black;border-collapse: collapse;">
-            <th style="border: 1px solid black;border-collapse: collapse;text-align:center;" width="100px"><strong>Đợt thi</strong></th>
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" width="100px"><strong>Đợt thi</strong></th>
             <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" >${this.kehoach_select.title}</th>
 
           </tr>
           <tr style="border: 1px solid black;border-collapse: collapse;">
-            <th style="border: 1px solid black;border-collapse: collapse;text-align:center;" width="100"><strong>Điểm dự thi</strong></th>
-            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" >${this.kehoach_diemduthi_select['_diemduthi'].title}</th>
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" width="100"><strong>Điểm dự thi</strong></th>
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" >${this.kehoach_diemduthi_select['_donvi_title']}</th>
 
           </tr>
           <tr style="border: 1px solid black;border-collapse: collapse;">
-            <th style="border: 1px solid black;border-collapse: collapse;text-align:center;" width="100px"><strong>Lệ phí thi</strong></th>
-            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" >${parseInt(String(order.lephithi)).toLocaleString('vi-VN', {style: 'currency', currency: 'VND'})}</th>
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" width="100px"><strong>Lệ phí thi</strong></th>
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:right;" >${parseInt(String(order.lephithi)).toLocaleString('vi-VN', {style: 'currency', currency: 'VND'})}</th>
           </tr>
 
 
     `;
-    // <td style="border: 1px solid black;border-collapse: collapse;">${this.dmCapdos.find(f => f.id === order.caphsk_id) ? this.dmCapdos.find(f => f.id === order.caphsk_id).title : ''}</td>
+    // <td style="border: 1px solid black;border-collapse: collapse;">${this.dmCapdos.find(f => f.id === order.diemduthi_id) ? this.dmCapdos.find(f => f.id === order.diemduthi_id).title : ''}</td>
 
     message += `
     </table>
     <p style="color: #ce3b04;">- Trạng thái thanh toán: Chưa thanh toán.</p>
     <p>- Bạn vui lòng thanh toán lệ phí thi để hoàn tất quá trình đăng ký .</p>
-`;
+    `;
+
     const emailsend: any = {
       to: this.auth.user.email,
+      // to: 'longkakainfo@gmail.com',
       title: ' Email thông báo đăng ký thành công',
       message: message
     }
     this.notifi.isProcessing(true)
-    return  this.senderEmailService.sendEmail(emailsend)
+    return this.senderEmailService.sendEmail(emailsend)
   }
-
 
 
   btnRouInfo() {
     this.router.navigate(['admin/thi-sinh/thong-tin']);
   }
-
-
 
   //===========new ====================
   selectKehoachthi(event){
@@ -513,43 +499,44 @@ export class ThiSinhDangKyComponent implements OnInit {
       ],page:'1',
       set:[
         {label:'limit',value:'-1'},
+        {label:'with',value:'donvi'},
 
       ]
     }
 
-    this.kehoachthiDiemthiVstepService.getDataByPageNew(conditionKehoachDiemthi).pipe(switchMap(m=>{
-      const ids = Array.from(m.data.map(a=>a.diemduthi_id));
-      console.log(ids)
-      return forkJoin([
-        of(m),
-        this.loopGetOrderBy(1,20,ids,[]),
-        this.ordersService.getDataTotalDiemthiByKehoach(event.id)
-      ])
-    })).subscribe({
-      next:([datakehoachDiemduthi, dmDimethduthi,sumDiemduthi])=>{
-        this.kehoachDiemduthi = datakehoachDiemduthi.data.map(m=> {
-          const diemduthi = dmDimethduthi.find(f=>f.id == m.diemduthi_id);
+    forkJoin([
+      this.kehoachthiDiemthiVstepService.getDataByPageNew(conditionKehoachDiemthi),
+      this.ordersService.getDataTotalDiemthiByKehoach(event.id)
+    ])
+    .subscribe({
+      next:([data,sumDiemduthi])=>{
 
-          m['_diemduthi'] = diemduthi;
+        console.log(data.data);
+        console.log(sumDiemduthi);
+        this.kehoachDiemduthi = data.data.map(m=>{
+          const donvi = m['donvi'];
 
+          m['_donvi_title'] = donvi ? donvi['title'] : '';
 
-          const sumByDiemduthi = sumDiemduthi.find(f=>parseInt(f.diemduthi_id) == m.diemduthi_id);
-          const soluongBySum = sumByDiemduthi ? sumByDiemduthi.total : 0;
+          const soluongBySum = sumDiemduthi.find(f=>f.diemduthi_id == m.diemduthi_id.toString())
 
-          m['_soluongByDiemduthi']= m.soluong > soluongBySum? (m.soluong - soluongBySum ) : 0;
-
-          m['_title'] = diemduthi ? diemduthi.title + '[' + m['_soluongByDiemduthi'] + ']' : '';
+          m['_soluong_conlai'] = !soluongBySum ? m.soluong : ((m.soluong - soluongBySum.total) > 0 ? (m.soluong - soluongBySum.total) : 0  );
 
           return m;
-        }).filter(f=>f['_soluongByDiemduthi'] > 0)
+        }).filter(f=>f['_soluong_conlai'] > 0);
 
+
+        console.log(this.kehoachDiemduthi);
         this.notifi.isProcessing(false);
+
 
       },error:()=>{
         this.notifi.toastError('Load dữ liệu không thành công');
         this.notifi.isProcessing(false);
       }
     })
+
+
 
   }
 
@@ -610,6 +597,16 @@ export class ThiSinhDangKyComponent implements OnInit {
   paginate({page}: NgPaginateEvent) {
     this.page = page + 1;
     this.getDataOrder();
+  }
+
+
+//   --------------------------------------------------------
+  displayModalThanhtoan:boolean =false;
+
+  order_select: OrdersVstep = null;
+  closeDialogThanhtoan(){
+    this.isLoading =false;
+    this.loadInit()
   }
 
 }

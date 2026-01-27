@@ -64,7 +64,7 @@
                         <label>Đợt thi <span class="ovic-mark">*</span></label>
                         <ovic-dropdown class="w-100" [options]="keHoachThi_dangky" [optionLabel]="'title'"
                                        placeholder="Chọn đợt thi" [filter]="true"
-                                       [filterBy]="'title'" optionId="id" [formField]="f['kehoach_id']"
+                                       [filterBy]="'title'" optionId="id" [formField]="f['kehoach_id']" [showClear]="false"
                                        (onChange)="selectKehoachthi($event)"
                         ></ovic-dropdown>
                       </div>
@@ -72,8 +72,9 @@
                     <div class="col col-md-12 col-xl-6">
                       <div class="form-row">
                         <label>Điểm dự thi <span class="ovic-mark">*</span></label>
-                        <ovic-dropdown class="w-100" [options]="kehoachDiemduthi" [optionLabel]="'_title'"
+                        <ovic-dropdown class="w-100" [options]="kehoachDiemduthi" [optionLabel]="'_donvi_title'"
                                        placeholder="Chọn điểm dự thi" [filter]="true"
+                                       [showClear]="false"
                                        [filterBy]="'_title'" optionId="diemduthi_id" [formField]="f['diemduthi_id']"
                                        (onChange)="selectDiemduthi($event)"
                         ></ovic-dropdown>
@@ -88,10 +89,13 @@
               <div class="body" *ngIf="this.kehoach_select && this.kehoach_diemduthi_select">
                 <div class="info">
                   <div><strong>Đợt thi:</strong> {{kehoach_select.title}}</div>
+                  <div *ngIf="kehoach_select.mota"><strong>Chi tiết:</strong>
+                    <div class=""  [innerHtml]="kehoach_select.mota | ovicSafeHtml"> </div>
+                  </div>
                   <div><strong>Thời gian đăng ký:</strong> {{kehoach_select['_date_convertd']}}</div>
-                  <div><strong>Điểm dự thi:</strong> {{kehoach_diemduthi_select['_diemduthi'] ? kehoach_diemduthi_select['_diemduthi'].title : '' }}</div>
-                  <div><strong>Số lượng đăng ký : </strong> <span class="count err">{{ kehoach_diemduthi_select['_soluongByDiemduthi'] }}</span></div>
-                  <div><strong>Giá: </strong> <span class="count">{{kehoach_select.gia | numberToVndCurrencuy}}</span></div>
+                  <div><strong>Điểm dự thi:</strong> {{kehoach_diemduthi_select ? kehoach_diemduthi_select['_donvi_title'] : '' }}</div>
+                  <div><strong>Số lượng đăng ký : </strong> <span class="count err">{{ kehoach_diemduthi_select['_soluong_conlai'] }}</span></div>
+                  <div><strong>Giá đăng ký: </strong> <span class="count">{{kehoach_select.gia | numberToVndCurrencuy}}</span></div>
                 </div>
               </div>
             </div>
@@ -136,7 +140,7 @@
                     <ng-template pTemplate="body" let-item>
                       <tr>
                         <td class="ovic-w-50px text-center" [innerHTML]="item['_indexTable']"></td>
-                        <td class="ovic-w-50px text-center" >VSTEP {{ item['id'] }}</td>
+                        <td class="ovic-w-50px text-center" >{{ item['id'] }}</td>
                         <td>
                           <div class="d-block --fs-14 font-weight-bold" [innerHTML]="item['__kehoach_thi']"></div>
                         </td>
@@ -221,3 +225,9 @@
 </ng-template>
 
 
+<p-dialog class="dal-dk-custome" [header]="'THANH TOÁN'" [(visible)]="displayModalThanhtoan" [modal]="true"
+          [style]="{width: '50vw', height:'80vh'}" [draggable]="false" [resizable]="false" (onHide)="closeDialogThanhtoan()" >
+  <ng-container *ngIf="order_select && displayModalThanhtoan">
+    <app-thanhtoan-by-qr [content]="'DK HSK'" [userInfo]="userInfo" [order]="order_select" [type]="'thisinh'" ></app-thanhtoan-by-qr>
+  </ng-container>
+</p-dialog>

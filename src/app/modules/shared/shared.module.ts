@@ -125,7 +125,7 @@ import { OvicResizeDropdowDirective } from './directives/ovic-resize-dropdow.dir
 import { OvicAvataTypeThptComponent } from "@shared/components/ovic-avata-type-thpt/ovic-avata-type-thpt.component";
 import { OvicCountdownComponent } from "@shared/components/ovic-countdown/ovic-countdown.component";
 import { NumberToVndCurrencuyPipe } from './pipes/number-to-vnd-currencuy.pipe';
-import { OvicInputMonthiComponent } from './components/ovic-input-monthi/ovic-input-monthi.component';
+
 import {CheckboxModule} from "primeng/checkbox";
 import { ThptFormTraketquaComponent } from './components/thpt-form-traketqua/thpt-form-traketqua.component';
 import { OvicTestOneAnswerComponent } from './components/ovic-test-one-answer/ovic-test-one-answer.component';
@@ -214,7 +214,7 @@ import { OvicAvataMakerV2Component } from './components/ovic-avata-maker-v2/ovic
     OvicResizeDropdowDirective,
     OvicAvataTypeThptComponent,
     NumberToVndCurrencuyPipe,
-    OvicInputMonthiComponent,
+
     ThptFormTraketquaComponent,
     OvicTestOneAnswerComponent,
     TestQuestionComponent,
@@ -344,7 +344,6 @@ import { OvicAvataMakerV2Component } from './components/ovic-avata-maker-v2/ovic
         OvicAvataTypeThptComponent,
         OvicCountdownComponent,
         NumberToVndCurrencuyPipe,
-        OvicInputMonthiComponent,
         OvicTestOneAnswerComponent
     ]
 })

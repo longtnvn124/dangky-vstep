@@ -4,7 +4,6 @@ import {ThptHoiDongPhongThi} from "@shared/models/thpt-model";
 import {asBlob} from "@shared/vendor/html-docx";
 
 
-import {DmPhongThi} from "@shared/services/danh-muc-phong-thi.service";
 import {NotificationService} from "@core/services/notification.service";
 
 
@@ -124,7 +123,7 @@ export class HtmlToPdfService {
   }
 
 
-  async exportHtmlToWordV2(item:DmPhongThi[], fileName: string){
+  async exportHtmlToWordV2(item:any[], fileName: string){
 
     this.notificationService.isProcessing(true);
     let htmlContent =  `<!DOCTYPE html>

@@ -111,11 +111,10 @@ export class ThanhtoanByQrComponent implements OnInit {
         // this.check = 12;
 
 
-      },error:(e)=>{
-        console.log(e)
+      },error:()=>{
         // this.ngType = 'getQr';
         this.ngType = 'error';
-        // this.notifi.toastError(e['error']['message']);
+        this.notifi.toastError('Mất kết nối với máy chủ');
       }
     })
 
@@ -168,7 +167,7 @@ export class ThanhtoanByQrComponent implements OnInit {
           this.remainingTimeClone = 0;
           this.stopTimer()
         }else{
-          if(![1,2].includes(data['result_data']['`status`'])){
+          if(![1,2].includes(data['result_data']['status'])){
             this.remainingTimeClone = 0;
             this.stopTimer()
             this.ngType ="result";
@@ -184,6 +183,14 @@ export class ThanhtoanByQrComponent implements OnInit {
 
   reload(){
     this.loadInit()
+  }
+
+  viewDongiaAll(arr:any[]){
+    const total = arr.reduce((acc, item) => {
+      return acc + item.soluong * item.value;
+    }, 0);
+
+    return total;
   }
 
 }

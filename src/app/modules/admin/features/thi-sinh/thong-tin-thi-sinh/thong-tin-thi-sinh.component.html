@@ -111,6 +111,15 @@
                     </div>
                   </div>
 
+                  <div class="col col-lg-4 col-xl-4">
+                    <div class="form-row" [class.fieldset--error]="f['diachi_congtac'].touched && f['diachi_congtac'].invalid"
+                         [class.fieldset--invalid]="f['diachi_congtac'].touched && f['diachi_congtac'].valid">
+                      <label>Địa chỉ công tác</label>
+                      <input pInputText type="text" placeholder="Vd:..." formControlName="diachi_congtac"
+                             autocomplete="off">
+                    </div>
+                  </div>
+
 
                 </div>
               </div>

@@ -1,7 +1,5 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {DanhMucMonService} from "@shared/services/danh-muc-mon.service";
 import {forkJoin} from "rxjs";
-import {DmMon} from "@shared/models/danh-muc";
 import {NotificationService} from "@core/services/notification.service";
 import {HskOrdersService, OrdersHsk} from "@shared/services/hsk-orders.service";
 import {HskKehoachThiService, KeHoachThi} from "@shared/services/hsk-kehoach-thi.service";
@@ -35,7 +33,6 @@ export class ThiSinhDangKyThiComponent implements OnInit,OnChanges {
   ]
   constructor(
     private orderService:HskOrdersService,
-    private danhMucMonService:DanhMucMonService,
     private kehoachthiService:HskKehoachThiService,
     private notificationService: NotificationService
   ) { }
@@ -59,12 +56,11 @@ export class ThiSinhDangKyThiComponent implements OnInit,OnChanges {
 
   loadData(thisinh_id:number){
     this.notificationService.isProcessing(true);
-    forkJoin<[DmMon[], KeHoachThi[], OrdersHsk[]]>(
-      this.danhMucMonService.getDataUnlimit(),
+    forkJoin<[KeHoachThi[], OrdersHsk[]]>(
       this.kehoachthiService.getDataUnlimit(),
       this.orderService.getDataByIdthisinh(thisinh_id)
     ).subscribe({
-      next:([dmMon, kehoachthi, orrder])=>{
+      next:([kehoachthi, orrder])=>{
         this.listdata = orrder.map((m,index)=>{
           m['_indexTable'] = index+1;
           m['_kehoachthi_covented'] =kehoachthi.find(f=>f.id === m.kehoach_id) ? kehoachthi.find(f=>f.id === m.kehoach_id).dotthi :'';

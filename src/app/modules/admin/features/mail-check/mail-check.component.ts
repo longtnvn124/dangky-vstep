@@ -1,15 +1,11 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {Paginator} from "primeng/paginator";
-import {DmCapdo} from "@shared/models/danh-muc";
 import {FormType, NgPaginateEvent, OvicTableStructure} from "@shared/models/ovic-models";
-import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {debounceTime, filter, Observable, Subject, Subscription} from "rxjs";
+import { FormGroup} from "@angular/forms";
+import {filter,Subscription} from "rxjs";
 import {ThemeSettingsService} from "@core/services/theme-settings.service";
 import {NotificationService} from "@core/services/notification.service";
-import {AuthService} from "@core/services/auth.service";
 import {HelperService} from "@core/services/helper.service";
-import {DanhMucCapDoService} from "@shared/services/danh-muc-cap-do.service";
-import {OvicButton} from "@core/models/buttons";
 import {EmailCheck, MailCheckService} from "@core/services/mail-check.service";
 
 // interface FormDmMon extends OvicForm {

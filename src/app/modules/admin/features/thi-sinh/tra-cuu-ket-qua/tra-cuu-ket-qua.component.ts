@@ -4,12 +4,9 @@ import {forkJoin, of, switchMap} from "rxjs";
 import {ThiSinhInfo} from "@shared/models/thi-sinh";
 import {AuthService} from "@core/services/auth.service";
 import {NotificationService} from "@core/services/notification.service";
-import {DanhMucMonService} from "@shared/services/danh-muc-mon.service";
-import {DmCapdo, DmMon} from "@shared/models/danh-muc";
 import {ExportToPdfService} from "@shared/services/export-to-pdf.service";
 import {HelperService} from "@core/services/helper.service";
 import {HskKehoachThiService, KeHoachThi} from "@shared/services/hsk-kehoach-thi.service";
-import {DanhMucCapDoService} from "@shared/services/danh-muc-cap-do.service";
 import {HskHoidongKetqua, HskHoidongKetquaService} from "@shared/services/hsk-hoidong-ketqua.service";
 
 @Component({
@@ -26,7 +23,7 @@ export class TraCuuKetQuaComponent implements OnInit {
   isLoading :boolean =false;
   dotDuThi:HskHoidongKetqua[];
   constructor(
-    private danhMucCapDoService:DanhMucCapDoService,
+
     private hskHoidongKetquaService:HskHoidongKetquaService,
     private thisinhInfoSerice:ThisinhInfoService,
     private thptKehoachThiService:HskKehoachThiService,
@@ -45,20 +42,20 @@ export class TraCuuKetQuaComponent implements OnInit {
     this.notifi.isProcessing(true);
 
     forkJoin([
-      this.danhMucCapDoService.getDataUnlimit(),
+
       this.thisinhInfoSerice.getUserInfo(this.auth.user.id),
       this.thptKehoachThiService.getDataUnlimitNotstatus()
     ]).pipe(
-      switchMap(([capdos, thisinh, kehoachs]) => {
+      switchMap(([thisinh, kehoachs]) => {
         return forkJoin([
-          of(capdos),
+
           of(thisinh),
           of(kehoachs),
           this.hskHoidongKetquaService.getKehoachByCccd(thisinh['cccd_so'])
         ]);
       })
     ).subscribe({
-      next:([dmMon,thisinhInfo, kehoachthi,dotduthi])=>{
+      next:([thisinhInfo, kehoachthi,dotduthi])=>{
         // console.log(dotduthi)
         this.thisinhInfo= thisinhInfo;
         this.kehoachThi = kehoachthi;

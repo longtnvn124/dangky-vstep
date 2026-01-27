@@ -25,6 +25,7 @@ import {InputTextareaModule} from "primeng/inputtextarea";
 import {ImageModule} from "primeng/image";
 import {OvicInputAddressNewComponent} from "@shared/components/ovic-input-address-new/ovic-input-address-new.component";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {ThanhtoanByQrComponent} from "@shared/components/thanhtoan-by-qr/thanhtoan-by-qr.component";
 
 
 @NgModule({
@@ -37,29 +38,30 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
     exports: [
 
     ],
-  imports: [
-    CommonModule,
-    ThiSinhRoutingModule,
-    SharedModule,
-    ReactiveFormsModule,
-    DropdownModule,
-    InputMaskModule,
-    RippleModule,
-    ButtonModule,
-    MultiSelectModule,
-    TableModule,
-    InputTextModule,
-    PaginatorModule,
-    CheckboxModule,
-    TooltipModule,
-    DialogModule,
-    TabViewModule,
-    RadioButtonModule,
-    MatMenuModule,
-    InputTextareaModule,
-    ImageModule,
-    OvicInputAddressNewComponent,
-    MatProgressBarModule
-  ]
+    imports: [
+        CommonModule,
+        ThiSinhRoutingModule,
+        SharedModule,
+        ReactiveFormsModule,
+        DropdownModule,
+        InputMaskModule,
+        RippleModule,
+        ButtonModule,
+        MultiSelectModule,
+        TableModule,
+        InputTextModule,
+        PaginatorModule,
+        CheckboxModule,
+        TooltipModule,
+        DialogModule,
+        TabViewModule,
+        RadioButtonModule,
+        MatMenuModule,
+        InputTextareaModule,
+        ImageModule,
+        OvicInputAddressNewComponent,
+        MatProgressBarModule,
+        ThanhtoanByQrComponent
+    ]
 })
 export class ThiSinhModule { }

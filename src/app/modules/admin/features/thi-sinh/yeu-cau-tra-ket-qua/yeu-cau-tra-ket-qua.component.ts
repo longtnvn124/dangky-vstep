@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {NotificationService} from "@core/services/notification.service";
 import {ThiSinhInfo} from "@shared/models/thi-sinh";
 import {forkJoin} from "rxjs";
@@ -12,13 +12,11 @@ import {Paginator} from "primeng/paginator";
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {BUTTON_NO, BUTTON_YES} from "@core/models/buttons";
 import {SenderEmailService} from "@shared/services/sender-email.service";
-import {ActivatedRoute, Router} from "@angular/router";
 import {FileService} from "@core/services/file.service";
 import {HskOrdersShip, HskOrdersShipService} from "@shared/services/hsk-orders-ship.service";
 import {HskKehoachThiService, KeHoachThi} from "@shared/services/hsk-kehoach-thi.service";
 import {HskHoidongKetqua, HskHoidongKetquaService} from "@shared/services/hsk-hoidong-ketqua.service";
 import {HskOrdersService, OrdersHsk} from "@shared/services/hsk-orders.service";
-import {DanhMucCapDoService} from "@shared/services/danh-muc-cap-do.service";
 import {DmCapdo} from "@shared/models/danh-muc";
 
 interface Dongia{
@@ -85,7 +83,6 @@ export class YeuCauTraKetQuaComponent implements OnInit {
 
   ]
 
-  ngRouterView:1|0|2|-1= 0;
 
   listKetquaThi :HskHoidongKetqua[] = null;
 
@@ -143,7 +140,6 @@ export class YeuCauTraKetQuaComponent implements OnInit {
     private senderEmailService: SenderEmailService,
     private hskOrdersService:HskOrdersService,
     private fileSerivce: FileService,
-    private dmCapdoService: DanhMucCapDoService
   ) {
     this.formSave = this.fb.group({
       thisinh_id: [null, Validators.required],
@@ -175,15 +171,15 @@ export class YeuCauTraKetQuaComponent implements OnInit {
     // this.isLoading=true;
     // this.notifi.isProcessing(true);
     this.ngType=0;
-    forkJoin<[ KeHoachThi[],ThiSinhInfo, DmCapdo[]]>(
+    forkJoin<[ KeHoachThi[],ThiSinhInfo,]>(
       this.kehoachthiService.getDataUnlimitNotstatus(),
       this.thisinhInfoService.getUserInfo(this.auth.user.id),
-      this.dmCapdoService.getDataUnlimit()
+
     ).subscribe({
-      next:([kehoachthi, thisinhinfo, listCapdo])=>{
+      next:([kehoachthi, thisinhinfo])=>{
         this.kehoachthi = kehoachthi ;
         this.thisinhInfo = thisinhinfo;
-        this.dmCapdo = listCapdo;
+
 
         if( this.kehoachthi && this.thisinhInfo){
           this.loadData(this.page);
@@ -222,10 +218,6 @@ export class YeuCauTraKetQuaComponent implements OnInit {
             m['__capHsk'] = this.dmCapdo.find(f=>f.id === m.caphsk_id) ?  this.dmCapdo.find(f=>f.id === m.caphsk_id).title : '' ;
             return m;
           }) : [];
-          // this.isLoading=false;
-          // this.notifi.isProcessing(false);
-
-          // this.ngType= data.length> 0 ? 2:1;
           this.ngType= 2;
         },
         error:(e)=>{
