@@ -6,13 +6,11 @@ import {filter, forkJoin, Observable, of, Subject, Subscription, switchMap} from
 import {ThemeSettingsService} from "@core/services/theme-settings.service";
 import {NotificationService} from "@core/services/notification.service";
 import {HskHoidongthi} from "@shared/services/hsk-hoidongthi.service";
-import {HskHoidongthiThiSinh, HskHoidongthiThisinhService} from "@shared/services/hsk-hoidongthi-thisinh.service";
 import {HskExportHoidongService} from "@shared/services/hsk-export-hoidong.service";
 import imageCompression from "browser-image-compression";
 import getDataUrlFromFile = imageCompression.getDataUrlFromFile;
-import {OrdersHsk} from "@shared/services/hsk-orders.service";
 import {HelperService} from "@core/services/helper.service";
-import {KeHoachThi} from "@shared/services/hsk-kehoach-thi.service";
+import {KeHoachThi} from "@shared/services/kehoachthi-vstep.service";
 
 @Component({
   selector: 'app-phong-thi',

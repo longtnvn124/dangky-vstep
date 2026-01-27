@@ -14,10 +14,13 @@ import {BUTTON_NO, BUTTON_YES} from "@core/models/buttons";
 import {SenderEmailService} from "@shared/services/sender-email.service";
 import {FileService} from "@core/services/file.service";
 import {HskOrdersShip, HskOrdersShipService} from "@shared/services/hsk-orders-ship.service";
-import {HskKehoachThiService, KeHoachThi} from "@shared/services/hsk-kehoach-thi.service";
 import {HskHoidongKetqua, HskHoidongKetquaService} from "@shared/services/hsk-hoidong-ketqua.service";
-import {HskOrdersService, OrdersHsk} from "@shared/services/hsk-orders.service";
 import {DmCapdo} from "@shared/models/danh-muc";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
+import {ConditionOption} from "@shared/models/condition-option";
+import {OvicQueryCondition} from "@core/models/dto";
+import {map} from "rxjs/operators";
 
 interface Dongia{
   title:string,
@@ -131,14 +134,14 @@ export class YeuCauTraKetQuaComponent implements OnInit {
   constructor(
     private themeSettingsService:ThemeSettingsService,
     private notifi:NotificationService,
-    private kehoachthiService:HskKehoachThiService,
+    private kehoachthiVstepService:KehoachthiVstepService,
     private thisinhInfoService: ThisinhInfoService,
     private auth:AuthService,
     private fb:FormBuilder,
     private hskOrdersShipService: HskOrdersShipService,
     private hskHoidongKetquaService: HskHoidongKetquaService,
     private senderEmailService: SenderEmailService,
-    private hskOrdersService:HskOrdersService,
+    private vstepOrdersService:VstepOrdersService,
     private fileSerivce: FileService,
   ) {
     this.formSave = this.fb.group({
@@ -154,7 +157,7 @@ export class YeuCauTraKetQuaComponent implements OnInit {
       tenphieu:['',Validators.required],
       sobaodanh:['',Validators.required],
       mota:[''],
-      caphsk_id:[0,Validators.required],
+      diemduthi_id:[0,Validators.required],
     })
     this.formUpdate = this.fb.group({
       files:[null, Validators.required]
@@ -171,8 +174,18 @@ export class YeuCauTraKetQuaComponent implements OnInit {
     // this.isLoading=true;
     // this.notifi.isProcessing(true);
     this.ngType=0;
+
+    const condition: ConditionOption = {
+      condition : [
+
+      ],
+      page:'1',
+      set:[{label:'limit',value:'-1'}]
+    }
+
+
     forkJoin<[ KeHoachThi[],ThiSinhInfo,]>(
-      this.kehoachthiService.getDataUnlimitNotstatus(),
+      this.kehoachthiVstepService.getDataByPageNew(condition).pipe(map(m=>m.data)),
       this.thisinhInfoService.getUserInfo(this.auth.user.id),
 
     ).subscribe({
@@ -209,13 +222,13 @@ export class YeuCauTraKetQuaComponent implements OnInit {
             m['__index']= (page -1)* this.rows +(index+1);
             m['__status_converted'] = this.listStyle.find(f => f.value == m.trangthai_thanhtoan) ?  this.listStyle.find(f => f.value == m.trangthai_thanhtoan).title : '';
             m['__status_converted_v2'] = m.trangthai_thanhtoan === 1 ? 'Đã xác nhận thanh toán': (m.trangthai_thanhtoan === 0 ? 'Chưa thanh toán': (m.trangthai_thanhtoan===2 ?'Đang chờ duyệt' :''));
-            m['__kehoach_thi'] = this.kehoachthi.length>0 && this.kehoachthi.find(f => f.id === m.kehoach_id) ? this.kehoachthi.find(f => f.id === m.kehoach_id).dotthi : '';
+            m['__kehoach_thi'] = this.kehoachthi.length>0 && this.kehoachthi.find(f => f.id === m.kehoach_id) ? this.kehoachthi.find(f => f.id === m.kehoach_id).title : '';
 
             const kehoachthi = this.kehoachthi.find(f => f.id === m.kehoach_id);
             m['__kehoach_thi_convent'] = kehoachthi ? kehoachthi :null;
             m['__lephithi_covered'] = m.lephithi;
             m['__minhchung'] = m['files'] && m['files'].length > 0 ? this.fileSerivce.getPreviewLinkLocalFileNotToken(m['files'][0]) : '';
-            m['__capHsk'] = this.dmCapdo.find(f=>f.id === m.caphsk_id) ?  this.dmCapdo.find(f=>f.id === m.caphsk_id).title : '' ;
+            m['__capHsk'] =  '' ;
             return m;
           }) : [];
           this.ngType= 2;
@@ -263,7 +276,7 @@ export class YeuCauTraKetQuaComponent implements OnInit {
     this.hskHoidongKetquaService.getKehoachByCccd(this.thisinhInfo.cccd_so).subscribe({
       next:(data)=>{
         this.kehoachthiByThisinh = data.length >0 ? data.map(m=>{
-          m['dotthi'] = this.kehoachthi.find(f=>f.id === m.kehoach_id) ? this.kehoachthi.find(f=>f.id === m.kehoach_id).dotthi : '';
+          m['dotthi'] = this.kehoachthi.find(f=>f.id === m.kehoach_id) ? this.kehoachthi.find(f=>f.id === m.kehoach_id).title : '';
           return m;
         }) :[];
 
@@ -278,16 +291,41 @@ export class YeuCauTraKetQuaComponent implements OnInit {
   }
 
 
-  listOrderByKehoachSelect :OrdersHsk[] = [];
+  listOrderByKehoachSelect :OrdersVstep[] = [];
 
   btnSelectKehoachthi(kehoach_id:number){
     // console.log(kehoach_id);
     this.kehoach_id_select = kehoach_id
     if(kehoach_id){
       this.isLoading = true;
+
+      const conndition :ConditionOption= {
+        condition:[
+          {
+            conditionName:'user_id',
+            condition:OvicQueryCondition.equal,
+            value:this.auth.user.id.toString(),
+          },
+          {
+            conditionName:'kehoach_id',
+            condition:OvicQueryCondition.equal,
+            value:kehoach_id.toString(),
+          },
+          {
+            conditionName:'trangthai_thanhtoan',
+            condition:OvicQueryCondition.equal,
+            value:'1',
+          },
+        ],page:'1',
+        set:[
+          { label: 'select' , value:'id,kehoach_id,diemduthi_id,trangthai_thanhtoan'},
+          { label: 'limit' , value:'-1'}
+        ]
+      };
+
       forkJoin([
         this.hskHoidongKetquaService.getdataByCccdSoAndKehoachId(this.thisinhInfo.cccd_so.toString(),kehoach_id),
-        this.hskOrdersService.getdataBykehoachAndUserAndSelectAndTrangthai(this.auth.user.id,kehoach_id,'1','id,kehoach_id,caphsk_id,trangthai_thanhtoan')
+        this.vstepOrdersService.getDataByPageNew(conndition)
       ])
       .subscribe({
         next:([data, listOrder])=>{
@@ -295,13 +333,13 @@ export class YeuCauTraKetQuaComponent implements OnInit {
           this.listKetquaThi = data;
           // console.log(listOrder)
           this.listOrderByKehoachSelect = [];
-          if(listOrder.length>0){
-            this.listOrderByKehoachSelect= listOrder.filter(f=>f['huy'] == false).map(m=>{
-              m['_caphsk'] =this.dmCapdo.find(f=>f.id === m.caphsk_id) ? this.dmCapdo.find(f=>f.id === m.caphsk_id).title : 'Không xác định';
+          if(listOrder.data.length>0){
+            this.listOrderByKehoachSelect= listOrder.data.filter(f=>f['huy'] == false).map(m=>{
+              m['_caphsk'] =this.dmCapdo.find(f=>f.id === m.diemduthi_id) ? this.dmCapdo.find(f=>f.id === m.diemduthi_id).title : 'Không xác định';
               return m;
             })
 
-              this.f['caphsk_id'].setValue(this.listOrderByKehoachSelect[0].caphsk_id);
+              this.f['diemduthi_id'].setValue(this.listOrderByKehoachSelect[0].diemduthi_id);
             // console.log(this.formSave.value);
           }
         },error:()=>{
@@ -334,9 +372,9 @@ export class YeuCauTraKetQuaComponent implements OnInit {
 
     return total;
   }
-  btnSelectCapBykehoach(item:OrdersHsk){
-    // console.log(item.caphsk_id);
-    this.f['caphsk_id'].setValue(item.caphsk_id);
+  btnSelectCapBykehoach(item:OrdersVstep){
+    // console.log(item.diemduthi_id);
+    this.f['diemduthi_id'].setValue(item.diemduthi_id);
 
   }
 
@@ -348,7 +386,7 @@ export class YeuCauTraKetQuaComponent implements OnInit {
     this.f['lephithi'].setValue(this.viewDongiaAll(this.objectThanhtoan));
 
     const kehoach = this.kehoachthi.find(f=>f.id === this.kehoach_id_select);
-    this.f['tenphieu'].setValue('Phiếu kết quả ' + (kehoach ? 'đợt thi ' + kehoach.dotthi : '' ) );
+    this.f['tenphieu'].setValue('Phiếu kết quả ' + (kehoach ? 'đợt thi ' + kehoach.title : '' ) );
 
     this.isLoading =true;
     if(this.formSave.valid){
@@ -411,7 +449,7 @@ export class YeuCauTraKetQuaComponent implements OnInit {
             </tr>
             <tr>
                 <td style="width:250px;">Cấp HSK:</td>
-                <td style="font-weight:600">${this.dmCapdo.find(f=>f.id === form['caphsk_id']) ? this.dmCapdo.find(f=>f.id === form['caphsk_id']) :''}</td>
+                <td style="font-weight:600">${this.dmCapdo.find(f=>f.id === form['diemduthi_id']) ? this.dmCapdo.find(f=>f.id === form['diemduthi_id']) :''}</td>
             </tr>
             <tr>
                 <td style="width:250px;">Số báo danh:</td>
@@ -487,7 +525,7 @@ export class YeuCauTraKetQuaComponent implements OnInit {
       lephithi:null,
       tenphieu:'',
       mota:'',
-      caphsk_id:0,
+      diemduthi_id:0,
     })
   }
 
@@ -528,7 +566,7 @@ export class YeuCauTraKetQuaComponent implements OnInit {
   }
 
 
-  async deleteRow(data:OrdersHsk) {
+  async deleteRow(data:OrdersVstep) {
     const kehoach = data['__kehoach_thi_convent']
     if(kehoach && kehoach['cancel_or_change'] !== 1){
       const confirm = await this.notifi.confirmDelete();

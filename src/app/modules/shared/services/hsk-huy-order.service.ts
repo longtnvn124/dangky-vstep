@@ -6,8 +6,7 @@ import {ThemeSettingsService} from "@core/services/theme-settings.service";
 import {AuthService} from "@core/services/auth.service";
 import {map, Observable} from "rxjs";
 import {Dto, OvicConditionParam, OvicQueryCondition} from "@core/models/dto";
-import {OrdersHsk} from "@shared/services/hsk-orders.service";
-import {DmCapdo} from "@shared/models/danh-muc";
+
 import {OvicFile} from "@core/models/file";
 
 export interface HskHuyOrder{

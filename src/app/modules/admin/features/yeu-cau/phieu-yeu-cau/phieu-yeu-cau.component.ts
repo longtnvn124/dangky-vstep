@@ -1,12 +1,10 @@
 import {Component, ElementRef, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {debounceTime, forkJoin, Observable, of, Subject, Subscription, switchMap} from "rxjs";
 import {Paginator} from "primeng/paginator";
-import {HskKehoachThiService, KeHoachThi} from "@shared/services/hsk-kehoach-thi.service";
 import {DmCapdo} from "@shared/models/danh-muc";
 import {HskOrdersShip, HskOrdersShipService} from '@modules/shared/services/hsk-orders-ship.service';
 import {NgPaginateEvent, OvicTableStructure} from '@modules/shared/models/ovic-models';
 import {ThemeSettingsService} from "@core/services/theme-settings.service";
-import {HskOrdersService} from "@shared/services/hsk-orders.service";
 import {NotificationService} from "@core/services/notification.service";
 import {DanhMucCapDoService} from "@shared/services/danh-muc-cap-do.service";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';

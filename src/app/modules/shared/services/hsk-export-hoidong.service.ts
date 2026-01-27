@@ -3,7 +3,6 @@ import {asBlob} from "@shared/vendor/html-docx";
 import { saveAs } from 'file-saver';
 import {HskHoidongthi} from "@shared/services/hsk-hoidongthi.service";
 import {Workbook} from "exceljs";
-import {HskHoidongthiThiSinh} from "@shared/services/hsk-hoidongthi-thisinh.service";
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
@@ -478,7 +477,7 @@ export class HskExportHoidongService {
   //------------------------------M14 -----------------------------------
 
 
-  async m14(phongthis: HskHoidongthiThiSinh[],hoidongthi:HskHoidongthi, fileName: string) {
+  async m14(phongthis: any[],hoidongthi:any, fileName: string) {
     let htmlContent = `
   <!DOCTYPE html>
   <html lang="en">
@@ -612,7 +611,7 @@ export class HskExportHoidongService {
       console.log( e );
     }
   }
-  exportM12(json:any[],phongthi:HskHoidongthiThiSinh,hoidong:HskHoidongthi,fileName:string){
+  exportM12(json:any[],phongthi:any,hoidong:HskHoidongthi,fileName:string){
 
     const header = ['TT','Số báo danh','Họ và tên','Giới tính','Ngày sinh','Số CCCD/Hộ chiếu','Phòng thi','Ký nộp'];
     const workbook = new Workbook();
@@ -917,7 +916,7 @@ export class HskExportHoidongService {
     return workbook;
   }
 
-  exportM13(json:any[],phongthi:HskHoidongthiThiSinh,hoidong:HskHoidongthi,fileName:string){
+  exportM13(json:any[],phongthi:any,hoidong:HskHoidongthi,fileName:string){
 
     const header = ['TT','Số báo danh','Họ và tên','Giới tính','Ngày sinh','Số CCCD/Hộ chiếu','Phòng thi',' Chứng chỉ','Ký nhận'];
     const workbook = new Workbook();

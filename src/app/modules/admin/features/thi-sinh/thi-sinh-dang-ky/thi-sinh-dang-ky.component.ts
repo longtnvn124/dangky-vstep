@@ -8,7 +8,6 @@ import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/form
 import {Router} from "@angular/router";
 import {SenderEmailService} from "@shared/services/sender-email.service";
 import {HelperService} from "@core/services/helper.service";
-import {OrdersHsk} from "@shared/services/hsk-orders.service";
 import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
 import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/kehoachthi-diemthi-vstep.service";
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
@@ -389,7 +388,7 @@ export class ThiSinhDangKyComponent implements OnInit {
     this.router.navigate(['admin/thi-sinh/thong-tin/']);
   }
 
-  async deleteRow(item: OrdersHsk) {
+  async deleteRow(item: OrdersVstep) {
     if (item.parent_id == 0) {
       const confirm = await this.notifi.confirmDelete();
       if (confirm) {

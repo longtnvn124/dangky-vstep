@@ -4,9 +4,7 @@ import {HttpClient, HttpParams} from "@angular/common/http";
 import {HttpParamsHeplerService} from "@core/services/http-params-hepler.service";
 import {ThemeSettingsService} from "@core/services/theme-settings.service";
 import {map, Observable} from "rxjs";
-import {Dto, OvicConditionParam} from "@core/models/dto";
-import {HskKehoachCapdo} from "@shared/services/kehoachthi-capdo.service";
-import {OrdersHsk} from "@shared/services/hsk-orders.service";
+import {Dto} from "@core/models/dto";
 import {ThiSinhInfo} from "@shared/models/thi-sinh";
 
 @Injectable({
@@ -52,7 +50,7 @@ export class HskSummaryService {
       return this.http.get<Dto>(this.api +'thi-sinh-duyet', {params}).pipe(map(res => res.data));
 
   }
-  getDsOrderByKehoachId(kehoach_id: number ): Observable<OrdersHsk[]> {
+  getDsOrderByKehoachId(kehoach_id: number ): Observable<any[]> {
     // const fromObject = {
     //   kehoach_id:kehoach_id ? kehoach_id:'',
     // }

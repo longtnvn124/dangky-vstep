@@ -1,9 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ChartComponent} from 'ng-apexcharts';
 import {NotificationService} from "@core/services/notification.service";
-import {OrdersHsk} from "@shared/services/hsk-orders.service";
-import {HskKehoachThiService, KeHoachThi} from "@shared/services/hsk-kehoach-thi.service";
 import {HskSummaryService} from "@shared/services/hsk-summary.service";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
 
 @Component({
   selector: 'app-home',
@@ -23,7 +22,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private notificationService: NotificationService,
-    private hskKehoachThiService: HskKehoachThiService,
+    private kehoachthiVstepService: KehoachthiVstepService,
     private hskSummaryService: HskSummaryService
   ) {
     this.optionsCharts = {
@@ -73,7 +72,7 @@ export class HomeComponent implements OnInit {
   loadInit() {
     this.notificationService.isProcessing(true);
 
-    this.hskKehoachThiService.getYearAndSelect('id,nam', -1).subscribe({
+    this.kehoachthiVstepService.getYearAndSelect('id,nam', -1).subscribe({
       next: (data) => {
         this.listYear = data;
         if (this.listYear.length > 0) {

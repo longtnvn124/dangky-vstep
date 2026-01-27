@@ -6,8 +6,10 @@ import {AuthService} from "@core/services/auth.service";
 import {NotificationService} from "@core/services/notification.service";
 import {ExportToPdfService} from "@shared/services/export-to-pdf.service";
 import {HelperService} from "@core/services/helper.service";
-import {HskKehoachThiService, KeHoachThi} from "@shared/services/hsk-kehoach-thi.service";
 import {HskHoidongKetqua, HskHoidongKetquaService} from "@shared/services/hsk-hoidong-ketqua.service";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {ConditionOption} from "@shared/models/condition-option";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-tra-cuu-ket-qua',
@@ -26,7 +28,7 @@ export class TraCuuKetQuaComponent implements OnInit {
 
     private hskHoidongKetquaService:HskHoidongKetquaService,
     private thisinhInfoSerice:ThisinhInfoService,
-    private thptKehoachThiService:HskKehoachThiService,
+    private kehoachthiVstepService:KehoachthiVstepService,
     private auth:AuthService,
     private notifi:NotificationService,
     private exportToPdfService:ExportToPdfService,
@@ -41,10 +43,15 @@ export class TraCuuKetQuaComponent implements OnInit {
   loadInit(){
     this.notifi.isProcessing(true);
 
+    const condition: ConditionOption= {
+      condition:[],
+      page:'1',
+      set:[{label:'limit', value:'-1'}]
+    }
     forkJoin([
 
       this.thisinhInfoSerice.getUserInfo(this.auth.user.id),
-      this.thptKehoachThiService.getDataUnlimitNotstatus()
+      this.kehoachthiVstepService.getDataByPageNew(condition).pipe(map(m=>m.data))
     ]).pipe(
       switchMap(([thisinh, kehoachs]) => {
         return forkJoin([
@@ -60,7 +67,7 @@ export class TraCuuKetQuaComponent implements OnInit {
         this.thisinhInfo= thisinhInfo;
         this.kehoachThi = kehoachthi;
         this.dotDuThi  = dotduthi.map(m=>{
-          m['_kehoachthi'] = kehoachthi.find(f=>f.id=== m.kehoach_id) ? kehoachthi.find(f=>f.id=== m.kehoach_id).dotthi:'';
+          m['_kehoachthi'] = kehoachthi.find(f=>f.id=== m.kehoach_id) ? kehoachthi.find(f=>f.id=== m.kehoach_id).title:'';
           return m;
         })
 

@@ -14,7 +14,6 @@ import {TableModule} from "primeng/table";
 import {InputTextModule} from "primeng/inputtext";
 import {MatMenuModule} from "@angular/material/menu";
 import {CheckboxModule} from "primeng/checkbox";
-import { PhongThiComponent } from './ds-hoi-dong-thi/phong-thi/phong-thi.component';
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import { KetQuaThiComponent } from './ds-hoi-dong-thi/ket-qua-thi/ket-qua-thi.component';
 
@@ -22,11 +21,9 @@ import { KetQuaThiComponent } from './ds-hoi-dong-thi/ket-qua-thi/ket-qua-thi.co
 @NgModule({
   declarations: [
 
-    PhongThiComponent,
     KetQuaThiComponent
   ],
   exports: [
-    PhongThiComponent,
     KetQuaThiComponent
   ],
   imports: [

@@ -72,4 +72,25 @@ export class KehoachthiVstepService {
       })
     );
   }
+
+  getYearAndSelect(select:string, limit:number): Observable<KeHoachThi[] > {
+    const conditions: OvicConditionParam[] = [
+      // {
+      //   conditionName:'nam',
+      //   condition:OvicQueryCondition.equal,
+      //   value:'nam'
+      // }
+    ];
+    const fromObject = {
+      paged: 1,
+      limit: limit,
+      select:select,
+      orderby: 'nam',
+      groupby: 'nam',
+      order: 'DESC'
+    };
+    const params = this.httpParamsHelper.paramsConditionBuilder(conditions, new HttpParams({ fromObject }));
+    return this.http.get<Dto>(this.api, { params }).pipe(map(res => res.data));
+  }
+
 }
