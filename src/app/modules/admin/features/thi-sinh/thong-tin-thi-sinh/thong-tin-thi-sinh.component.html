@@ -1,3 +1,4 @@
+
 <ng-container [ngSwitch]="checkdata">
   <ng-container *ngSwitchCase="'-1'">
     <div class="h-100 d-flex flex-column justify-content-center align-items-center"
@@ -126,6 +127,8 @@
             </div>
             <div class="row">
               <div class="mar-14px col-12 col-lg-4">
+
+
                 <ovic-avata-type-thpt [disabled]=" f['status'].value ===1" [formField]="f['anh_chandung']" [public]="0"
                                       [aspectRatio]="2 / 3" [accept]="['.jpg', '.png', '.jpeg']" [site]="true"
                                       [textView]="'<span>Tải ảnh chân dung(*)</span><p>(Dung lượng file tối thiểu 21kb và tối đa 100kb.)</p>'"

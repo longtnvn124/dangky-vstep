@@ -1,0 +1,43 @@
+.bm-container{
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /*gap: 20px;*/
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.bm-card{
+  padding:10px;
+  border-radius: 10px;
+  /*background: #ecf2f5;*/
+
+}
+.bm-item{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  padding: 10px;
+  background: #ecf2f5;
+  border-radius: 10px;
+  border: 2px dashed #ccc;
+  height: 120px;
+  font-weight: 500;
+}
+.bm-item i{
+  font-size:25px;
+}
+
+.bm-item:hover{
+  cursor: pointer;
+  border: 2px dashed #257bf0;
+  color:#257bf0;
+}
+.bm-item:hover i{
+  color:#257bf0;
+}

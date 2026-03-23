@@ -421,7 +421,7 @@ export class KeHoachThiComponent implements OnInit {
   typeDkByDiemduthi     : boolean = false;
   displayModal          : boolean = false;
   soLuongDiemduthiTheoTram(object : KeHoachThi){
-    console.log(object);
+
 
     this.notifi.isProcessing(true);
     const condition:ConditionOption = {

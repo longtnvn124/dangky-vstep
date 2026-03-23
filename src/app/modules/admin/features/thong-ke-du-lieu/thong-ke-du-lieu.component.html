@@ -1,7 +1,7 @@
 <div class="row">
   <div class="col-12 d-flex flex-column " style="height:calc(100vh - 90px)">
     <div class="hsk-header justify-content-between">
-      <h3 class="tbl-title ">Kết quả đăng ký</h3>
+      <h3 class="tbl-title ">Thông kê dữ liệu</h3>
       <div class="search-block ui-table-globalfilter-container ">
         <div class="d-flex align-items-center">
           <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
@@ -132,7 +132,7 @@
             <td class="ovic-w-80px text-right">{{ item['__phone'] }}</td>
             <td class="text-right">{{ item['__lephithi'] | numberToVndCurrencuy }}</td>
             <td>
-              <div [ngClass]="'hsk hsk'+ item['caphsk_id']">{{ item['__capthi_converted'] }}</div>
+              <div >{{ item['__capthi_converted'] }}</div>
             </td>
             <td class="text-left">
               <ng-container [ngSwitch]="item['__isInfo']">

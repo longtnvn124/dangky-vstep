@@ -435,7 +435,7 @@ export class AddThiSinhComponent implements OnInit {
 
     this.loopGetOrrder(1,100,this.hoidong_select.kehoach_id, [], 1).pipe(switchMap(m=>{
       const thisinh_ids = Array.from(new Set(m.map(a=>a.thisinh_id))) ;
-      console.log(thisinh_ids)
+
       return forkJoin([
         of(m),
         this.loopGetThisinh(1,20, thisinh_ids,[])

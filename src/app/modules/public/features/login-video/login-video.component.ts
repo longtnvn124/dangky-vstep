@@ -88,7 +88,10 @@ export class LoginVideoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.formReset = this.fb.group({email: ['', [Validators.required, Validators.email]]});
     this.formLogin = this.fb.group({username: ['', Validators.required], password: ['', Validators.required]});
     this.activatedRoute.queryParams.pipe(takeUntil(this.observerCloser)).subscribe(params => this.params = params);
-    this.eventSignIn.asObservable().pipe(takeUntil(this.observerCloser), debounceTime(100)).subscribe(() => this.__signIn());
+    this.eventSignIn.asObservable().pipe(
+      takeUntil(this.observerCloser),
+      debounceTime(100)
+    ).subscribe(() => this.__signIn());
   }
 
   ngOnInit(): void {
@@ -143,15 +146,23 @@ export class LoginVideoComponent implements OnInit, AfterViewInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
     this.eventSignIn.next('');
+    if (this.formLogin.valid) {
+      this.loading = true;
+    }
   }
 
   private __signIn() {
     if (this.formLogin.valid) {
-      this.loading = true;
       this.auth.login(this.formLogin.value).subscribe({
-        next: () => this.checkUserLoginStatus(),
-        error: () => this.loading = false
+        next: (): void => {
+          void this.checkUserLoginStatus();
+        },
+        error: (): void => {
+          this.loading = false;
+        }
       });
+    } else {
+      this.loading = false;
     }
   }
 
@@ -213,21 +224,26 @@ export class LoginVideoComponent implements OnInit, AfterViewInit, OnDestroy {
     // 	this.title.setTitle( 'Đăng nhập tài khoản' );
     // 	this.loading = false;
     // }
+
+    if(!this.auth.isLoggedIn()){
+      this.loading = false;
+      return;
+    }
     this.loading = true;
     if (this.auth.user['verified'] && this.auth.user['verified'] === 1) {
       if (this.auth.isLoggedIn()) {
         const roles = this.auth.roles;
         const thisinh = roles.length === 1 && roles.find(f => f.id === 124);
         const doitac = roles.length === 1 && roles.find(f => f.id === 125);
-        // console.log(doitac);
+
         if (this.auth.isLoggedIn()) {
           let redirect: string = APP_CONFIGS.defaultRedirect;
           switch (true) {
             case this.auth.roles.some(r => r.name === 'admin') :
               redirect = '/admin/dashboard';
               break;
-            case this.auth.roles.some(r => r.name === 'doitac_hsk') :
-              redirect = '/admin/doi-tac/dang-ky-thi-sinh';
+            case this.auth.roles.some(r => r.name === 'diem-du-thi') :
+              redirect = '/admin/ke-hoach-thi';
               break;
             default :
 
@@ -247,6 +263,7 @@ export class LoginVideoComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     } else {
       this.notification.toastError("Bạn chưa xác nhận Email, vui lòng xác nhận Email rồi quay lại.");
+      this.loading = false;
     }
 
   }

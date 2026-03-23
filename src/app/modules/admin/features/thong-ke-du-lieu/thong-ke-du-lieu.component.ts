@@ -135,7 +135,7 @@ export class ThongKeDuLieuComponent implements OnInit {
     ]).subscribe({
       next:([dataDonvi,kehoachthi])=>{
         console.log(dataDonvi);
-          this.dataDonvi= dataDonvi;
+          this.dataDonvi= dataDonvi.filter(f=>f.id !== this.auth.user.donvi_id);
           this.kehoachthi = kehoachthi;
         this.notifi.isProcessing(false);
       },

@@ -281,8 +281,7 @@ export class VanDonComponent implements OnInit {
       this.ketquaChange = 'have';
       this.dsKetqua_have = dataReturn[0];
       this.dsKetqua_nothave = dataReturn[1];
-      console.log(this.dsKetqua_have);
-      console.log(this.dsKetqua_nothave);
+
       this.ketquaImportViewClone = this.dsKetqua_have;
 
       this.ketquaImportViewCloneTotal =this.dsKetqua_have.length

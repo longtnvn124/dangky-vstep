@@ -629,7 +629,7 @@ export class YeuCauTraKetQuaComponent implements OnInit {
     }
   }
   btnSelectChuyenphat(bl : string){
-    console.log(bl)
+
     if(bl == '0'){
       this.objectThanhtoan.find(f=>f.isChange == 0).soluong= 1;
     }else{

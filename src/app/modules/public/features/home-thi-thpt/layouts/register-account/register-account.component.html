@@ -1,5 +1,5 @@
 <div class="home-thpt-register" >
-  <div class="home-bg" style=" background-image: url(./assets/images/home-thpt/bg-1.jpg);"></div>
+  <div class="home-bg" style=" background-image: url(./assets/images/home-thpt/bg-02.png);"></div>
   <div class="register-cotainer m-auto ">
     <ng-container [ngSwitch]="active_regiter">
       <ng-container *ngSwitchCase="'0'">
@@ -14,7 +14,7 @@
                 <div class="mb-3  col-12 col-lg-12">
                   <fieldset class="register-form-row" [class.fieldset--error]="f['username'].touched && f['username'].invalid"
                             [class.fieldset--invalid]="f['username'].touched && f['username'].valid">
-                    <label>Số căn cước công dân() <span class="ovic-mark">*</span></label>
+                    <label>Số căn cước công dân<span class="ovic-mark">*</span></label>
                     <input type="text" placeholder="Ví dụ:09127920011" formControlName="username" autocomplete="off">
                   </fieldset>
                   <span class="test-member__from__col__span"
@@ -155,7 +155,7 @@
 <!--          <div class="regiter-true__title" > Đăng ký thành công</div>-->
           <div class="test-submit-form">
             <div class="d-flex flex-column">
-              <label class="text-justify">Hệ thống ghi nhận bạn đã sự dụng tài khoản có <b>số CCCD (hoặc email)</b> để đăng ký tài khoản <b>VSAT-TNU</b>, vui lòng sự dụng tài khoản này để thực hiện đăng nhập vào <b>hệ thống Đăng ký HSK</b> (do Đại học Thái Nguyên phát hành ).
+              <label class="text-justify">Hệ thống ghi nhận bạn đã sự dụng tài khoản có <b>số CCCD (hoặc email)</b> để đăng ký tài khoản <b>VSAT-TNU</b> hoặc <b>HSK-TNU</b>, vui lòng sự dụng tài khoản này để thực hiện đăng nhập vào hệ thống (do Đại học Thái Nguyên phát hành ).
               </label>
               <label class="text-justify"><b class="text-uppercase">lưu ý:</b> Trường hợp quên mật khẩu vui lòng sử dụng chức năng quên mật khẩu ở trang <b>Đăng nhập</b></label>
             </div>

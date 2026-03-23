@@ -175,7 +175,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-6">
+            <div class="col-4">
               <p class="form-row">
                 <label>Đợt thi <span class="ovic-mark">*</span></label>
                 <p-dropdown placeholder="Chọn..." class="w-100" [options]="dataKeHoach" [filter]="true"
@@ -183,11 +183,18 @@
                             formControlName='kehoach_id'></p-dropdown>
               </p>
             </div>
-            <div class="col-6 ">
+            <div class="col-4 ">
               <p class="form-row">
                 <label>Ngày thi <span class="ovic-mark">*</span></label>
                 <p-calendar class="w-100" formControlName="ngaythi" placeholder="Chọn ngày thi" dateFormat="dd/mm/yy"
                             [showIcon]="true" [showSeconds]="false"></p-calendar>
+              </p>
+            </div>
+            <div class="col-4 ">
+              <p class="form-row">
+                <label>Tiền tố SBD<span class="ovic-mark">*</span></label>
+                <input type="text" placeholder="Vd:VSTEP0126..."
+                       formControlName="tiento_sbd" autocomplete="off">
               </p>
             </div>
 
@@ -235,7 +242,8 @@
     </div>
     <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style ">
 
-      <app-add-thi-sinh class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-add-thi-sinh>
+<!--      <app-add-thi-sinh class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-add-thi-sinh>-->
+      <app-add-thi-sinh-v2 class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-add-thi-sinh-v2>
     </div>
 
   </div>

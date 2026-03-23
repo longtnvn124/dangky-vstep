@@ -28,13 +28,23 @@ import {ThanhtoanByQrComponent} from "@shared/components/thanhtoan-by-qr/thanhto
 import {
   DuthiThisinhComponent
 } from "@modules/admin/features/tram-thi/dang-ky-du-thi/duthi-thisinh/duthi-thisinh.component";
+import {FormsModule} from '@angular/forms';
+import {RadioButtonModule} from 'primeng/radiobutton';
 
 type AOA = any[][];
+
+interface ObjectFilter {
+  paymentMethod:number,
+  check_accept:boolean,
+  diemduthi_id:number,
+  isCheckDuthi:boolean
+}
+
 
 @Component({
   selector: 'app-dang-ky-du-thi',
   standalone: true,
-  imports: [CommonModule, MatProgressBarModule, ButtonModule, RippleModule, PaginatorModule, SharedModule, TableModule, TooltipModule, CheckboxModule, DialogModule, ThanhtoanByQrComponent, DuthiThisinhComponent],
+  imports: [CommonModule, FormsModule, MatProgressBarModule, ButtonModule, RippleModule, PaginatorModule, SharedModule, TableModule, TooltipModule, CheckboxModule, RadioButtonModule, DialogModule, ThanhtoanByQrComponent, DuthiThisinhComponent],
   templateUrl: './dang-ky-du-thi.component.html',
   styleUrls: ['./dang-ky-du-thi.component.css']
 })
@@ -49,6 +59,13 @@ export class DangKyDuThiComponent implements OnInit {
   limit             : number = 20;
   sizeFullWidth     : number =1024;
   subscription      : Subscription = new Subscription();
+
+  objectFilter :ObjectFilter = {
+    paymentMethod : 0,
+    check_accept:false,
+    diemduthi_id:null,
+    isCheckDuthi:false
+  }
    constructor(
     private ordersService:VstepOrdersService,
     private notifi:NotificationService,
@@ -88,7 +105,7 @@ export class DangKyDuThiComponent implements OnInit {
 
     this.kehoachthiVstepService.getDataByPageNew(conditionKehoach).subscribe({
       next:({data})=>{
-        console.log(data);
+
         const dataKehoach = data.map(m=>{
           m['_time_convertd'] = this.strToTime(m.ngaybatdau) + ' - ' + this.strToTime(m.ngayketthuc);
           return m;
@@ -290,12 +307,13 @@ export class DangKyDuThiComponent implements OnInit {
         hodem: row[2],
         ten: row[3],
         ngaysinh: this.convertDateByXlsx(row[4]),
-        dantoc: row[5],
-        noisinh: row[6].trim(),
-        cccd_so: row[7],
-        phone:row[10],
-        email:row[11],
-        diachi_congtac:row[12]
+        gioitinh: row[5],
+        dantoc: row[6],
+        noisinh: row[7].trim(),
+        cccd_so: row[8],
+        phone:row[11],
+        email:row[12],
+        diachi_congtac:row[13]
       }
 
       data.push(cell)
@@ -360,17 +378,17 @@ export class DangKyDuThiComponent implements OnInit {
     }
   }
 
-  tableDiemduthi: KehoachthiDiemduthi;
+  tableDiemduthi: KehoachthiDiemduthi[];
   checkTabelDiemduth:boolean = false;
   checkthisinhAffterImport(){
     this.listCheckResult = [];
-    this.tableDiemduthi =null;
+    this.tableDiemduthi =[];
     this.checkTabelDiemduth = false;
       if(this.kehoach_id_select){
 
         const datacheck = JSON.parse(JSON.stringify(this.dataUpload));
         this.notifi_loadding = true;
-        console.log(datacheck);
+
         if (this.kehoach_id_select && datacheck.length > 0) {
           this.loopCheckInfo(datacheck).pipe(
             finalize(() => this.notifi_loadding = false) // Đảm bảo loading được tắt
@@ -383,16 +401,17 @@ export class DangKyDuThiComponent implements OnInit {
                   condition:OvicQueryCondition.equal,
                   value:this.kehoach_id_select.toString()
                 },
-                {
-                  conditionName:'diemduthi_id',
-                  condition:OvicQueryCondition.equal,
-                  value:this.auth.user.donvi_id.toString()
-                }
+                // {
+                //   conditionName:'diemduthi_id',
+                //   condition:OvicQueryCondition.equal,
+                //   value:this.auth.user.donvi_id.toString()
+                // }
               ],
               page:'1',
               set:[
                 {label:'limit', value:'-1'},
                 {label:'select', value:'id,kehoach_id,soluong,diemduthi_id'},
+                {label:'with', value:'donvi'},
               ]
             }
 
@@ -410,12 +429,13 @@ export class DangKyDuThiComponent implements OnInit {
               })
               this.listCheckResult = dataParam;
               // const caphsk_ids = Array.from(new Set(dataParam.map(m=>m['hsk_capdangky'] + '')));
-              this.tableDiemduthi= kehoachCapdo.filter(f=>f.diemduthi_id == this.auth.user.donvi_id).map(m=>{
-                const soluongHaveDangky = capdo.find(f=>f.diemduthi_id == this.auth.user.donvi_id.toString()).total
+              this.tableDiemduthi= kehoachCapdo.map(m=>{
+                m['_title'] = m['donvi'] ? m['donvi'].title : '';
+                const soluongHaveDangky =capdo.find(f=>f.diemduthi_id == m.diemduthi_id) ? capdo.find(f=>f.diemduthi_id == m.diemduthi_id).total : 0
                 m['_soluong_conlai'] = (m.soluong - soluongHaveDangky) > 0 ? (m.soluong - soluongHaveDangky) : 0;
                 return m;
-              })[0];
-              this.checkTabelDiemduth = this.tableDiemduthi['_soluong_conlai'] > 0 ;
+              }).filter(f=>f['_soluong_conlai'] > 0);
+              this.checkTabelDiemduth = this.tableDiemduthi.length > 0 ;
             },error:()=>{
               this.notifi_loadding = false;
               this.notifi.toastError('Mất kết nối với máy chủ')
@@ -435,6 +455,7 @@ export class DangKyDuThiComponent implements OnInit {
   kehoach_id_select: number = null;
   ketquaImportViewPayment: any[] = [];
   listCheckResult: any[] = [];
+  paymentMethod: number = 1;
 
   changeKehoachthi(event) {
     this.kehoach_id_select = event.value;
@@ -584,6 +605,7 @@ export class DangKyDuThiComponent implements OnInit {
         hoten: item['hodem'] + ' ' + item['ten'],
         ten: item['ten'].trim(),
         ngaysinh: this.replaceBirth(item['ngaysinh']),
+        gioitinh: item.gioitinh ? (item.gioitinh.toLowerCase() == 'nam' ? 'nam' : 'nu' ) : '',
         noisinh:item['noisinh'],
         dantoc:item['dantoc'],
         cccd_so: item['cccd_so'].replace(/'/g,""),
@@ -619,7 +641,8 @@ export class DangKyDuThiComponent implements OnInit {
     const itemCreated = {
       user_id: this.auth.user.id,
       kehoach_id: this.kehoach_id_select,
-      lephithi: this.getTongDongia(this.listCheckResult.length, this.kehoach_id_select)
+      lephithi: this.getTongDongia(this.listCheckResult.length, this.kehoach_id_select),
+      is_child_payment: this.paymentMethod
     }
     return this.ordersService.create(itemCreated).pipe(switchMap(m => {
       itemCreated['id'] = m;
@@ -636,10 +659,11 @@ export class DangKyDuThiComponent implements OnInit {
       const itemCreate = {
         parent_id: itemParent['id'],
         kehoach_id: itemParent['kehoach_id'],
-        diemduthi_id: this.auth.user.donvi_id,
+        diemduthi_id: this.objectFilter.diemduthi_id,
         user_id: item['__user_id'],
         lephithi: this.getDongia(this.kehoach_id_select),
         thisinh_id: item['__thisinh_id'],
+        is_child_payment: this.paymentMethod
 
       }
       data[index]['__canOrder'] = true;
@@ -731,6 +755,9 @@ export class DangKyDuThiComponent implements OnInit {
     });
   }
   btnItemPayment(item:OrdersVstep){
+    if(item['is_child_payment']== 1){
+      return this.notifi.toastWarning('Thông báo lượt đăng ký do thí sinh tự thanh toán');
+    }
     this.order_select = {...item};
     this.displayModalThanhtoan = true;
 
@@ -810,5 +837,15 @@ export class DangKyDuThiComponent implements OnInit {
     this.listCheckResult = [];
     this.dataUpload = [];
     this.notifi.closeSideNavigationMenu();
+  }
+
+
+  selectDiemduthiByDrd(event){
+
+    this.objectFilter.diemduthi_id = event.value;
+
+    const itemForselect = this.tableDiemduthi.find(f=>f.diemduthi_id == event.value.toString());
+
+    this.objectFilter.isCheckDuthi = itemForselect && itemForselect['_soluong_conlai'] >= this.dataUpload.length ;
   }
 }

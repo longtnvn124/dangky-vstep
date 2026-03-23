@@ -328,7 +328,7 @@ export class DonviComponent implements OnInit {
   saveForm() {
     const titleInput = this.f['title'].value.trim();
     this.f['title'].setValue(titleInput);
-    console.log(this.formSave.value)
+
     if (this.formSave.valid) {
       if (titleInput !== '') {
         this.formActive.data = this.formSave.value;

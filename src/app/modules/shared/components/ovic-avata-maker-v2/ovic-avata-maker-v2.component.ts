@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {OutputFormat} from "ngx-image-cropper/lib/interfaces/cropper-options.interface";
 import {ImageCroppedEvent} from "ngx-image-cropper";
 import {AvatarMaker} from "@shared/models/avatar-maker";

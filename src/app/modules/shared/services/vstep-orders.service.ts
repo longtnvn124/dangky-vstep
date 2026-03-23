@@ -23,7 +23,7 @@ export interface OrdersVstep {
   parent_id?: number;
   params?: params[];
   user_id?:number;
-
+  is_child_payment?: number;
 }
 
 export interface params {
@@ -140,6 +140,115 @@ export class VstepOrdersService {
   activeOrder(ids: number[]): Observable<any> {
     return this.http.post<Dto>(this.api + 'active-order/', {ids: ids});
   }
+  // ------------------------------------------------------------------------------
+  getDataByKehoachIdAndNotwidthXuatdanhSach(kehoach_id: number,  isThisinh?: boolean, trangthai_thanhtoan?:number): Observable<OrdersHsk[]> {
+    const conditions: OvicConditionParam[] = [
+      {
+        conditionName: 'kehoach_id',
+        condition: OvicQueryCondition.equal,
+        value: kehoach_id.toString(),
+      },
+
+    ];
+    if (isThisinh) {
+      conditions.push(
+        {
+          conditionName: 'diemduthi_id',
+          condition: OvicQueryCondition.notEqual,
+          value: '0',
+          orWhere: "and"
+        },
+      )
+    }
+    if (trangthai_thanhtoan === 1) {
+      conditions.push(
+        {
+          conditionName: 'trangthai_thanhtoan',
+          condition: OvicQueryCondition.equal,
+          value: '1',
+          orWhere: "and"
+        },
+      )
+    }
+    const fromObject = {
+      paged: 1,
+      limit: -1,
+      orderby: 'id',
+      order: "ASC",// dieemr giarm dần,
+
+    }
+    const params: HttpParams = this.httpParamsHelper.paramsConditionBuilder(conditions, new HttpParams({fromObject}).set('with','huy'));
+    return this.http.get<Dto>(this.api, {params}).pipe(map(res => res.data));
+  }
+
+  getDataBykehoachIdAndSelectforThongkeV2(page:number,limit:number,kehoach_id: number, select:string,trangthai_thanhtoan?:string): Observable<{recordsTotal: number, data: OrdersVstep[]}> {
+    const conditions: OvicConditionParam[] = [
+      {
+        conditionName: 'kehoach_id',
+        condition: OvicQueryCondition.equal,
+        value: kehoach_id.toString(),
+      },
+      {
+        conditionName: 'diemduthi_id',
+        condition: OvicQueryCondition.notEqual,
+        value: '0',
+        orWhere:'and'
+      },
+    ];
+    if( trangthai_thanhtoan && trangthai_thanhtoan == '1'){
+      conditions.push({
+        conditionName: 'trangthai_thanhtoan',
+        condition: OvicQueryCondition.equal,
+        value: '1',
+        orWhere:'and'
+      })
+    }
+    if( trangthai_thanhtoan &&trangthai_thanhtoan ==  '0'){
+      conditions.push({
+          conditionName: 'trangthai_thanhtoan',
+          condition: OvicQueryCondition.notEqual,
+          value: '1',
+          orWhere:'and'
+        }
+      )
+    }
+
+    const fromObject = {
+      paged: page,
+      limit: limit,
+      orderby: 'id',
+      order: "ASC",// dieemr giarm dần,
+      select:select ? select:'',
+    }
+    const params: HttpParams = this.httpParamsHelper.paramsConditionBuilder(conditions, new HttpParams({fromObject}).set('with', 'user,thisinh'));
+    return this.http.get<Dto>(this.api, {params});
+  }
+
+  getDataByparentIds(parent_id: number[], select: string): Observable<OrdersVstep[]> {
+    const conditions: OvicConditionParam[] = [
+      // {
+      //   conditionName: 'parent_id',
+      //   condition: OvicQueryCondition.equal,
+      //   value: parent_id.toString(),
+      // },
+
+    ];
+
+    const fromObject = {
+      paged: 1,
+      limit: -1,
+      orderby: 'id',
+      order: "ASC",// dieemr giarm dần,
+      select: select ? select : null,
+      include: parent_id.join(','),
+      include_by: 'id'
+
+    }
+
+    const params: HttpParams = this.httpParamsHelper.paramsConditionBuilder(conditions, new HttpParams({fromObject}).set('with','user,thisinh'));
+    return this.http.get<Dto>(this.api, {params}).pipe(map(res => res.data));
+  }
+
 
   // ------------------------------------new --------------------------------------
   getPaymentV2(id: number): Observable<any> {
@@ -160,6 +269,8 @@ export class VstepOrdersService {
     const params = this.httpParamsHelper.paramsConditionBuilder(conditions, new HttpParams({fromObject}));
     return this.http.get<Dto>(''.concat(this.api, 'payment-check/',token), {params}).pipe(map(res => res));
   }
+
+
 
 
 }

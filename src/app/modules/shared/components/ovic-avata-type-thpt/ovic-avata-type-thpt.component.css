@@ -3,6 +3,11 @@
     width: auto;
 }
 
+/*.imgchecksize.horizontal {*/
+/*  width: unset;*/
+/*  height: 100%;*/
+/*}*/
+
 @media(max-width:1024px) {
     .imgchecksize {
         max-height: unset;
@@ -13,5 +18,10 @@
       width: unset;
       height: 100%;
     }
+
+  .imgchecksize.horizontal {
+    width: unset;
+    height: 100%;
+  }
 
 }

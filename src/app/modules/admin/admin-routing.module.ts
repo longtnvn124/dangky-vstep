@@ -7,6 +7,9 @@ import {HomeComponent} from "@modules/admin/features/home/home.component";
 import {KeHoachThiComponent} from "@modules/admin/features/ke-hoach-thi/ke-hoach-thi.component";
 import {ThongKeDuLieuComponent} from "@modules/admin/features/thong-ke-du-lieu/thong-ke-du-lieu.component";
 import {MailCheckComponent} from "@modules/admin/features/mail-check/mail-check.component";
+import {
+  DuyetThanhToanTramComponent
+} from "@modules/admin/features/duyet-thanh-toan-tram/duyet-thanh-toan-tram.component";
 
 const routes : Routes = [
 	{
@@ -88,6 +91,10 @@ const routes : Routes = [
       {
         path         : 'quan-ly-tai-khoan' ,
         loadChildren : () => import('@modules/admin/features/quan-ly-tai-khoan/quan-ly-tai-khoan.module').then( m => m.QuanLyTaiKhoanModule )
+      } ,
+      {
+        path         : 'duyet-thanh-toan-tram' ,
+        component : DuyetThanhToanTramComponent
       } ,
       {
         path         : 'thong-ke-du-lieu' ,

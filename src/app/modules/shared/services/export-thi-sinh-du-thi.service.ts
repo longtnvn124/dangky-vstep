@@ -369,7 +369,7 @@ export class ExportThiSinhDuThiService {
     const wb = new Workbook();
     const worksheet = wb.addWorksheet('Danh sách thí sinh', { pageSetup: { paperSize: 9, orientation: 'portrait' } });
 
-    const text_header = 'TRẠNG THÁI ĐĂNG KÝ THI HSK ('+ title +')';
+    const text_header = 'TRẠNG THÁI ĐĂNG KÝ THI VSTEP ('+ title +')';
     worksheet.addRow([text_header]);
     worksheet.addRow([""]);
     const header =
@@ -384,7 +384,7 @@ export class ExportThiSinhDuThiService {
           "Email",
           "Điện thoại",
           "Lệ phí thi",
-          "Cấp Hsk đăng ký",
+          "Điểm dự thi",
           "Cập nhật thông tin",
           "Cập nhật ảnh chân dung",
           "Cập nhật ảnh CCCD (hộ chiếu)",
@@ -531,7 +531,7 @@ export class ExportThiSinhDuThiService {
 
     wb.xlsx.writeBuffer().then(buffer => {
       const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      fs.saveAs(data, 'Thống kê HSK-TNU('+ title +').xlsx' );
+      fs.saveAs(data, 'Thống kê V-STEP( '+ title +').xlsx' );
     });
 
 

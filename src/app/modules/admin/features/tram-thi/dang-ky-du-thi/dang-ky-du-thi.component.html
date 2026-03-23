@@ -29,9 +29,9 @@
           Danh sách đăng ký
         </div>
         <div class="dk-head_r">
-          <div><ovic-dropdown [options]="listKehoachClone" placeholder="Chọn..." filterBy="title" [filter]="true"
-            optionLabel="title" optionId="id"
-          ></ovic-dropdown></div>
+<!--          <div><ovic-dropdown [options]="listKehoachClone" placeholder="Chọn..." filterBy="title" [filter]="true"-->
+<!--            optionLabel="title" optionId="id"-->
+<!--          ></ovic-dropdown></div>-->
           <button pRipple pButton icon="pi pi-plus" label="Thêm mới" (click)="btnViewFormAdd()"></button>
         </div>
       </div>
@@ -64,7 +64,7 @@
                   <td class="text-center">{{ item['__ngay_thanhtoan'] }}</td>
                   <td class="text-center">{{ item['_total'] }}</td>
                   <td class="text-right">{{ item.lephithi | numberToVndCurrencuy }}</td>
-                  <td class="text-center">
+                  <td class="text-center" *ngIf="item['is_child_payment'] == 0 else ischild">
                     <ng-container [ngSwitch]="item['trangthai_thanhtoan']">
                       <ng-container *ngSwitchCase="0">
                         <div class="chuathanhtoan">Chưa thanh toán</div>
@@ -77,6 +77,11 @@
                       </ng-container>
                     </ng-container>
                   </td>
+                  <ng-template #ischild>
+                    <td class="text-center">
+                      <div class="chothanhtoan">Thí sinh tự thanh toán</div>
+                    </td>
+                  </ng-template>
 
                   <td class="text-center">
                     <ng-container *ngIf="item.trangthai_thanhtoan ===1 else chuathanhtoan">
@@ -150,6 +155,7 @@
                   <th class=" text-center ">họ đệm</th>
                   <th class="ovic-w-180px text-center">Tên</th>
                   <th class="ovic-w-180px text-center">Ngày sinh</th>
+                  <th class="ovic-w-180px text-center">Giới tính</th>
                   <th class="ovic-w-120px text-center">Dân tộc</th>
                   <th class="ovic-w-120px text-center">Nơi sinh</th>
                   <th class="ovic-w-200px text-center">Số CCCD(Hộ chiếu)</th>
@@ -165,6 +171,7 @@
                   <td class="text-left">{{ item['hodem'] }}</td>
                   <td class="text-center">{{ item['ten'] }}</td>
                   <td class="text-center">{{ item['ngaysinh'] }}</td>
+                  <td class="text-center">{{ item['gioitinh'] }}</td>
                   <td class="text-left">{{ item['dantoc'] }}</td>
                   <td class="text-left">{{ item['noisinh'] }}</td>
                   <td class="text-center" [ngClass]="checkDuplicate(dataUpload,item,'cccd_so') ? 'tb-duplicate':''">{{ item['cccd_so'] }}</td>
@@ -233,17 +240,23 @@
           <span>Hệ thống ghi nhận có <strong style="color: #0ba50b">{{listCheckResult.length }} </strong> thông tin đăng ký phù hợp, <strong style="color: #d61919">{{((this.dataUpload.length - listCheckResult.length) >= 0 ? (this.dataUpload.length - listCheckResult.length) : 0 )}}</strong> thông tin không phù hợp</span>
         </div>
         <div class="view-table mt-2" *ngIf="tableDiemduthi">
-<!--          <div class="title"> SỐ lượng được phép đăng ký còn lại</div>-->
-          <table class="site-hsk">
-            <tr >
-              <th class="text-center font-weight-bold"  style="font-size:18px;">Số lượng được phép đăng ký còn lại</th>
+          <div class="title"> Số lượng được phép đăng ký còn lại</div>
 
-            </tr>
-            <tr>
-              <td class="text-center " [ngClass]="tableDiemduthi['_soluong_conlai'] > 0 ? 'view-true' : 'view-false' " >{{ tableDiemduthi['_soluong_conlai'] }}</td>
-            </tr>
+          <div class="ovic-wrap-table-rps">
+            <div class="ovic-wrap-table-rps__inner">
+              <table class="site-hsk">
+                <tr>
+                  <th class="text-center ovic-w-180px" *ngFor="let item of tableDiemduthi "> {{item['donvi']['title']}}</th>
+                </tr>
+                <tr>
+                  <td class="text-center" *ngFor="let item of tableDiemduthi"
+                      [ngClass]="item['_soluong_conlai'] > 0 ? 'view-true' : 'view-false' "
+                  > {{item['_soluong_conlai']}}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
 
-          </table>
           <div *ngIf="!checkTabelDiemduth" class="text-center p-4" ><span style="color:red"><strong>Lưu ý: </strong></span> Danh sách thí sinh bạn import có số lượng đăng ký không phù hợp, vui lòng kiểm tra lại file trước khi import vào phần mềm </div>
         </div>
       </div>
@@ -276,19 +289,37 @@
             </div>
 
           </div>
-          <div class="notifi-payment_right">
-            <!--            <div class="drd">-->
-            <!--              <p-dropdown class="capdo-hsk bd-rd-0 ovic-w-150px" placeholder="Chọn đợt thi đăng ký" [options]="kehoanhThi" optionLabel="dotthi"-->
-            <!--                          optionValue="id" (onChange)="changeKehoachthi($event)"></p-dropdown>-->
-            <!--            </div>-->
+
+          <div class="mt-3">
+            <div class="title">Điểm dự thi </div>
+            <p-dropdown class="capdo-hsk bd-rd-0 ovic-w-250px" placeholder="Chọn Điểm dự thi..." [options]="tableDiemduthi" optionLabel="_title" optionValue="diemduthi_id" (onChange)="selectDiemduthiByDrd($event)"></p-dropdown>
+          </div>
+
+
+          <div *ngIf="objectFilter.diemduthi_id && objectFilter.isCheckDuthi " class="notifi-payment_right">
+
+            <div class="payment-method mb-3">
+
+              <div class="title">Hình thức thanh toán</div>
+              <div class="d-flex align-items-center" style="gap:14px">
+                <div class="field-radiobutton">
+                  <p-radioButton name="paymentMethod" [(ngModel)]="objectFilter.paymentMethod" [value]="0" inputId="pm-parent"></p-radioButton>
+                  <label for="pm-parent" class="m-0 pl-1">Trạm thi thanh toán</label>
+                </div>
+                <div class="field-radiobutton">
+                  <p-radioButton name="paymentMethod" [(ngModel)]="objectFilter.paymentMethod" [value]="1" inputId="pm-self"></p-radioButton>
+                  <label for="pm-self" class="m-0 pl-1">Thí sinh tự thanh toán</label>
+                </div>
+              </div>
+            </div>
             <div class="checkbox">
               <div>
                 <div class="field-checkbox">
-                  <p-checkbox [(ngModel)]="check_accept" [binary]="true" inputId="binary" ></p-checkbox>
+                  <p-checkbox [(ngModel)]="objectFilter.check_accept" [binary]="true" inputId="binary" ></p-checkbox>
                   <label class="m-0 pl-1">Xác nhận thanh toán</label>
                 </div>
               </div>
-              <ng-container *ngIf="check_accept else patmentTemPlace">
+              <ng-container *ngIf="objectFilter.check_accept else patmentTemPlace">
                 <button pButton pRipple label="Xác nhận" (click)="btnPayment()" class="p-button-success"></button>
               </ng-container>
               <ng-template #patmentTemPlace>
@@ -298,6 +329,12 @@
             </div>
 
           </div>
+
+          <ng-container  *ngIf="objectFilter.diemduthi_id && !objectFilter.isCheckDuthi ">
+            <div>Số lượng thí sinh dự thi vượt quá số lượng còn lại được phép đăng ký.</div>
+          </ng-container>
+
+
         </div>
       </div>
 

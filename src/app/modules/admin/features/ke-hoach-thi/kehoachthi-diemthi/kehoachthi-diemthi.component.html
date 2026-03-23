@@ -30,13 +30,16 @@
                 <div class="title">Danh sách điểm dự thi và số lượng thí sinh mỗi điểm</div>
               </div>
               <div class="diemduthi-body">
-                <div class="checkbox-layout-form-parent">
+                <div class="checkbox-layout-form-parent" *ngIf="dmDiemduthi.length>0 else notDiemduhi">
                   <div *ngFor="let item of dmDiemduthi" class="checkbox-layout-form">
                     <mat-checkbox [checked]="item['checked']" (change)="onSekectDiemthi($event, item)"
                                   [value]="item['id'].toString()">{{ item['title'] }}
                     </mat-checkbox>
                   </div>
                 </div>
+                <ng-template #notDiemduhi>
+                  <div class="d-flex justify-content-center align-items-center"> không có điểm dự thi</div>
+                </ng-template>
 
               </div>
               <div class="diemduthi-bottom">

@@ -71,7 +71,7 @@ const appLanguages = [
 
 const appDefaultLanguage = { name: 'vn', label: 'Tiếng việt' };
 
-const appVersion = '1.0.04';
+const appVersion = '1.0.00';
 
 export const APP_CONFIGS = {
   defaultRedirect: '/admin/thi-sinh/thong-tin',

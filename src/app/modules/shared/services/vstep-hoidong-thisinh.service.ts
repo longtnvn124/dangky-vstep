@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import {getRoute} from "@env";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {HttpParamsHeplerService} from "@core/services/http-params-hepler.service";
 import {Observable} from "rxjs";
-import {Dto} from "@core/models/dto";
+import {Dto, OvicConditionParam} from "@core/models/dto";
 import {map} from "rxjs/operators";
 import {ConditionOption} from "@shared/models/condition-option";
+import {SumDiemduthi} from "@modules/admin/features/thi-sinh/thi-sinh-dang-ky/thi-sinh-dang-ky.component";
 
 export interface HoidongThisinh {
   id?:number,
@@ -54,6 +55,22 @@ export class VstepHoidongThisinhService {
   deleteByKey(id:number,key:string): Observable<any> {
     return this.http.delete(''.concat(this.api, id.toString(10),'?by=',key));
   }
+
+  //---------------------------------------------------
+  getDataTotalDiemthiByKehoach(kehoach_id: number,hoidong_id:number): Observable<SumDiemduthi[]> {
+    const conditions: OvicConditionParam[] = [
+
+    ];
+    const fromObject = {
+      kehoach_id:kehoach_id,
+      hoidong_id:hoidong_id,
+    }
+
+    const params: HttpParams = this.httpParamsHelper.paramsConditionBuilder(conditions, new HttpParams({fromObject}));
+    // return this.http.get<Dto>(this.api, { params }).pipe(map(res => res.data));
+    return this.http.get<Dto>(''.concat(this.api, 'diemduthi'), {params}).pipe(map(res => res['diemduthi']));
+  }
+
 
 
 

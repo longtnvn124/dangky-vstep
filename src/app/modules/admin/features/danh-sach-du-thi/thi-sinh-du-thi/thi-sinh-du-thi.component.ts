@@ -300,7 +300,7 @@ export class ThiSinhDuThiComponent implements OnInit {
   }
 
   loadDropdow(event) {
-    console.log(event)
+
     // if(!event){
     //   return
     // }

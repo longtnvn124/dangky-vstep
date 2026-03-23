@@ -31,13 +31,14 @@ import {VstepHoidongPhongthiThisinhService} from "@shared/services/vstep-hoidong
 import {
   HoidongthiPhongthiThisinhComponent
 } from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/hoidongthi-phongthi/hoidongthi-phongthi-thisinh/hoidongthi-phongthi-thisinh.component";
+import {FocusInputPipe} from "@shared/pipes/focus-input.pipe";
 
 type AOA = any[][];
 
 @Component({
   selector: 'app-hoidongthi-phongthi',
   standalone: true,
-  imports: [CommonModule, ButtonModule, RippleModule, DropdownModule, TableModule, FormsModule, SharedModule, TooltipModule, PaginatorModule, MatProgressBarModule, DialogModule, InputTextModule, HoidongthiPhongthiThisinhComponent],
+  imports: [CommonModule, ButtonModule, RippleModule, DropdownModule, TableModule, FormsModule, SharedModule, TooltipModule, PaginatorModule, MatProgressBarModule, DialogModule, InputTextModule, HoidongthiPhongthiThisinhComponent, FocusInputPipe],
   templateUrl: './hoidongthi-phongthi.component.html',
   styleUrls: ['./hoidongthi-phongthi.component.css']
 })
@@ -296,10 +297,11 @@ export class HoidongthiPhongthiComponent implements OnInit {
         ordering: row[0],
         diemduthi_id: row[1],
         phongthi: row[2],
-        soluong: row[3],
-        ngaythi: this.convertDateByXlsx(row[4]),
-        thoigian_duthi: row[5],
-        diadiem_duthi: row[6],
+        soluong_toida: row[3],
+        soluong: row[4],
+        ngaythi: this.convertDateByXlsx(row[5]),
+        thoigian_duthi: row[6],
+        diadiem_duthi: row[7],
       }
 
       data.push(cell)
@@ -391,6 +393,7 @@ export class HoidongthiPhongthiComponent implements OnInit {
         diemduthi_id: !!this.dataDonvi.find(f=>f.code == data[index].diemduthi_id) ? this.dataDonvi.find(f=>f.code == data[index].diemduthi_id).id :null,
         phongthi: data[index]['phongthi'],
         soluong: data[index]['soluong'],
+        soluong_toida: data[index]['soluong_toida'],
         ngaythi: data[index]['ngaythi'],
         diadiem_duthi: data[index]['diadiem_duthi'],
         thoigian_duthi: data[index]['thoigian_duthi'],
@@ -497,7 +500,7 @@ export class HoidongthiPhongthiComponent implements OnInit {
   convertDateTimeByPhong(text1:string,text2: string){
     const textiDate =new Date(text1);
 
-    return textiDate.getDate() + '/'+ (textiDate.getMonth() + 1) + '/' + textiDate.getFullYear()+ ' ' + text2.replace('h', ':');
+    return textiDate.getDate() + '/'+ (textiDate.getMonth() + 1) + '/' + textiDate.getFullYear()+ ' ' + text2;
   }
 
   async btnDeleteByDiemduthi(item:KehoachthiDiemduthi){
@@ -526,6 +529,11 @@ export class HoidongthiPhongthiComponent implements OnInit {
   dataPhonthiDiemthi:{thisinh: HoidongThisinh[],phongthi: HoidongPhongthi[],diemduthi:KehoachthiDiemduthi[]}=null;
   viewResultCheck :boolean = false;
   btnCheckData(){
+    if(!this.hoidongSelect.tiento_sbd ){
+      return  this.notifi.toastError('Vui lòng cập nhật tiền tố SBD của thí sinh');
+    }
+
+
     this.dataPhonthiDiemthi={
       thisinh : [],
       diemduthi:[],
@@ -551,15 +559,19 @@ export class HoidongthiPhongthiComponent implements OnInit {
       this.kehoachthiDiemthiVstepService.getDataByPageNew(conditionkehoachDIemduthi)
     ]).subscribe({
       next:([dataThisinh,dataPhongthi,dataDiemduthi])=>{
-
-
         const diemduthi = dataDiemduthi.data.map(m=>{
-
+          const donvi = this.dataDonvi.find(f=>f.id == m.diemduthi_id);
           const thisinh = dataThisinh.filter(f=>f.diemduthi_id === m.diemduthi_id).sort((a,b)=>{
             a['_ten']= a.hoten.trim().split(/\s+/).pop();
             b['_ten'] = b.hoten.trim().split(/\s+/).pop();
 
             return a['_ten'].localeCompare(b['_ten'])
+          }).map((a,index)=>{
+
+            const stt = (index + 1).toString().padStart(3,'0')
+              a['_sobaodanh'] = (donvi ? donvi.code : '' ) + this.hoidongSelect.tiento_sbd + '-' + stt;
+
+            return a;
           })
 
           m['_thisinh'] = thisinh
@@ -571,7 +583,6 @@ export class HoidongthiPhongthiComponent implements OnInit {
           const phongthiTotalSoluong : number = phongthi.length >0 ? phongthi.reduce((acc ,item)=>{
             return acc + item['soluong']
           },0) : 0;
-          console.log(phongthiTotalSoluong);
           if(thisinh.length > 0 && phongthiTotalSoluong>0 && thisinh.length <= phongthiTotalSoluong){
             m['_isSettings'] = true;
             m['_thisinh_in_phongthi'] = this.attachPhongthi(thisinh,phongthi)
@@ -609,12 +620,11 @@ export class HoidongthiPhongthiComponent implements OnInit {
   btnAcceptDiemduthi(){
     // this.notifi.isProcessing(true);
     let phongthiThisinh = [];
-    console.log(this.dataPhonthiDiemthi)
     this.dataPhonthiDiemthi.diemduthi.filter(f=>f['_isSettings']).forEach((e)=>{
-      console.log(e);
+
       phongthiThisinh = [].concat(...phongthiThisinh, ...e['_thisinh_in_phongthi'])
     })
-    console.log(phongthiThisinh);
+
 
     this.hoidongPhongthiThisinhService.deleteByKey(this.hoidongSelect.id,'hoidong_id').pipe(switchMap(m=>{
 
@@ -630,7 +640,8 @@ export class HoidongthiPhongthiComponent implements OnInit {
         this.notifi.isProcessing(false);
         this.notifi.disableLoadingAnimationV2();
 
-      },error:()=>{
+      },error:(e)=>{
+        console.log(e)
         this.notifi.toastError('Mất kết nối với máy chủ');
         this.notifi.isProcessing(false);
         this.notifi.disableLoadingAnimationV2();
@@ -642,6 +653,7 @@ export class HoidongthiPhongthiComponent implements OnInit {
 
   private loopCreatedHoidongPhongthi(data: any[],step:number,percent:number):Observable<any>{
     const index = data.findIndex(a=>!a['isCreated']);
+    console.log(index);
     if(index !== -1){
       const item  = {
 
@@ -650,7 +662,9 @@ export class HoidongthiPhongthiComponent implements OnInit {
         diemduthi_id:data[index].diemduthi_id ,
         hoidong_phongthi_id:data[index].hoidong_phongthi_id ,
         hoidong_id:this.hoidongSelect.id,
-        kehoach_id:this.hoidongSelect.kehoach_id
+        kehoach_id:this.hoidongSelect.kehoach_id,
+        hoten:data[index]['hoten'],
+        sobaodanh:data[index]['_sobaodanh']
       };
       return this.hoidongPhongthiThisinhService.create(item).pipe(switchMap(m=>{
         data[index]['isCreated']= true;
@@ -672,6 +686,71 @@ export class HoidongthiPhongthiComponent implements OnInit {
     this.diemduthiSelect= diemduthi;
     this.hoidongPhongthiSelect = {...item};
     this.ngView = 4;//
+  }
+
+  // -----------------------------------------
+
+  index_focus: number = 0;
+  pointQuestionKeyDown(event: KeyboardEvent, inputPoint_quest: HTMLInputElement) {
+    if (!event) return;
+
+    const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight'];
+
+    const value = inputPoint_quest.value;
+    const cursorStart = inputPoint_quest.selectionStart ?? 0;
+    const cursorEnd = inputPoint_quest.selectionEnd ?? 0;
+
+    if (/^[0-100]$/.test(event.key)) {
+      const newValue =
+        value.substring(0, cursorStart) + event.key + value.substring(cursorEnd);
+      if (newValue.includes('.')) {
+        const parts = newValue.split('.');
+        if (parts[1]?.length > 1) {
+          event.preventDefault();
+          return;
+        }
+      }
+      return;
+    }
+    if (event.key === '.') {
+      if (value.includes('.')) {
+        event.preventDefault();
+      }
+      return;
+    }
+
+    if (allowedKeys.includes(event.key)) {
+      return;
+    }
+    event.preventDefault();
+  }
+  saveSoluongByDiemduthi(event,row:any,indexParent:number, index){
+    if (event && row) {
+      if (row.soluong || row.soluong === 0) {
+        if (event.key === 'Enter') {
+          this.notifi.isProcessing(true);
+          console.log(this.index_focus)
+          console.log(row)
+          console.log(event)
+          this.hoidongPhongthiService.update(row.id, { soluong: row.soluong }).subscribe({
+            next: () => {
+              this.notifi.isProcessing(false);
+              if (this.listKehoachDiemthi[indexParent]['__hoidongPhongthi'][index + 1]) {
+                this.index_focus = this.listKehoachDiemthi[indexParent]['__hoidongPhongthi'][index + 1].id;
+              }
+
+              this.notifi.toastSuccess("Lưu số lượng thí sinh thành công");
+
+            },
+            error: () => {
+              this.notifi.isProcessing(false);
+              this.notifi.toastError("Lưu số lượng thí sinh thất bại");
+              row.soluong = row['soluong'] ? row['soluong'] : 0;
+            }
+          })
+        }
+      }
+    }
   }
 
 }

@@ -32,6 +32,9 @@ import {AuthService} from "@core/services/auth.service";
 import {
   HoidongthiBieumauComponent
 } from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/hoidongthi-bieumau/hoidongthi-bieumau.component";
+import {
+  AddThiSinhV2Component
+} from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/add-thi-sinh-v2/add-thi-sinh-v2.component";
 
 interface FormHoiDong extends OvicForm {
   object: HskHoidongthi;
@@ -56,6 +59,7 @@ interface FormHoiDong extends OvicForm {
     AddThiSinhComponent,
     HoidongthiPhongthiComponent,
     HoidongthiBieumauComponent,
+    AddThiSinhV2Component,
 
   ],
   standalone: true
@@ -137,6 +141,7 @@ export class DsHoiDongThiComponent implements OnInit {
       mota: [null],
       state: [1, Validators.required],
       ngaythi: ['', Validators.required],
+      tiento_sbd: ['', Validators.required],
     })
 
     this.isAdmin= this.auth.userHasRole('admin');
@@ -277,7 +282,7 @@ export class DsHoiDongThiComponent implements OnInit {
             mota: '',
             status: 1,
             ngaythi: '',
-            tiento_sobaodanh: 'TNU241'
+            tiento_sbd: ''
           });
         }
         this.notifi.closeSideNavigationMenu();
@@ -317,7 +322,9 @@ export class DsHoiDongThiComponent implements OnInit {
         title: '',
         mota: '',
         state: 1,
-        ngaythi: ''
+        ngaythi: '',
+        tiento_sbd:''
+
       });
     } else if (type === 'update') {
       this.btn_checkAdd = "Cập nhật"
@@ -327,7 +334,8 @@ export class DsHoiDongThiComponent implements OnInit {
         title: object1.title,
         mota: object1.mota,
         state: object1.state,
-        ngaythi: object1.ngaythi ? new Date(object1.ngaythi) : null
+        ngaythi: object1.ngaythi ? new Date(object1.ngaythi) : null,
+        tiento_sbd:object1.tiento_sbd
       });
       this.formActive = this.listForm[FormType.UPDATE];
       this.formActive.object = object1;
@@ -375,6 +383,7 @@ export class DsHoiDongThiComponent implements OnInit {
       kehoach_id: this.f['kehoach_id'].value,
       mota: this.f['mota'].value,
       state: this.f['state'].value,
+      tiento_sbd: this.f['tiento_sbd'].value,
     }
 
     if (this.formSave.valid) {

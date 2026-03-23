@@ -17,6 +17,9 @@ import {OvicQueryCondition} from "@core/models/dto";
 import {map} from "rxjs/operators";
 import {NgPaginateEvent} from "@shared/models/ovic-models";
 import {DonViService} from "@shared/services/don-vi.service";
+import {HuyOrders, HuyOrdersService} from "@shared/services/huy-orders.service";
+import {BUTTON_NO, BUTTON_YES} from "@core/models/buttons";
+import {DateTimeServer, ServerTimeService} from "@shared/services/server-time.service";
 
 export interface SumMonThi {
   diemduthi_id: string,
@@ -24,7 +27,7 @@ export interface SumMonThi {
 }
 
 export interface SumDiemduthi {
-  diemduthi_id: string,
+  diemduthi_id: number,
   total: number,
 }
 
@@ -58,7 +61,7 @@ export class ThiSinhDangKyComponent implements OnInit {
   kehoach_select            : KeHoachThi = null;
   kehoach_diemduthi_select  : KehoachthiDiemduthi = null;
   limit                     : number = 20;
-
+  formHuyOrder              : FormGroup;
 
   constructor(
     private kehoachthiVstepService: KehoachthiVstepService,
@@ -73,7 +76,9 @@ export class ThiSinhDangKyComponent implements OnInit {
     private thisinhInfoService: ThisinhInfoService,
     private senderEmailService: SenderEmailService,
     private dmDiemDuThiService: DmDiemDuThiService,
-    private donviService: DonViService
+    private donviService: DonViService,
+    private huyOrdersService:HuyOrdersService,
+    private serverTimeService :ServerTimeService
   ) {
     this.formSave = this.fb.group({
       user_id: [null, Validators.required],
@@ -81,10 +86,22 @@ export class ThiSinhDangKyComponent implements OnInit {
       diemduthi_id: [null, Validators.required],
       lephithi: [null, Validators.required],
     })
+    this.formHuyOrder = this.fb.group({
+      user_id: [null, Validators.required],
+      kehoach_id: [null, Validators.required],
+      caphsk_id: [null, Validators.required],
+      order_id: [null, Validators.required],
+      hoten: ['', Validators.required],
+      mota: ['', Validators.required],
+      files: [null],
+      minhchung: [null]
+    })
 
   }
 
-
+  get formHuy(): { [key: string]: AbstractControl<any> } {
+    return this.formHuyOrder.controls;
+  }
   ngOnInit(): void {
 
     this.loadInit();
@@ -113,20 +130,21 @@ export class ThiSinhDangKyComponent implements OnInit {
         { label:'order', value:'ASC'},
       ]
     }
-    forkJoin<[ThiSinhInfo, KeHoachThi[]]>(
+    forkJoin<[ThiSinhInfo, KeHoachThi[],DateTimeServer]>(
       [
         this.thisinhInfoService.getUserInfo(this.auth.user.id),
         this.kehoachthiVstepService.getDataByPageNew(conditonKehoach).pipe(map(m=>m.data)),
-
+        this.serverTimeService.getTime()
       ]
     ).subscribe({
-      next: ([ thisinhInfo, keHoachThi,]) => {
-
+      next: ([ thisinhInfo, keHoachThi,dateTimeService]) => {
+        this.dateTimeService = dateTimeService;
         this.userInfo = thisinhInfo;
 
         const curentDate = new Date();
 
         const kehoachthiParam = keHoachThi.map(m => {
+          m['_time_convertd'] = this.strToTime(m.ngaybatdau) + ' - ' + this.strToTime(m.ngayketthuc);
           m['_date_convertd'] = this.strToTime(m.ngaybatdau) + ' - ' + this.strToTime(m.ngayketthuc);
           return m;
         })
@@ -168,6 +186,9 @@ export class ThiSinhDangKyComponent implements OnInit {
         },
         {
           label:'order',value : 'DESC'
+        },
+        {
+          label:'with',value : 'parent'
         }
       ]
     }
@@ -181,7 +202,8 @@ export class ThiSinhDangKyComponent implements OnInit {
           {
             conditionName:'id',
             condition:OvicQueryCondition.equal,
-            value:diemthi_ids.toString()
+            value:diemthi_ids.toString(),
+            orWhere:'in'
           },
         ],
         page: '1',
@@ -222,7 +244,7 @@ export class ThiSinhDangKyComponent implements OnInit {
           return m;
         });
         this.notifi.isProcessing(false);
-        // console.log(this.dataOrders);
+
       },
       error: () => {
         this.notifi.isProcessing(false);
@@ -262,7 +284,7 @@ export class ThiSinhDangKyComponent implements OnInit {
 
   SaveForm() {
     this.f['user_id'].setValue(this.auth.user.id);
-    console.log(this.formSave);
+
     if (this.formSave.valid) {
       this.isLoading = true;
 
@@ -340,26 +362,52 @@ export class ThiSinhDangKyComponent implements OnInit {
   getPayment(item: OrdersVstep) {
     const kehoachSelect = this.keHoachThi.find(f => f.id === item.kehoach_id)
 
-
-    if (item.parent_id === 0) {
-      if (kehoachSelect.status === 1) {
-        this.isLoading = true;
-        if (this.helperService.formatSQLDate(new Date()) <= this.helperService.formatSQLDate(new Date(kehoachSelect.ngayketthuc))) {
+    if (kehoachSelect.status === 1) {
+      this.isLoading = true;
+      if (this.helperService.formatSQLDate(new Date()) <= this.helperService.formatSQLDate(new Date(kehoachSelect.ngayketthuc))) {
 
 
-          this.order_select = item;
-          this.displayModalThanhtoan= true;
+        this.order_select = item;
+        this.displayModalThanhtoan= true;
 
-        } else {
-          this.isLoading = false;
-          this.notifi.toastError('Đã hết thời hạn đăng ký môn trong đợt thi này');
-        }
       } else {
-        this.notifi.toastWarning('Đã hết thời hạn đăng ký môn trong đợt thi này');
+        this.isLoading = false;
+        this.notifi.toastError('Đã hết thời hạn đăng ký môn trong đợt thi này');
       }
-    } else {
-      this.notifi.toastError('Vui lòng không thực hiện thao tác này');
+
+    }else{
+      if (item.is_child_payment == 0){
+
+        return  this.notifi.toastWarning('Thí sinh không được thực hiện thao tác này ');
+
+      }
+
+      this.order_select = item;
+      this.displayModalThanhtoan= true;
+
     }
+
+
+
+    // if (item.parent_id === 0) {
+    //   if (kehoachSelect.status === 1) {
+    //     this.isLoading = true;
+    //     if (this.helperService.formatSQLDate(new Date()) <= this.helperService.formatSQLDate(new Date(kehoachSelect.ngayketthuc))) {
+    //
+    //
+    //       this.order_select = item;
+    //       this.displayModalThanhtoan= true;
+    //
+    //     } else {
+    //       this.isLoading = false;
+    //       this.notifi.toastError('Đã hết thời hạn đăng ký môn trong đợt thi này');
+    //     }
+    //   } else {
+    //     this.notifi.toastWarning('Đã hết thời hạn đăng ký môn trong đợt thi này');
+    //   }
+    // } else {
+    //   this.notifi.toastError('Vui lòng không thực hiện thao tác này');
+    // }
 
   }
 
@@ -411,7 +459,7 @@ export class ThiSinhDangKyComponent implements OnInit {
 
 
   sendEmail(thiSinh: ThiSinhInfo, order:any):Observable<any> {
-    console.log(this.kehoach_diemduthi_select);
+
     let message = `
 
         <p>Bạn đã đăng ký thi Vstep Đại học Thái Nguyên (TNU-VSTEP):</p>
@@ -485,7 +533,7 @@ export class ThiSinhDangKyComponent implements OnInit {
     if(!event){
       return;
     }
-    console.log(event);
+
     this.notifi.isProcessing( true);
 
     const conditionKehoachDiemthi :ConditionOption = {
@@ -510,22 +558,17 @@ export class ThiSinhDangKyComponent implements OnInit {
     .subscribe({
       next:([data,sumDiemduthi])=>{
 
-        console.log(data.data);
-        console.log(sumDiemduthi);
         this.kehoachDiemduthi = data.data.map(m=>{
           const donvi = m['donvi'];
 
           m['_donvi_title'] = donvi ? donvi['title'] : '';
 
-          const soluongBySum = sumDiemduthi.find(f=>f.diemduthi_id == m.diemduthi_id.toString())
+          const soluongBySum = sumDiemduthi.find(f=>f.diemduthi_id == m.diemduthi_id)
 
           m['_soluong_conlai'] = !soluongBySum ? m.soluong : ((m.soluong - soluongBySum.total) > 0 ? (m.soluong - soluongBySum.total) : 0  );
 
           return m;
         }).filter(f=>f['_soluong_conlai'] > 0);
-
-
-        console.log(this.kehoachDiemduthi);
         this.notifi.isProcessing(false);
 
 
@@ -588,7 +631,7 @@ export class ThiSinhDangKyComponent implements OnInit {
 
 
   selectDiemduthi(event){
-    console.log(event);
+
     this.kehoach_diemduthi_select =event;
 
 
@@ -606,6 +649,269 @@ export class ThiSinhDangKyComponent implements OnInit {
   closeDialogThanhtoan(){
     this.isLoading =false;
     this.loadInit()
+  }
+
+  viewModelChange:boolean = false;
+  viewModelCancel:boolean = false;
+
+  btnViewChange(item:OrdersVstep){
+    this.order_select = {...item};
+    this.viewModelChange = true;
+  }
+  btnViewCancel(item:OrdersVstep){
+    this.order_select = {...item};
+    const kehoachByOrder = this.keHoachThi.find(f => f.id == item.kehoach_id);
+    if (kehoachByOrder && kehoachByOrder.status === 1) {
+      const datekehoach = new Date(kehoachByOrder.ngayketthuc);
+
+      this.notifi.isProcessing(false);
+      const dateSeverGet = new Date(this.dateTimeService.date)
+      if (new Date(this.helperService.formatSQLDate(datekehoach)) >= new Date(this.helperService.formatSQLDate(dateSeverGet))) {
+        this.resetFormHuyOrder();
+
+        this.viewModelCancel = true;
+
+        this.loading_huyorder = 0;
+        this.formHuyOrder.reset(
+          {
+            user_id: item.user_id,
+            kehoach_id: item.kehoach_id,
+            diemduthi_id: item.diemduthi_id,
+            order_id: item.id,
+            hoten: item['__hoten'],
+            type: 'cancel',
+            mota: '',
+            files: null,
+            minhchung: null
+          }
+        )
+        this.huyOrdersService.getDataByOrderIdAndType(item.id, 'cancel').subscribe({
+          next: (huyhsk) => {
+
+            // const checkHuy  = huyhsk.reduce()
+            this.huyByCancel = huyhsk && huyhsk.length > 0 ? huyhsk[0] : null;
+            if (!huyhsk[0]) {
+              this.loading_huyorder = 2;
+            } else {
+              this.loading_huyorder = 1;
+            }
+          },
+          error: (err) => {
+            this.loading_huyorder = -1;
+          }
+        })
+      } else {
+        this.notifi.toastError('Đã hết thời gian hủy đăng ký dự thi');
+      }
+    } else {
+      this.notifi.toastWarning('Đã hết thời gian hủy đăng ký dự thi');
+    }
+
+
+
+
+  }
+
+
+  displayModal:boolean =false;
+  listOrderHuyChange:HuyOrders[];
+  filePermission = {
+    canDelete: true,
+    canDownload: true,
+    canUpload: true
+  };
+
+  conventNameDotthi(id: number) {
+    return this.keHoachThi.find(f => f.id == id) ? this.keHoachThi.find(f => f.id == id).title : '';
+  }
+  change_kehoachthi_id:number = null;
+  check_change_dothi: -1 | 1 | 2 | 0 | 3 = -1;//0:loadding, 1:true,2:false;-1:hiden 3:đã tồn tại
+  loading_huyorder: 1 | 0 | 2 | -1 = 0; // 1 ddax huy,2 form, 0 loading,-1 mất kết nối mạng;
+  data_Kehoachthi_change: KeHoachThi[];
+  huyByCancel: HuyOrders;
+
+
+  onchangeSelectDothi(event) {
+    this.check_change_dothi = 0;
+    const kehoachIdsHaveSelect = this.order_select.params ? Array.from(new Set(this.order_select.params.map(m => m['kehoanh_thi_cu']))) : [];
+    if (!kehoachIdsHaveSelect.includes(event.value)) {
+      // forkJoin([
+      //   this.kehoachthiCapdoService.getDataUnlimitAndKehoachId(event.value),
+      //   this.ordersService.getDataMonSelect(event.value)
+      //
+      // ])
+      //   .subscribe({
+      //     next: ([dmCapdo, data]): void => {
+      //       const numOfLuotthi = dmCapdo.find(f => f.caphsk_id == this.order_select.diemduthi_id) ? dmCapdo.find(f => f.caphsk_id == this.order_select.diemduthi_id).soluong : null;
+      //       const numOfUse = data.find(f => parseInt(f.caphsk_id) == this.order_select.diemduthi_id) ? data.find(f => parseInt(f.caphsk_id) == this.order_select.diemduthi_id).total : null;
+      //       // console.log(numOfLuotthi)
+      //       // console.log(numOfUse)
+      //       this.check_change_dothi =  !numOfUse || ( numOfLuotthi && numOfUse && numOfLuotthi > numOfUse) ? 1 : 2;
+      //     }, error: (err) => {
+      //       this.check_change_dothi = 2;
+      //
+      //       this.notifi.toastError(err['message'])
+      //     }
+      //   })
+    } else {
+      this.check_change_dothi = 3;
+      this.notifi.toastError('Bạn đã từng đổi đợt thi này, vui lòng chọn đợt thi khác.');
+    }
+
+  }
+  async btnAccept() {
+
+    if (this.formHuyOrder.valid) {
+      const button = await this.notifi.confirmRounded('Thao tác này sẽ đổi đợt dự thi của thí sinh', 'XÁC NHẬN', [BUTTON_YES , BUTTON_NO]);
+
+      const dataUp = {
+        ...this.formHuyOrder.value,
+        type: 'change',
+        content: {
+          kehoanh_thi_cu: this.order_select.kehoach_id,
+          kehoanh_thi_moi: this.change_kehoachthi_id,
+          thoigian_sua: this.helperService.formatSQLDateTime(new Date())
+        },
+
+      };
+
+      // console.log(dataUp);
+
+      if (button.name === BUTTON_YES.name) {
+        // this.ordersService.changeDotthi(this.orderSelect.id, {kehoach_id: this.change_kehoachthi_id}).subscribe({
+        this.notifi.isProcessing(true);
+        this.huyOrdersService.create(dataUp).pipe(switchMap(m => {
+
+            return this.huyOrdersService.ActiveChangeDotthi(m)
+          }
+        )).subscribe({
+          next: () => {
+            this.displayModal = false;
+            this.getDataOrder();
+            this.notifi.isProcessing(false);
+            this.notifi.toastSuccess('Thao tác thành công');
+          }, error: (err) => {
+            this.notifi.isProcessing(false);
+            this.notifi.toastError(err['error']['message']);
+          }
+        })
+      }
+    } else {
+      this.notifi.toastError('Vui lòng nhập lý do đổi đợt thi');
+    }
+
+  }
+
+  async btnAcceptHuyOrder() {
+    // console.log(this.formHuyOrder.value);
+    const objectForm = this.formHuyOrder.value
+    if (this.formHuyOrder.valid && objectForm['files'] !== null && objectForm['minhchung'] !== null) {
+      // console.log(this.formHuyOrder.value);
+      const object = this.formHuyOrder.value;
+      // console.log(object);
+
+      if (object['minhchung'] !== [] || object['minhchung'] !== [] || (object['minhchung'] !== [] && object['minhchung']) !== []) {
+        const html = `
+          <p>Yêu cầu này sẽ được cán bộ phụ trách xét duyệt </p>
+          <p>Vui lòng chờ thông báo </p>
+        `;
+        const button = await this.notifi.confirmRounded('Xác nhận hủy đăng ký dữ thi', 'XÁC NHẬN HỦY DỰ THI', [BUTTON_YES, BUTTON_NO]);
+        if (button.name === BUTTON_YES.name) {
+          this.loading_huyorder = 0;
+          this.huyOrdersService.create(this.formHuyOrder.value).subscribe({
+            next: (data) => {
+              // this.loading_huyorder =1;
+              this.huyByCancel = {...this.formHuyOrder.value, id: data, state: 0}
+              this.notifi.toastSuccess('Thao tác thành công');
+              this.loading_huyorder = 1;
+            }, error: (err) => {
+              this.loading_huyorder = 2;
+              // console.log(err)
+              this.notifi.toastError(err['error']['message']);
+
+            }
+          })
+        }
+      } else {
+        this.notifi.toastError('Đơn hoàn lệ phí thi hoặc minh chứng chuyển khoản không được để trống');
+
+      }
+
+
+    } else {
+      this.notifi.toastError('Vui lòng nhập đủ thông tin');
+    }
+
+  }
+
+
+  resetFormHuyOrder() {
+    this.formHuyOrder.reset(
+      {
+        user_id: null,
+        kehoach_id: null,
+        diemduthi_id: null,
+        order_id: null,
+        hoten: '',
+      }
+    )
+  }
+  dateTimeService: DateTimeServer;
+
+  btnHuyOrderthi(item: OrdersVstep) {
+
+    const kehoachByOrder = this.keHoachThi.find(f => f.id == item.kehoach_id);
+    if (kehoachByOrder && kehoachByOrder.status === 1) {
+      const datekehoach = new Date(kehoachByOrder.ngayketthuc);
+
+      this.notifi.isProcessing(false);
+      const dateSeverGet = new Date(this.dateTimeService.date)
+      if (new Date(this.helperService.formatSQLDate(datekehoach)) >= new Date(this.helperService.formatSQLDate(dateSeverGet))) {
+        this.resetFormHuyOrder();
+        this.order_select = {...item};
+        this.viewModelCancel = true;
+        this.loading_huyorder = 0;
+        this.formHuyOrder.reset(
+          {
+            user_id: item.user_id,
+            kehoach_id: item.kehoach_id,
+            diemduthi_id: item.diemduthi_id,
+            order_id: item.id,
+            hoten: item['__hoten'],
+            type: 'cancel',
+            mota: '',
+            files: null,
+            minhchung: null
+          }
+        )
+        this.huyOrdersService.getDataByOrderIdAndType(item.id, 'cancel').subscribe({
+          next: (huyhsk) => {
+
+            // const checkHuy  = huyhsk.reduce()
+            this.huyByCancel = huyhsk && huyhsk.length > 0 ? huyhsk[0] : null;
+            if (!huyhsk[0]) {
+              this.loading_huyorder = 2;
+            } else {
+              this.loading_huyorder = 1;
+            }
+          },
+          error: (err) => {
+            this.loading_huyorder = -1;
+          }
+        })
+      } else {
+        this.notifi.toastError('Đã hết thời gian hủy đăng ký dự thi');
+      }
+    } else {
+      this.notifi.toastWarning('Đã hết thời gian hủy đăng ký dự thi');
+    }
+  }
+
+  btnDowloadDon() {
+    const link = document.createElement('a');
+    link.href = 'assets/files/hsk/don-xin-hoan-thi.docx';
+    link.download = 'don-xin-hoan-thi.docx';
+    link.click();
   }
 
 }

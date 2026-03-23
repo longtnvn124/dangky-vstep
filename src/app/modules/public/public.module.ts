@@ -27,6 +27,7 @@ import {DropdownModule} from "primeng/dropdown";
 import {PdfViewerModule} from "ng2-pdf-viewer";
 
 import { TraCuuKetQuaComponent } from './features/tra-cuu-ket-qua/tra-cuu-ket-qua.component';
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 @NgModule({
   declarations: [
@@ -42,24 +43,25 @@ import { TraCuuKetQuaComponent } from './features/tra-cuu-ket-qua/tra-cuu-ket-qu
   exports: [
 
   ],
-  imports: [
-    CommonModule,
-    PublicRoutingModule,
-    ReactiveFormsModule,
-    ButtonModule,
-    RippleModule,
-    InputMaskModule,
-    FormsModule,
-    SharedModule,
-    DialogModule,
-    TabMenuModule,
-    GalleriaModule,
-    CarouselModule,
-    ImageModule,
-    InputTextModule,
-    DropdownModule,
-    PdfViewerModule,
-  ]
+    imports: [
+        CommonModule,
+        PublicRoutingModule,
+        ReactiveFormsModule,
+        ButtonModule,
+        RippleModule,
+        InputMaskModule,
+        FormsModule,
+        SharedModule,
+        DialogModule,
+        TabMenuModule,
+        GalleriaModule,
+        CarouselModule,
+        ImageModule,
+        InputTextModule,
+        DropdownModule,
+        PdfViewerModule,
+        MatProgressBarModule,
+    ]
 })
 export class PublicModule {
 }

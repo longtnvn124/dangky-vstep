@@ -1,3 +1,79 @@
-<div class="d-flex justify-content-center align-items-center h-100" style="font-size:14px;">
-  Chức năng nay đang tạm khóa
-</div>
+<!--<div class="d-flex justify-content-center align-items-center h-100" style="font-size:14px;">-->
+<!--  Chức năng nay đang tạm khóa-->
+<!--</div>-->
+<ng-container [ngSwitch]="isLoadding">
+  <ng-container *ngSwitchCase="-1">
+    <div class="h-100 d-flex flex-column justify-content-center align-items-center"
+         style="gap:4px;background:#c1ccd8">
+      <div style="font-size:16px;"></div>
+      <div style="font-size:16px;">Mất kết nối với máy chủ vui lòng bấm 'Tải lại'</div>
+      <button pButton pRipple label="Tải lại" icon="pi pi-sync" (click)="reLoad()"></button>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase="0">
+    <div class="h-100 d-flex flex-column justify-content-center align-items-center"
+         style="background:#ededed">
+      <div class=" text-center"
+           style="font-size: 15px;background: #d6def7;padding: 14px 20px;border-radius: 10px;border: 1px solid #ccc;">
+        <p>Đang tải dữ liệu, vui lòng chờ</p>
+        <div style=" width: 300px">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase="1">
+
+    <div class="bm-container row">
+      <div class="bm-card col-4">
+        <div class="bm-item" (click)="btnDsThisinh()">
+          <i class="pi pi-users"></i>
+          <div>Ds thí sinh theo phòng</div>
+        </div>
+      </div>
+
+      <div class="bm-card col-4">
+        <div class="bm-item " (click)="btnDsThisinhNopbai()">
+          <i class="pi pi-database"></i>
+          <div>Ds thí sinh nộp bài</div>
+        </div>
+      </div>
+
+
+      <div class="bm-card col-4">
+        <div class="bm-item " (click)="btnDsXacnhanThongtinThisinh()">
+          <i class="pi pi-check-square"></i>
+          <div>Ds xác nhận thông tin thí sinh</div>
+        </div>
+      </div>
+
+      <div class="bm-card col-4">
+        <div class="bm-item " (click)="btnBangTenPhong()">
+          <i class="pi pi-building"></i>
+          <div>Bảng tên phòng thi</div>
+        </div>
+      </div>
+
+      <div class="bm-card col-4">
+        <div class="bm-item" (click)="btnTuidunghosophongthi()">
+          <i class="pi pi-briefcase"></i>
+          <div>Nhãn túi đựng hồ sơ phòng thi</div>
+        </div>
+      </div>
+
+      <div class="bm-card col-4">
+        <div class="bm-item" (click)="btnTuidungphieutaikhoan()">
+          <i class="pi pi-sliders-h"></i>
+          <div>Nhãn túi đựng phiếu tài khoản</div>
+        </div>
+      </div>
+
+
+    </div>
+
+  </ng-container>
+</ng-container>
+
+
+
+

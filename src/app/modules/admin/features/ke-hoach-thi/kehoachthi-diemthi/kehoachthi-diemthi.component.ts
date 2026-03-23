@@ -9,7 +9,7 @@ import {OvicQueryCondition} from "@core/models/dto";
 import {forkJoin, Observable, of, switchMap} from "rxjs";
 import {map} from "rxjs/operators";
 import {BUTTON_NO, BUTTON_YES} from "@core/models/buttons";
-import {NgForOf, NgSwitch, NgSwitchCase} from "@angular/common";
+import {NgForOf, NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
 import {ButtonModule} from "primeng/button";
 import {RippleModule} from "primeng/ripple";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
@@ -19,6 +19,9 @@ import {TableModule} from "primeng/table";
 import {FormsModule} from "@angular/forms";
 import {FocusInputPipe} from "@shared/pipes/focus-input.pipe";
 import {PaginatorModule} from "primeng/paginator";
+import {DonViService} from "@shared/services/don-vi.service";
+import {DonVi} from "@shared/models/danh-muc";
+import {AuthService} from "@core/services/auth.service";
 
 @Component({
   selector: 'app-kehoachthi-diemthi',
@@ -36,7 +39,8 @@ import {PaginatorModule} from "primeng/paginator";
     FormsModule,
     FocusInputPipe,
     PaginatorModule,
-    NgForOf
+    NgForOf,
+    NgIf
   ],
   standalone: true
 })
@@ -49,7 +53,7 @@ export class KehoachthiDiemthiComponent implements OnInit {
     this.loadInit()
   }
   _kehoachthi         : KeHoachThi;
-  dmDiemduthi         : DmDiemduthi[];
+  dmDiemduthi         : DonVi[];
   kehoachthiDiemduthi : KehoachthiDiemduthi[];
   ngType              : -1|1|0 = 0;
   limit               : number = 20;
@@ -60,9 +64,10 @@ export class KehoachthiDiemthiComponent implements OnInit {
   index_focus: number = 0;
 
   constructor(
-    private dmDiemDuThiService:DmDiemDuThiService,
+    private donViService:DonViService,
     private kehoachthiDiemthiVstepService:KehoachthiDiemthiVstepService,
     private notifi: NotificationService,
+    private auth: AuthService
 
   ) { }
 
@@ -76,6 +81,7 @@ export class KehoachthiDiemthiComponent implements OnInit {
     const conditionDm: ConditionOption = {
        condition: [
          {conditionName: 'status', condition:OvicQueryCondition.equal, value: '1'},
+         {conditionName: 'parent_id', condition:OvicQueryCondition.equal, value: this.auth.user.donvi_id.toString()},
        ],
       page:'1',
       set:[
@@ -87,26 +93,25 @@ export class KehoachthiDiemthiComponent implements OnInit {
 
 
     forkJoin([
-      this.dmDiemDuThiService.getDataByPageNew(conditionDm).pipe(map(m=>m.data)),
+      this.donViService.getDataByPageNew(conditionDm).pipe(map(m=>m.data)),
       this.getDataKehoachDiemduthi(this.page,'-1',this._kehoachthi.id)
     ]).subscribe({
       next:([dmDiemDuthi, {data,recordsFiltered}])=>{
-        console.log(dmDiemDuthi,data)
         this.recordTotal  = recordsFiltered;
         this.kehoachthiDiemduthi = data.map((m,i)=>{
 
-          const diemduthi = dmDiemDuthi.find(f=>f.id  == m.diemduthi_id);
+          const diemduthi = m['donvi'];
           m['_title'] = diemduthi ? diemduthi.title : '';
           m['_diemduthi'] =diemduthi;
           m['_index'] = (this.page - 1)* this.limit + i + 1;
           return m;
         });
 
-        this.dmDiemduthi = dmDiemDuthi.length> 0 ? dmDiemDuthi.map(m=>{
+        const dataIds = data.map(m=>m.diemduthi_id);
 
-          const dataIds = data.map(m=>m.id);
+        this.dmDiemduthi = dmDiemDuthi.length> 0 ? dmDiemDuthi.filter(f=> !dataIds.includes(f.id)).map(m=>{
 
-          m['checked'] = data.length >0 && dataIds.includes(m.id) ;
+          m['checked'] = false ;
           return m;
         }) : [];
 
@@ -137,7 +142,7 @@ export class KehoachthiDiemthiComponent implements OnInit {
       page:page.toString(),
       set:[
         {label:'limit',value:limit},
-        // {label:'orderby',value:'title'},
+        {label:'with',value:'donvi'},
       ]
     }
     return this.kehoachthiDiemthiVstepService.getDataByPageNew((conditionDiemthi))
@@ -149,7 +154,7 @@ export class KehoachthiDiemthiComponent implements OnInit {
 
   paginate(event){}
 
-  onSekectDiemthi(event, item:DmDiemduthi){
+  onSekectDiemthi(event, item:DonVi){
     console.log(event.checked);
 
     this.dmDiemduthi.find(f=>f.id == item.id)['checked'] = event.checked
@@ -161,9 +166,7 @@ export class KehoachthiDiemthiComponent implements OnInit {
     const diemthiIds = this.kehoachthiDiemduthi.length > 0 ? this.kehoachthiDiemduthi.map(m=>m.diemduthi_id) : [];
 
     const dataAdd = this.dmDiemduthi.filter(f=>!diemthiIds.includes(f.id) && f['checked'])
-    console.log(dataAdd);
     //
-    console.log(dataAdd)
     if(dataAdd.length > 0){
       const html=`
            <p class="text-left">- Thực hiện Thêm điểm dự thi đối với đợt thi  <strong>${this._kehoachthi.title}</strong></p>
@@ -277,7 +280,7 @@ export class KehoachthiDiemthiComponent implements OnInit {
   }
   saveSoluongByDiemduthi(event,row:KehoachthiDiemduthi, index){
     if (event && row) {
-      if (row.soluong || row.soluong === 0 || row['test_info'].point === null) {
+      if (row.soluong || row.soluong === 0 ) {
         if (event.key === 'Enter') {
           this.notifi.isProcessing(true);
           this.kehoachthiDiemthiVstepService.update(row.id, { soluong: row.soluong }).subscribe({

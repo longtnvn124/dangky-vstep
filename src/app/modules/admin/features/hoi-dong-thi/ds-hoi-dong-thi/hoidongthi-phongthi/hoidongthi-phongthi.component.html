@@ -37,7 +37,7 @@
       <div class="phongthi-h">
         <div class="phongthi-h_title">Danh sách phòng thi theo điểm thi</div>
         <div class="phongthi-h_btn">
-          <button pButton pRipple icon="pi pi-plus" label="Thêm mới" class="p-button-success" (click)=" btnCreate()"></button>
+          <button *ngIf="isAdmin" pButton pRipple icon="pi pi-plus" label="Thêm mới" class="p-button-success" (click)=" btnCreate()"></button>
 
           <ng-container *ngIf="isAdmin">
             <button pButton pRipple icon ="pi pi-sliders-h" label="Xếp phòng thi cho thí sinh" (click)="btnFormSortThisinh()"></button>
@@ -56,12 +56,12 @@
               <div class="">
                 <p-table   styleClass="tb-thpt tbl-danhSachUser table-scroll-able ovic-ui-table table-border table-able-dropdown-p-table table-none-header"
                          [value]="listKehoachDiemthi" [rowHover]="true">
-                  <ng-template pTemplate="body" let-item let-i="rowIndex">
+                  <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
                     <tr >
-                      <td class="font-weight-bold text-left text-uppercase" colspan="6">
+                      <td class="font-weight-bold text-left text-uppercase" colspan="7">
                         <div class="d-flex justify-content-between align-items-center">
                           <div>
-                            {{ (i + 1 ) + '. ' + item['__diemduthi_title']  + ' [ SỐ lượng tối đa: ' + item['soluong'] + ']' }}
+                            {{ (rowIndex + 1 ) + '. ' + item['__diemduthi_title']  + ' [ SỐ lượng tối đa: ' + item['soluong'] + ']' }}
                           </div>
                           <div *ngIf="isAdmin && item['__hoidongPhongthi'].length > 0">
                             <button  pButton pRipple icon="pi pi-trash" class="p-button-danger" (click)="btnDeleteByDiemduthi(item)"></button>
@@ -72,9 +72,10 @@
                     <tr>
                       <td class="font-weight-bold text-center">STT</td>
                       <td class="font-weight-bold text-center">Phòng thi</td>
-                      <td class="font-weight-bold text-center">Số lượng thí sinh</td>
                       <td class="font-weight-bold text-center">ngày thi</td>
                       <td class="font-weight-bold text-center">Địa điểm dự thi</td>
+                      <td class="font-weight-bold text-center">Số lượng tối đa</td>
+                      <td class="font-weight-bold text-center">Số lượng dự thi</td>
                       <td class="font-weight-bold text-center">Thao tác</td>
                     </tr>
                     <ng-container *ngIf="item['__hoidongPhongthi'].length> 0 else notPhongthi">
@@ -82,9 +83,17 @@
                       <tr *ngFor="let item2 of item['__hoidongPhongthi']; index as i">
                         <td class="text-center">{{ i + 1 }}</td>
                         <td class="text-center">{{ item2['phongthi'] }}</td>
-                        <td class="text-center">{{ item2['soluong'] }}</td>
                         <td class="text-center">{{ convertDateTimeByPhong(item2['ngaythi'],item2['thoigian_duthi'])  }}</td>
                         <td class="text-center">{{ item2['diadiem_duthi'] }}</td>
+                        <td class="text-center">{{ item2['soluong_toida'] }}</td>
+                        <td class="text-center">{{ item2['soluong'] }}</td>
+<!--                        <td class="text-center">-->
+<!--                          <input  type="text" class="inputSoluong"  #inputSoluong-->
+<!--                                  (keyup)="saveSoluongByDiemduthi($event, item2,rowIndex, i)"-->
+<!--                                  (keydown)="pointQuestionKeyDown($event,inputSoluong)"-->
+<!--                                  [(ngModel)]="item2['soluong']">-->
+<!--                          {{inputSoluong | focusInput : index_focus : item2.id}}-->
+<!--                        </td>-->
                         <td class="text-center">
                           <button pButton pRipple icon="pi pi-users" (click)="btnViewThisinhByPhongthi(item,item2)"></button>
                         </td>
@@ -92,7 +101,7 @@
                     </ng-container>
                     <ng-template #notPhongthi>
                       <tr>
-                        <td colspan="6"> Chưa có dữ liệu phòng thi của điểm thi.</td>
+                        <td colspan="7"> Chưa có dữ liệu phòng thi của điểm thi.</td>
                       </tr>
                     </ng-template>
                   </ng-template>
@@ -124,7 +133,7 @@
           <div>Thêm mới phòng thi</div>
         </div>
         <div class="phongthi-h_btn">
-          <a href="assets/files/dkVstep/mau-phongthi.xlsx" download="file-mau.xlsx">
+          <a href="assets/files/dkVstep/mau-phongthi.xlsx" download="mau-phongthi.xlsx">
             <button pRipple pButton class="border-radius-0" label="Tải file mẫu" icon="pi pi-download">
             </button>
           </a>
@@ -152,7 +161,8 @@
                   <th style="min-width: 50px;" class="text-center">TT</th>
                   <th style="min-width: 150px;" class="text-center">Điểm dự thi</th>
                   <th style="min-width: 150px;" class="text-center">Phòng thi</th>
-                  <th style="min-width: 150px;" class="text-center">Số lượng</th>
+                  <th style="min-width: 150px;" class="text-center">Số lượng Tối đa</th>
+                  <th style="min-width: 150px;" class="text-center">Số lượng dự thi mỗi phòng</th>
                   <th style="min-width: 150px;" class="text-center">Ngày thi</th>
                   <th style="min-width: 150px;" class="text-center">Địa điểm dự thi</th>
 <!--                  <th style="min-width: 150px;" class="text-center">Thao tác </th>-->
@@ -164,12 +174,13 @@
                   <td pFrozenColumn class="text-center">{{ rowIndex + 1 }}</td>
                   <td pFrozenColumn class="text-center" [pTooltip]="!checkDiemduthi(item['diemduthi_id']) ? 'Điểm dự thi ko hợp lệ' :'' " > <div [ngClass]="!checkDiemduthi(item['diemduthi_id']) ? 'div-error' :'' ">{{ item['diemduthi_id'] }}</div></td>
                   <td pFrozenColumn class="text-center">{{ item['phongthi'] }}</td>
+                  <td pFrozenColumn class="text-center">{{ item['soluong_toida'] }}</td>
                   <td pFrozenColumn class="text-center">{{ item['soluong'] }}</td>
                   <td pFrozenColumn class="text-center">{{ item['ngaythi'] + ' ' + item['thoigian_duthi'] }}</td>
                   <td pFrozenColumn class="text-center">{{ item['diadiem_duthi'] }}</td>
-                  <td pFrozenColumn class="text-center">
+<!--                  <td pFrozenColumn class="text-center">-->
 <!--                    <button pRipple pButton icon="pi pi-users" (click)="btnViewThisinh"></button>-->
-                  </td>
+<!--                  </td>-->
 
 
                 </tr>

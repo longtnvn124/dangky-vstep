@@ -15,21 +15,7 @@ export class ExpThisinhDuthiService {
     const text_header = headerName +  '('+ title +')';
     worksheet.addRow([text_header]);
     worksheet.addRow([""]);
-    // const header =header
-    //   [
-    //     "STT",
-    //     "MADK",
-    //     "Trạng thái",
-    //     "Họ và tên",
-    //     "Ngày sinh",
-    //     "Giới tính",
-    //     "CCCD/CMND",
-    //     "Email",
-    //     "Điện thoại",
-    //     "Cấp Hsk đăng ký",
-    //     "Ghi chú",
-    //     "Thời gian thanh toán"
-    //   ]
+
 
     worksheet.pageSetup.margins = {
       left: 0, right: 0,

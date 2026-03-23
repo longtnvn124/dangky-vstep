@@ -48,6 +48,14 @@
 
     </div>
   </div>
+
+
+  <div class="login-authenticating-animation" *ngIf="loading">
+    <div class="login-authenticating-animation__inner">
+      <h4 class="login-authenticating-animation__heading">Đăng nhập</h4>
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+  </div>
 </div>
 
 <!--<div class="lg-container" >-->

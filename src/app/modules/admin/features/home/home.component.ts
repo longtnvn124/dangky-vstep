@@ -105,7 +105,7 @@ export class HomeComponent implements OnInit {
 
         this.totalOrderTT  =  data['thanhtoan_thanhcong']
 
-        this.totalLephithi  =  data['tongtiem']
+        this.totalLephithi  =  data['tongtien']
 
         this.chartKehoachthi = {
           labels:data['dotthi'].map(m=>m.dotthi),

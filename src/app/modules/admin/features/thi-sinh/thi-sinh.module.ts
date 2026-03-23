@@ -26,6 +26,9 @@ import {ImageModule} from "primeng/image";
 import {OvicInputAddressNewComponent} from "@shared/components/ovic-input-address-new/ovic-input-address-new.component";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {ThanhtoanByQrComponent} from "@shared/components/thanhtoan-by-qr/thanhtoan-by-qr.component";
+import {
+    CancelOrChangeComponent
+} from "@modules/admin/features/thi-sinh/thi-sinh-dang-ky/cancel-or-change/cancel-or-change.component";
 
 
 @NgModule({
@@ -61,7 +64,8 @@ import {ThanhtoanByQrComponent} from "@shared/components/thanhtoan-by-qr/thanhto
         ImageModule,
         OvicInputAddressNewComponent,
         MatProgressBarModule,
-        ThanhtoanByQrComponent
+        ThanhtoanByQrComponent,
+        CancelOrChangeComponent
     ]
 })
 export class ThiSinhModule { }

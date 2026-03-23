@@ -45,8 +45,6 @@ import { MailCheckComponent } from './features/mail-check/mail-check.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {FocusInputPipe} from "@shared/pipes/focus-input.pipe";
 
-
-
 @NgModule({
   declarations: [
     DashboardComponent,
@@ -61,6 +59,7 @@ import {FocusInputPipe} from "@shared/pipes/focus-input.pipe";
     CardWidgetComponent,
     CardCountComponent,
     MailCheckComponent,
+
   ],
   exports: [
 

@@ -55,9 +55,8 @@ export class DonViService {
   }
 
   deleteDonVi(id: number): Observable<any> {
-    const is_deleted = 1;
-    const deleted_by = this.auth.user.id;
-    return this.updateDonVi(id, { is_deleted, deleted_by });
+    return this.http.delete<Dto>(''.concat(this.api, id.toString(10)));
+
   }
 
   getParentList(): Observable<{ id: number, title: string, status: number }[]> {

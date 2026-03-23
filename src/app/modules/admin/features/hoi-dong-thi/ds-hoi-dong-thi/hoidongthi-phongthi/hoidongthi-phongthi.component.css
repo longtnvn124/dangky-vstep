@@ -287,3 +287,16 @@ td.view-false{
   align-items: center;
 
 }
+.inputSoluong{
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+.inputSoluong:active{
+  border: 1px solid #ccc;
+
+}
+.inputSoluong:hover{
+  border: 1px solid #ccc;
+
+}

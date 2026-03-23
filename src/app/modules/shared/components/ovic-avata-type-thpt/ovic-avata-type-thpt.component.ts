@@ -100,12 +100,18 @@ export class OvicAvataTypeThptComponent implements OnInit {
     // console.log(fileChooser.files);
     if (fileChooser.files && fileChooser.files.length) {
       if (this.typeFileAdd.includes(fileChooser.files[0].type)){
+
+        console.log(fileChooser.files[0])
         if(fileChooser.files[0].size >= 21*1024){
           const file = await this.makeCharacterAvatar(fileChooser.files[0],this.replaceFileName(this.file_name ? this.file_name :fileChooser.files[0].name ,fileChooser.files[0].type) );
           let fileUser:File  = file;
+
+          console.log(fileUser)
           if(this.file_size !== null){
             const fileConvert =await this.reSizeFileByCompression(file, this.file_size);
+            console.log(fileChooser.files[0].name)
             fileUser = this.fileService.blobToFile(fileConvert,this.replaceFileName(this.file_name ? this.file_name :fileChooser.files[0].name ,fileChooser.files[0].type));
+            console.log(this.replaceFileName(this.file_name ? this.file_name :fileChooser.files[0].name ,fileChooser.files[0].type))
           }
           // console.log(fileUser)
 
@@ -141,7 +147,10 @@ export class OvicAvataTypeThptComponent implements OnInit {
   replaceFileName(fileName:string , typeFile:string){
     const newName = fileName.split('.')[0];
     const newType =typeFile.split('/')[1];
-    return fileName+'.'+(newType === 'jpeg'? 'jpg':newType);
+
+    console.log(newName)
+    console.log(newType)
+    return newName+ '.' + (newType == 'jpeg'? 'jpg':newType);
   }
 
   async reSizeFileByCompression(file: File, file_size: number) {
@@ -181,6 +190,45 @@ export class OvicAvataTypeThptComponent implements OnInit {
     } catch (e) {
       console.error("Lỗi trong quá trình nén ảnh:", e);
       return null;
+    }
+  }
+
+  async btnCamera(){
+    const options: AvatarMakerSetting = {
+      aspectRatio: this.aspectRatio ? this.aspectRatio : 2 / 3,
+      resizeToWidth: 300,
+      format: 'jpeg',
+      cropperMinWidth: 10,
+      dirRectImage: {
+        enable: false,
+        dataUrl: ''
+      },
+      rotateShow:this.rotateShow
+    };
+    const avatar = await this.mediaService.callAvatarMakerV2(options);
+    console.log(avatar)
+    if (avatar && !avatar.error && avatar.data) {
+      const none = new Date().valueOf();
+      const fileName = this.file_name+ '.jpg';
+      const fileUpload = await this.fileService.base64ToFile(avatar.data.base64, fileName);
+
+      this.fileService.uploadFile(fileUpload, this.public).subscribe({
+        next: fileUl => {
+          // this.objectThumbnail = this.objectThumbnail.length>0 ? [].concat(fileUl);
+
+          if (this.fileList[0]){
+            this.fileList[0] = fileUl;
+            this.formField.setValue(this.fileList)
+          }else{
+            this.fileList = this.fileList.concat(fileUl);
+            this.formField.setValue(this.fileList)
+          }
+        }, error: () => {
+          this.notificationService.toastError('Upload file không thành công');
+        }
+      })
+    } else {
+      return Promise.resolve(null);
     }
   }
 
