@@ -65,6 +65,7 @@ export class ThongtinThisinhComponent implements OnInit {
 
   isTramthi : boolean = false;
 
+  isAdmin : boolean = false;
   constructor
   (
     private notificationService: NotificationService,
@@ -96,7 +97,8 @@ export class ThongtinThisinhComponent implements OnInit {
       email: ['', Validators.required],
     });
 
-    this.isTramthi = this.auth.userHasRole('diem-du-thi')
+    this.isTramthi = this.auth.userHasRole('diem-du-thi');
+    this.isAdmin = this.auth.userHasRole('admin');
   }
 
   ngOnInit(): void {

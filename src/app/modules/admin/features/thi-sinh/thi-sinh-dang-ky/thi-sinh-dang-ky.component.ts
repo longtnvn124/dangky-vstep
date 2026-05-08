@@ -909,8 +909,8 @@ export class ThiSinhDangKyComponent implements OnInit {
 
   btnDowloadDon() {
     const link = document.createElement('a');
-    link.href = 'assets/files/hsk/don-xin-hoan-thi.docx';
-    link.download = 'don-xin-hoan-thi.docx';
+    link.href = 'assets/files/dkVstep/don-hoan-lephi.doc';
+    link.download = 'don-hoan-lephi.doc';
     link.click();
   }
 

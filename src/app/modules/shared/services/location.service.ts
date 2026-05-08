@@ -49,6 +49,7 @@ export class LocationService {
 
   //-----------------------------------------------------------------------
 
+  // provinces : Tỉnh // regions: Xã, Phường
   getListByIdAndKey( provinceId : number, key:'provinces' |'regions') : Observable<DiaDanh[]> {
     return this._getChildByParentId( provinceId , getRoute( key +'/' ) );
   }

@@ -307,8 +307,8 @@ export class DangKyDuThiComponent implements OnInit {
         hodem: row[2],
         ten: row[3],
         ngaysinh: this.convertDateByXlsx(row[4]),
-        gioitinh: row[5],
-        dantoc: row[6],
+        dantoc: row[5],
+        gioitinh: row[6],
         noisinh: row[7].trim(),
         cccd_so: row[8],
         phone:row[11],
@@ -455,7 +455,7 @@ export class DangKyDuThiComponent implements OnInit {
   kehoach_id_select: number = null;
   ketquaImportViewPayment: any[] = [];
   listCheckResult: any[] = [];
-  paymentMethod: number = 1;
+
 
   changeKehoachthi(event) {
     this.kehoach_id_select = event.value;
@@ -642,7 +642,7 @@ export class DangKyDuThiComponent implements OnInit {
       user_id: this.auth.user.id,
       kehoach_id: this.kehoach_id_select,
       lephithi: this.getTongDongia(this.listCheckResult.length, this.kehoach_id_select),
-      is_child_payment: this.paymentMethod
+      is_child_payment: this.objectFilter.paymentMethod
     }
     return this.ordersService.create(itemCreated).pipe(switchMap(m => {
       itemCreated['id'] = m;
@@ -663,7 +663,7 @@ export class DangKyDuThiComponent implements OnInit {
         user_id: item['__user_id'],
         lephithi: this.getDongia(this.kehoach_id_select),
         thisinh_id: item['__thisinh_id'],
-        is_child_payment: this.paymentMethod
+        is_child_payment: this.objectFilter.paymentMethod
 
       }
       data[index]['__canOrder'] = true;

@@ -71,7 +71,7 @@
                       <i class="pi pi-file-edit"></i>
                       <span>Cập nhật thông tin</span>
                     </button>
-                    <button class="btn-menu-material delete" (click)="btnDelete(item)">
+                    <button *ngIf="isAdmin" class="btn-menu-material delete" (click)="btnDelete(item)">
                       <i class="pi pi-trash"></i>
                       <span>Xóa</span>
                     </button>
