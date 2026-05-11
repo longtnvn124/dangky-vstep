@@ -134,7 +134,6 @@ export class ThongKeDuLieuComponent implements OnInit {
       this.kehoachthiVstepService.getDataByPageNew(conditionKehoach).pipe(map(m=>m.data))
     ]).subscribe({
       next:([dataDonvi,kehoachthi])=>{
-        console.log(dataDonvi);
           this.dataDonvi= dataDonvi.filter(f=>f.id !== this.auth.user.donvi_id);
           this.kehoachthi = kehoachthi;
         this.notifi.isProcessing(false);

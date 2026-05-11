@@ -2,7 +2,7 @@ import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {FormType, NgPaginateEvent, OvicForm} from '@modules/shared/models/ovic-models';
 import {Paginator, PaginatorModule} from 'primeng/paginator';
-import {debounceTime, filter, Observable, Subject, Subscription} from 'rxjs';
+import {debounceTime, filter, Observable, Subject, Subscription, switchMap} from 'rxjs';
 import {HskHoidongthi,} from "@shared/services/hsk-hoidongthi.service";
 import {NotificationService} from "@core/services/notification.service";
 import {HelperService} from "@core/services/helper.service";
@@ -35,6 +35,7 @@ import {
 import {
   AddThiSinhV2Component
 } from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/add-thi-sinh-v2/add-thi-sinh-v2.component";
+import {VstepHoidongThisinhService} from "@shared/services/vstep-hoidong-thisinh.service";
 
 interface FormHoiDong extends OvicForm {
   object: HskHoidongthi;
@@ -125,8 +126,8 @@ export class DsHoiDongThiComponent implements OnInit {
     private notifi: NotificationService,
     private fb: FormBuilder,
     private helperService: HelperService,
-    private auth: AuthService
-    // private hoidongThisinhService: VstepHoidongThisinhService
+    private auth: AuthService,
+    private hoidongThisinhService: VstepHoidongThisinhService
   ) {
     const observeProcessFormData = this.OBSERVE_PROCESS_FORM_DATA.asObservable().pipe(debounceTime(100)).subscribe(form => this.__processFrom(form));
     this.subscription.add(observeProcessFormData);
@@ -402,7 +403,9 @@ export class DsHoiDongThiComponent implements OnInit {
   async btnDelete(item: Hoidongthi) {
     const confirm = await this.notifi.confirmDelete();
     if (confirm) {
-      this.hoidongThiService.delete(item.id).subscribe({
+      this.hoidongThiService.delete(item.id).pipe(switchMap(m=>{
+        return this.hoidongThisinhService.deleteByKey(item.id,'hoidong_id')
+      })).subscribe({
         next: () => {
           // this.page = Math.max(1, this.page - (this.listData.length > 1 ? 0 : 1));
           // this.listData.filter(f => f.id !== item.id)

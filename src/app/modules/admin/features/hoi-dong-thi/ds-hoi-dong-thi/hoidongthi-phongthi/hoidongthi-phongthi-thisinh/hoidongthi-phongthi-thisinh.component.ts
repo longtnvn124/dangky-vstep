@@ -106,7 +106,6 @@ export class HoidongthiPhongthiThisinhComponent implements OnInit {
           return m;
         })
 
-        console.log(this.listData);
 
         this.ngView= 1;
       },error:()=>{

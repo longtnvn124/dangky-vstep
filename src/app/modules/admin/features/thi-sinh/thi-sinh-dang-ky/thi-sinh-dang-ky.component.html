@@ -1,5 +1,5 @@
 <ng-container
-  *ngIf="userInfo && userInfo.cccd_img_truoc && userInfo.anh_chandung  && userInfo.status === 0,else notStatus">
+  *ngIf="userInfo && userInfo.cccd_img_truoc && userInfo.anh_chandung  && userInfo.status === 0 && isCheckCCCD,else notStatus">
 
   <ng-container [ngSwitch]="ngType">
     <ng-container *ngSwitchCase="-1">
@@ -221,6 +221,10 @@
       <i class="pi pi-exclamation-circle py-3" style="font-size: 8rem;color:#f59e0b"></i>
     </div>
     <div class="p-3" style="font-size: 17px;">Bạn chưa hoàn thành cập nhật thông tin!</div>
+
+    <div *ngIf="!isCheckCCCD">
+      Thông tin số CCCD của bạn không trùng với tài khoản, Vui lòng liên hệ với quản trị viên !
+    </div>
     <div>
       <button pButton pRipple class="p-button-warning p-button-text" label="Cập nhật thông tin cá nhân"
               style="font-size:16px;"

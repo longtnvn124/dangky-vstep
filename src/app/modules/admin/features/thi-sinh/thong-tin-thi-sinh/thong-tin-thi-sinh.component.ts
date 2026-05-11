@@ -223,7 +223,6 @@ export class ThongTinThiSinhComponent implements OnInit {
           this.userInfo = data;
 
           this.file_name = this.replaceHoten(this.auth.user.display_name)+ '_' + data.cccd_so;
-          console.log(this.file_name);
 
         } else {
           this.checkdata = 1;
@@ -287,6 +286,10 @@ export class ThongTinThiSinhComponent implements OnInit {
   }
 
   saveForm() {
+    const check = this.auth.user.username.toLowerCase() ==  this.f['cccd_so'].value.toLowerCase();
+    if(!check){
+      return this.notifi.toastError('Thông tin số CCCD của bạn không trùng với tài khoản');
+    }
     if (this.formSave.valid) {
       this.f['ten'].setValue(this.f['hoten'].value.split(' ').pop());
       this.f['hoten'].setValue(this.f['hoten'].value?.toString().trim());

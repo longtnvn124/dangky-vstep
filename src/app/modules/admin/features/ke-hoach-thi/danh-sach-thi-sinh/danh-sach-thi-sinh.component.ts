@@ -225,7 +225,6 @@ export class DanhSachThiSinhComponent implements OnInit {
 
               const header = ['STT','Mã ĐK','Trạng thái','Họ và tên','Ngày sinh','Giới tính','CCCD','Email','Số ĐT', 'Điểm dự thi','Ghi chú','Thời gian thanh toán']
 
-              console.log(dataMap);
               this.expThisinhDuthiService.export(dataMap,this._kehoachthi.title, this._kehoachthi.title,[header],'Danh sách đăng ký thành công');
               this.notifi.isProcessing(false);
 

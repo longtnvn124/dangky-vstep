@@ -325,10 +325,6 @@ export class AddThiSinhV2Component implements OnInit {
         this.hoidongThisinhService.getDataTotalDiemthiByKehoach(this.hoidong_select.kehoach_id,this.hoidong_select.id)
       ]).subscribe({
         next:([kehoach_dienduthi,orders,hoidongThisinhKhac,sumThisinh])=>{
-          // console.log(kehoach_dienduthi )
-          // console.log(orders)
-          // console.log(hoidongThisinhKhac)
-          console.log(sumThisinh)
 
           this.sumThisinh = sumThisinh.map(m=>{
             m['_diemduthi'] = this.dataDonvi.find(f=>f.id == m.diemduthi_id) ? this.dataDonvi.find(f=>f.id ==  m.diemduthi_id).title : '';
@@ -364,9 +360,6 @@ export class AddThiSinhV2Component implements OnInit {
             }
           }
 
-
-          console.log(this.objectAdd);
-
         },error:()=>{
           this.notifi.toastWarning('Load dữ liệu không thành công');
         }
@@ -380,8 +373,8 @@ export class AddThiSinhV2Component implements OnInit {
         condition: [
           {
             conditionName:'kehoach_id',
-            condition:OvicQueryCondition.notEqual,
-            value:this.hoidong_select.id.toString(),
+            condition:OvicQueryCondition.equal,
+            value:this.hoidong_select.kehoach_id.toString(),
           },
           {
             conditionName:'trangthai_thanhtoan',
@@ -475,8 +468,6 @@ export class AddThiSinhV2Component implements OnInit {
   }
 
   addThisinh(){
-
-    console.log('is');
     const listThisinh = this.objectAdd.ordersSelect;
     const objercheck = this.objectAdd.objectCheck;
 

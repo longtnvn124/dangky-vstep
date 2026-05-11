@@ -341,9 +341,9 @@ export class ThiSinhDuThiComponent implements OnInit {
   searchContentByInput(text: string) {
     this.page = 1;
 
-    let viTri = text.indexOf("vsat");
 
-    this.search = viTri === -1 ? text.trim() : text.slice(viTri + 4).trim()
+
+    this.search = text.trim()
 
 
     this.loadData(1, this.kehoach_id, this.search);

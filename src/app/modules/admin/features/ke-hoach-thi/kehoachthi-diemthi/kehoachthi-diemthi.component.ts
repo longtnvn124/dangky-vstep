@@ -115,9 +115,6 @@ export class KehoachthiDiemthiComponent implements OnInit {
           return m;
         }) : [];
 
-        console.log(this.kehoachthiDiemduthi);
-        console.log(this.dmDiemduthi);
-
         this.ngType = 1;
 
 

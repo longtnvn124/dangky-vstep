@@ -62,7 +62,7 @@ export class ThiSinhDangKyComponent implements OnInit {
   kehoach_diemduthi_select  : KehoachthiDiemduthi = null;
   limit                     : number = 20;
   formHuyOrder              : FormGroup;
-
+  isCheckCCCD               :  boolean = false;
   constructor(
     private kehoachthiVstepService: KehoachthiVstepService,
     private kehoachthiDiemthiVstepService: KehoachthiDiemthiVstepService,
@@ -85,6 +85,8 @@ export class ThiSinhDangKyComponent implements OnInit {
       kehoach_id: [null, Validators.required],
       diemduthi_id: [null, Validators.required],
       lephithi: [null, Validators.required],
+      thisinh_id:[null,Validators.required]
+
     })
     this.formHuyOrder = this.fb.group({
       user_id: [null, Validators.required],
@@ -94,7 +96,7 @@ export class ThiSinhDangKyComponent implements OnInit {
       hoten: ['', Validators.required],
       mota: ['', Validators.required],
       files: [null],
-      minhchung: [null]
+      minhchung: [null],
     })
 
   }
@@ -140,6 +142,10 @@ export class ThiSinhDangKyComponent implements OnInit {
       next: ([ thisinhInfo, keHoachThi,dateTimeService]) => {
         this.dateTimeService = dateTimeService;
         this.userInfo = thisinhInfo;
+        this.isCheckCCCD = thisinhInfo.cccd_so.toLowerCase() == this.auth.user.username.toLowerCase();
+        if (!this.isCheckCCCD){
+          this.notifi.toastError('Thông tin số CCCD của bạn không trùng với tài khoản, Vui lòng liên hệ với quản trị viên !');
+        }
 
         const curentDate = new Date();
 
@@ -274,6 +280,7 @@ export class ThiSinhDangKyComponent implements OnInit {
       user_id: this.auth.user.id,
       kehoach_id: null,
       diemduthi_id: null,
+      thisinh_id:this.userInfo.id
     })
   }
 
@@ -284,6 +291,7 @@ export class ThiSinhDangKyComponent implements OnInit {
 
   SaveForm() {
     this.f['user_id'].setValue(this.auth.user.id);
+    this.f['thisinh_id'].setValue(this.userInfo.id);
 
     if (this.formSave.valid) {
       this.isLoading = true;
