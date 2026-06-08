@@ -276,7 +276,11 @@ export class ThiSinhDuThiComponent implements OnInit {
           m['__thisinh_phone'] = thisinh && thisinh['phone'] ? thisinh['phone'] : (user ? user.phone:'');
           m['__thisinh_email'] = thisinh && thisinh['email'] ? thisinh['email'] : (user ? user.email:'');
           m['giadich'] = m.trangthai_thanhtoan === 1 ? m['transaction_id'] :'';
-          m['__dotthi_coverted'] = this.dsKehoachthi.find(f => f.id === m.kehoach_id) ? this.dsKehoachthi.find(f => f.id === m.kehoach_id).title : '';
+
+          const dotthi: KeHoachThi  = this.dsKehoachthi.find(f => f.id === m.kehoach_id);
+
+          m['__dotthi_coverted'] = dotthi ? dotthi.title : '';
+          m['__capthi'] = dotthi && dotthi.levels && m.capthi ? (dotthi.levels.find(f=>f.value == m.capthi) ? dotthi.levels.find(f=>f.value == m.capthi).label : '' ) : '';
           // m['__monthi_covered'] = this.dsCapdo.find(f=>f.id === m.caphsk_id) ? m.mon_id.map(b => this.dsMon.find(f => f.id == b) ? this.dsMon.find(f => f.id == b) : []) : [];
 
           m['__status_converted'] = m.trangthai_thanhtoan ;
@@ -630,5 +634,6 @@ export class ThiSinhDuThiComponent implements OnInit {
     }
   }
 
-
 }
+
+

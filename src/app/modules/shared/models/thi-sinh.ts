@@ -28,4 +28,9 @@ export interface ThiSinhInfo {
   email?:string;
   diachi_congtac?:string;
 
+  doituong:string,
+  doituong_masv?:string,
+  doituong_truong?:string,
+  doituong_anhthe?:OvicFile;
+
 }

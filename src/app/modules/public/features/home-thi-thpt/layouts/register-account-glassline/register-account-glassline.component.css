@@ -1,0 +1,365 @@
+:host {
+  display: block;
+  min-height: 100%;
+  color: #0f1419;
+  font-family: Geist, Inter, Arial, sans-serif;
+}
+
+.home-thpt-register {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: #f1f3f5;
+  padding: 32px;
+}
+
+.register-shell {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 500px);
+  gap: 32px;
+  align-items: center;
+}
+
+.register-intro {
+  padding: 32px 16px;
+}
+
+.register-eyebrow,
+.register-card__kicker {
+  margin: 0 0 12px;
+  color: #2c5ef5;
+  font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.register-intro h1 {
+  max-width: 620px;
+  margin: 0;
+  color: #0f1419;
+  font-size: clamp(2.5rem, 6vw, 3.75rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+}
+
+.register-intro__desc {
+  max-width: 520px;
+  margin: 24px 0 0;
+  color: #4a5568;
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+.register-benefits {
+  margin: 32px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  list-style: none;
+  color: #0f1419;
+  font-size: 0.95rem;
+}
+
+.register-benefits li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.register-benefits li::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #2c5ef5;
+  flex: 0 0 auto;
+}
+
+.register-card {
+  width: 100%;
+  min-height: 520px;
+  border: 1px solid rgba(74, 85, 104, 0.14);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 24px 80px rgba(15, 20, 25, 0.08);
+  padding: 24px;
+}
+
+.register-card__header {
+  margin-bottom: 24px;
+}
+
+.register-card__header h2,
+.register-result h2 {
+  margin: 0;
+  color: #0f1419;
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+
+.register-card__header p:last-child,
+.register-result p {
+  margin: 10px 0 0;
+  color: #4a5568;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.register-form {
+  display: grid;
+  gap: 16px;
+}
+
+.register-field {
+  display: grid;
+  gap: 8px;
+}
+
+.register-field label {
+  color: #4a5568;
+  font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.register-field label span {
+  color: #2c5ef5;
+}
+
+.register-field input {
+  width: 100%;
+  height: 46px;
+  border: 1px solid rgba(74, 85, 104, 0.22);
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f1419;
+  outline: none;
+  padding: 0 14px;
+  font-size: 0.95rem;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.register-field input::placeholder {
+  color: rgba(74, 85, 104, 0.58);
+}
+
+.register-field input:focus {
+  border-color: #2c5ef5;
+  box-shadow: 0 0 0 4px rgba(44, 94, 245, 0.12);
+}
+
+.register-field input.register-input--error {
+  border-color: #d92d20;
+  box-shadow: 0 0 0 4px rgba(217, 45, 32, 0.08);
+}
+
+.register-field small {
+  color: #d92d20;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.register-password {
+  position: relative;
+}
+
+.register-password input {
+  padding-right: 48px;
+}
+
+.register-password__toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #4a5568;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+  transform: translateY(-50%);
+}
+
+.register-password__toggle:hover {
+  background: #f1f3f5;
+  color: #2c5ef5;
+}
+
+.register-password-rules {
+  display: grid;
+  gap: 4px;
+  border: 1px solid rgba(217, 45, 32, 0.14);
+  border-left: 3px solid #d92d20;
+  border-radius: 10px;
+  background: rgba(217, 45, 32, 0.04);
+  padding: 10px 12px;
+  color: #4a5568;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.register-password-rules strong {
+  color: #0f1419;
+}
+
+.register-note {
+  margin-top: 18px;
+  border-radius: 10px;
+  background: #f1f3f5;
+  padding: 12px 14px;
+  color: #4a5568;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.register-note strong {
+  color: #0f1419;
+}
+
+.register-login-link {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  color: #4a5568;
+  font-size: 0.9rem;
+}
+
+.register-login-link button {
+  border: 0;
+  background: transparent;
+  color: #2c5ef5;
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+}
+
+.register-footer {
+  margin-top: 20px;
+}
+
+.register-submit,
+.register-secondary {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 10px !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+}
+
+.register-submit.p-button,
+.register-submit.p-button:enabled:hover,
+.register-submit.p-button:enabled:focus {
+  border-color: #2c5ef5 !important;
+  background: #2c5ef5 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.register-submit.p-button:disabled {
+  border-color: rgba(74, 85, 104, 0.18) !important;
+  background: #f1f3f5 !important;
+  color: rgba(74, 85, 104, 0.62) !important;
+  opacity: 1 !important;
+}
+
+.register-secondary.p-button,
+.register-secondary.p-button:enabled:hover,
+.register-secondary.p-button:enabled:focus {
+  border-color: rgba(74, 85, 104, 0.22) !important;
+  background: #ffffff !important;
+  color: #0f1419 !important;
+  box-shadow: none !important;
+}
+
+.register-inline-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 10px;
+  background: #f1f3f5;
+  padding: 12px 14px;
+  color: #0f1419;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.register-inline-success i {
+  color: #2c5ef5;
+  margin-top: 2px;
+}
+
+.register-result {
+  min-height: 472px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.register-result > i {
+  margin-bottom: 18px;
+  color: #2c5ef5;
+  font-size: 4rem;
+}
+
+.register-result__actions {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .home-thpt-register {
+    align-items: flex-start;
+    padding: 24px;
+  }
+
+  .register-shell {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .register-intro {
+    padding: 8px 0;
+  }
+
+  .register-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .home-thpt-register {
+    padding: 16px;
+  }
+
+  .register-card {
+    padding: 18px;
+  }
+
+  .register-card__header h2,
+  .register-result h2 {
+    font-size: 1.8rem;
+  }
+
+  .register-result__actions {
+    grid-template-columns: 1fr;
+  }
+}

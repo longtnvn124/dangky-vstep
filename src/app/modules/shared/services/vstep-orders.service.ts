@@ -24,6 +24,9 @@ export interface OrdersVstep {
   params?: params[];
   user_id?:number;
   is_child_payment?: number;
+
+  capthi:string,
+  trangthai_duyet:number;
 }
 
 export interface params {

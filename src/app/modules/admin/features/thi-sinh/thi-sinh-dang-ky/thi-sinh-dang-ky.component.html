@@ -59,17 +59,18 @@
               <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
                 <form [formGroup]="formSave" autocomplete="off">
                   <div class="row ">
-                    <div class="col col-md-12 col-xl-6">
+                    <div class="col col-md-12 col-xl-4">
                       <div class="form-row">
                         <label>Đợt thi <span class="ovic-mark">*</span></label>
                         <ovic-dropdown class="w-100" [options]="keHoachThi_dangky" [optionLabel]="'title'"
                                        placeholder="Chọn đợt thi" [filter]="true"
-                                       [filterBy]="'title'" optionId="id" [formField]="f['kehoach_id']" [showClear]="false"
+                                       [filterBy]="'title'" optionId="id" [formField]="f['kehoach_id']"
+                                       [showClear]="false"
                                        (onChange)="selectKehoachthi($event)"
                         ></ovic-dropdown>
                       </div>
                     </div>
-                    <div class="col col-md-12 col-xl-6">
+                    <div class="col col-md-12 col-xl-4">
                       <div class="form-row">
                         <label>Điểm dự thi <span class="ovic-mark">*</span></label>
                         <ovic-dropdown class="w-100" [options]="kehoachDiemduthi" [optionLabel]="'_donvi_title'"
@@ -81,6 +82,19 @@
                       </div>
                     </div>
 
+                    <div class="col col-md-12 col-xl-4">
+                      <div class="form-row">
+                        <label>Cấp độ dự thi <span class="ovic-mark">*</span></label>
+                        <ovic-dropdown class="w-100" [options]="listLever" [optionLabel]="'label'"
+                                       placeholder="Chọn cấp độ" [filter]="true"
+                                       [showClear]="false"
+                                       [filterBy]="'label'" optionId="value" [formField]="f['capthi']"
+                                       (onChange)="selectCapthi($event)"
+                        ></ovic-dropdown>
+                      </div>
+                    </div>
+
+
                   </div>
 
                 </form>
@@ -88,14 +102,21 @@
 
               <div class="body" *ngIf="this.kehoach_select && this.kehoach_diemduthi_select">
                 <div class="info">
-                  <div><strong>Đợt thi:</strong> {{kehoach_select.title}}</div>
+                  <div><strong>Đợt thi:</strong> {{ kehoach_select.title }}</div>
                   <div *ngIf="kehoach_select.mota"><strong>Chi tiết:</strong>
-                    <div class=""  [innerHtml]="kehoach_select.mota | ovicSafeHtml"> </div>
+                    <div class="" [innerHtml]="kehoach_select.mota | ovicSafeHtml"></div>
                   </div>
-                  <div><strong>Thời gian đăng ký:</strong> {{kehoach_select['_date_convertd']}}</div>
-                  <div><strong>Điểm dự thi:</strong> {{kehoach_diemduthi_select ? kehoach_diemduthi_select['_donvi_title'] : '' }}</div>
-                  <div><strong>Số lượng đăng ký : </strong> <span class="count err">{{ kehoach_diemduthi_select['_soluong_conlai'] }}</span></div>
-                  <div><strong>Giá đăng ký: </strong> <span class="count">{{kehoach_select.gia | numberToVndCurrencuy}}</span></div>
+
+                  <div><strong>Ngôn ngữ:</strong> {{ kehoach_select['_ngonngu'] }}</div>
+                  <div><strong>Thời gian đăng ký:</strong> {{ kehoach_select['_date_convertd'] }}</div>
+                  <div><strong>Điểm dự
+                    thi:</strong> {{ kehoach_diemduthi_select ? kehoach_diemduthi_select['_donvi_title'] : '' }}
+                  </div>
+                  <div><strong>Cấp thi:</strong> {{ capthi_select ? capthi_select.label : '' }}</div>
+                  <div><strong>Số lượng đăng ký : </strong> <span
+                    class="count err">{{ kehoach_diemduthi_select['_soluong_conlai'] }}</span></div>
+                  <div><strong>Giá đăng ký: </strong> <span
+                    class="count">{{ conventGiabyKehoach(kehoach_select) | numberToVndCurrencuy }}</span></div>
                 </div>
               </div>
             </div>
@@ -103,9 +124,9 @@
 
             <div style="padding: 15px 0 ;display: flex;justify-content: center;gap: 10px;">
 
-                <button pButton pRipple class="p-button-success" icon="pi pi-check-square" label="Đăng ký dự thi"
-                        [loading]="isLoading"
-                        (click)="SaveForm()"></button>
+              <button pButton pRipple class="p-button-success" icon="pi pi-check-square" label="Đăng ký dự thi"
+                      [loading]="isLoading"
+                      (click)="SaveForm()"></button>
 
               <button pButton pRipple icon="pi pi-user-edit" label="Cập nhật thông tin" (click)="btnRouInfo()"></button>
             </div>
@@ -140,7 +161,7 @@
                     <ng-template pTemplate="body" let-item>
                       <tr>
                         <td class="ovic-w-50px text-center" [innerHTML]="item['_indexTable']"></td>
-                        <td class="ovic-w-50px text-center" >{{ item['id'] }}</td>
+                        <td class="ovic-w-50px text-center">{{ item['id'] }}</td>
                         <td>
                           <div class="d-block --fs-14 font-weight-bold" [innerHTML]="item['__kehoach_thi']"></div>
                         </td>
@@ -178,21 +199,45 @@
                                   Bạn đã hủy dự thi
                                 </div>
                                 <ng-template #notHuy>
-                                  <button pRipple pButton class="" label="Đổi đợt thi" (click)="btnViewChange(item)"></button>
-                                  <button pRipple pButton class="p-button-warning" label="Hủy dự thi" (click)="btnViewCancel(item)"></button>
+                                  <button pRipple pButton class="" label="Đổi đợt thi"
+                                          (click)="btnViewChange(item)"></button>
+                                  <button pRipple pButton class="p-button-warning" label="Hủy dự thi"
+                                          (click)="btnViewCancel(item)"></button>
                                 </ng-template>
 
                               </div>
                             </ng-container>
                             <ng-template #notParentNotPay>
-                              <div class="d-flex flex-wrap justify-content-center" style=" gap: 10px;">
-                                <button pButton pRipple class="p-button-warning mx-1" [pTooltip]="'Thanh toán'"
-                                        [tooltipPosition]="'top'" icon="pi pi-credit-card" [loading]="isLoading"
-                                        (click)="getPayment(item)"></button>
-                                <button pButton pRipple class="p-button-danger mx-1"
-                                        [pTooltip]="'Xoá'" [tooltipPosition]="'top'" icon="pi pi-trash"
-                                        (click)="deleteRow(item)"></button>
-                              </div>
+                              <ng-container *ngIf="item.trangthai_thanhtoan == 1 ">
+                                <div class="d-flex justify-content-center">
+                                  <button pRipple pButton icon="pi pi-file" (click)="viewPhieudangky(item)"></button>
+                                </div>
+                              </ng-container>
+
+                              <ng-container *ngIf="item.trangthai_thanhtoan !== 1 ">
+<!--                                <button pRipple pButton icon="pi pi-file" (click)="viewPhieudangky(item)"></button>-->
+
+
+                                <ng-container *ngIf="item.trangthai_duyet == 1 else notDuyet">
+                                  <div class="d-flex flex-wrap justify-content-center" style=" gap: 10px;">
+                                    <button pButton pRipple class="p-button-warning mx-1" [pTooltip]="'Thanh toán'"
+                                            [tooltipPosition]="'top'" icon="pi pi-credit-card" [loading]="isLoading"
+                                            (click)="getPayment(item)"></button>
+                                    <button pButton pRipple class="p-button-danger mx-1"
+                                            [pTooltip]="'Xoá'" [tooltipPosition]="'top'" icon="pi pi-trash"
+                                            (click)="deleteRow(item)"></button>
+                                  </div>
+                                </ng-container>
+                                <ng-template #notDuyet>
+                                  <div
+                                    style="padding: 8px 12px;background: #fffbe6;border-radius: 10px;color: #874d00;border: 1px solid #ffd591;">
+                                    Chờ duyệt thông tin đăng ký của thí sinh
+                                  </div>
+                                </ng-template>
+
+                              </ng-container>
+
+
                             </ng-template>
                           </ng-template>
 
@@ -202,7 +247,8 @@
                     </ng-template>
                   </p-table>
 
-                  <p-paginator [rows]="limit" [totalRecords]="recordTotal" (onPageChange)="paginate($event)"></p-paginator>
+                  <p-paginator [rows]="limit" [totalRecords]="recordTotal"
+                               (onPageChange)="paginate($event)"></p-paginator>
                 </ng-template>
               </div>
             </div>
@@ -236,13 +282,13 @@
 
 
 <p-dialog class="dal-dk-custome" [header]="'THANH TOÁN'" [(visible)]="displayModalThanhtoan" [modal]="true"
-          [style]="{width: '50vw', height:'80vh'}" [draggable]="false" [resizable]="false" (onHide)="closeDialogThanhtoan()" >
+          [style]="{width: '50vw', height:'80vh'}" [draggable]="false" [resizable]="false"
+          (onHide)="closeDialogThanhtoan()">
   <ng-container *ngIf="order_select && displayModalThanhtoan">
-    <app-thanhtoan-by-qr [content]="'DK HSK'" [userInfo]="userInfo" [order]="order_select" [type]="'thisinh'" ></app-thanhtoan-by-qr>
+    <app-thanhtoan-by-qr [content]="'DK VSTEP'" [userInfo]="userInfo" [order]="order_select"
+                         [type]="'thisinh'"></app-thanhtoan-by-qr>
   </ng-container>
 </p-dialog>
-
-
 
 
 <p-dialog class="dal-dk-custome" [header]="'ĐỔI ĐỢT THI'" [(visible)]="viewModelChange" [modal]="true"
@@ -396,24 +442,28 @@
       </div>
     </ng-container>
     <ng-container *ngSwitchCase="'1'">
-      <div *ngIf="huyByCancel.state == 1" class="d-flex justify-content-center align-items-center flex-column h-100 w-100"
+      <div *ngIf="huyByCancel.state == 1"
+           class="d-flex justify-content-center align-items-center flex-column h-100 w-100"
            style="gap:10px;color:#0ba50b">
         <i class="pi pi-check-circle pi-sync" style="font-size: 80px;"></i>
         <div style="font-size:20px;">Bạn đã yêu cầu hủy dự thi thành công</div>
       </div>
 
-      <div *ngIf="huyByCancel.state == 0" class="d-flex justify-content-center align-items-center flex-column h-100 w-100"
+      <div *ngIf="huyByCancel.state == 0"
+           class="d-flex justify-content-center align-items-center flex-column h-100 w-100"
            style="gap:10px;color:#e87600">
         <i class="pi pi-spin pi-sync" style="font-size: 80px;"></i>
         <div style="font-size:20px;">Yêu cầu của thí sinh đang chờ xét duyệt</div>
       </div>
 
-      <div *ngIf="huyByCancel.state == -1" class="d-flex justify-content-center align-items-center flex-column h-100 w-100"
+      <div *ngIf="huyByCancel.state == -1"
+           class="d-flex justify-content-center align-items-center flex-column h-100 w-100"
            style="gap:10px;color:rgb(252 41 37)">
         <i class="pi pi-times" style="font-size: 80px;"></i>
-        <div  class="text-center" style="font-size: 17px;">
+        <div class="text-center" style="font-size: 17px;">
           <p>Yêu cầu của bạn đã bị hủy</p>
-          <p>Mọi thắc mắc liên hệ đt: <strong>Điện thoại:</strong> 0345409227, <strong>Email:</strong> hsk@tnu.edu.vn</p>
+          <p>Mọi thắc mắc liên hệ đt: <strong>Điện thoại:</strong> 0345409227, <strong>Email:</strong> hsk@tnu.edu.vn
+          </p>
         </div>
       </div>
 
@@ -428,7 +478,8 @@
               1. Khi thực hiện "Hủy đăng ký", cán bộ phụ trách sẽ tiến hành xét duyệt đơn.
             </div>
             <div>
-              2. Thí sinh tiến hành hủy đăng ký thi trước ngày thi ít nhất 05 ngày làm việc, sau thời hạn trên, yêu cầu hủy đăng ký thi sẽ không được giải quyết
+              2. Thí sinh tiến hành hủy đăng ký thi trước ngày thi ít nhất 05 ngày làm việc, sau thời hạn trên, yêu cầu
+              hủy đăng ký thi sẽ không được giải quyết
             </div>
             <div>
               3. Trường hợp yêu cầu được phê duyệt, thí sinh không còn trong danh sách dự thi của đợt thi.
@@ -437,7 +488,9 @@
               4. Hoàn lệ phí thi tại <strong>"Trung tâm Khảo thí và Quản lý chất lượng giáo dục - ĐHTN"</strong>
             </div>
             <div>
-              <strong>Điện thoại:</strong> 0977.529.996 (chứng chỉ VSTEP) - 0913.629.996 (Giấy chứng nhận năng lực ngoại ngữ của Đại học Thái Nguyên), <strong>Email:</strong>   phongkhaothi.cteq@tnu.edu.vn, <strong>Địa chỉ:</strong> Địa chỉ: Nhà T1 - ĐHTN, Tân Thịnh, TP. Thái Nguyên
+              <strong>Điện thoại:</strong> 0977.529.996 (chứng chỉ VSTEP) - 0913.629.996 (Giấy chứng nhận năng lực ngoại
+              ngữ của Đại học Thái Nguyên), <strong>Email:</strong> phongkhaothi.cteq@tnu.edu.vn, <strong>Địa
+              chỉ:</strong> Địa chỉ: Nhà T1 - ĐHTN, Tân Thịnh, TP. Thái Nguyên
             </div>
           </div>
         </div>
@@ -453,7 +506,7 @@
 
             <div class="row">
               <div class="col-12">
-                <div><strong>1.lý do huỷ dự thi</strong> </div>
+                <div><strong>1.lý do huỷ dự thi</strong></div>
                 <div class="form-row">
                   <label>Lý do<span class="ovic-mark">*</span></label>
                   <textarea pInputTextarea placeholder="Nhập lý do đổi đợt thi" formControlName="mota"
@@ -465,9 +518,12 @@
               <div class="col-12">
                 <div>
                   <p><strong>2.Đơn xin hoàn lại lệ phi và minh chứng chuyển khoản</strong></p>
-                  <p class="text-center " style="color:red;">Để hoàn lại lệ phí dự thi, thi sinh thực hiện tải đơn này và điền thông tin, sau đó thí sinh scan hoặc chụp ảnh phần đơn đã hoàn thiện kèm theo bill đã nộp phí thi và tải lên hệ thống </p>
+                  <p class="text-center " style="color:red;">Để hoàn lại lệ phí dự thi, thi sinh thực hiện tải đơn này
+                    và điền thông tin, sau đó thí sinh scan hoặc chụp ảnh phần đơn đã hoàn thiện kèm theo bill đã nộp
+                    phí thi và tải lên hệ thống </p>
                   <div class="text-center">
-                    <button pRipple pButton label="Đơn hoàn lệ phí" icon="pi pi-download" (click)="btnDowloadDon()"></button>
+                    <button pRipple pButton label="Đơn hoàn lệ phí" icon="pi pi-download"
+                            (click)="btnDowloadDon()"></button>
                   </div>
                 </div>
 
@@ -477,7 +533,8 @@
               <div class="col col-lg-6">
                 <div class="form-row">
                   <label>Đơn hoàn lệ phí<span class="ovic-mark">*</span></label>
-                  <app-file-list-local class="w-100 ovic-vertical__file-list" [permission]="filePermission" [accept]="['.jpg', '.png', '.jpeg']"
+                  <app-file-list-local class="w-100 ovic-vertical__file-list" [permission]="filePermission"
+                                       [accept]="['.jpg', '.png', '.jpeg']"
                                        [formField]="formHuy['files']" [multiple]="false"
                                        [state]="1"></app-file-list-local>
                 </div>
@@ -485,7 +542,8 @@
               <div class="col col-lg-6">
                 <div class="form-row">
                   <label>Minh chứng chuyển khoản <span class="ovic-mark">*</span></label>
-                  <app-file-list-local class="w-100 ovic-vertical__file-list" [permission]="filePermission" [accept]="['.jpg', '.png', '.jpeg']"
+                  <app-file-list-local class="w-100 ovic-vertical__file-list" [permission]="filePermission"
+                                       [accept]="['.jpg', '.png', '.jpeg']"
                                        [formField]="formHuy['minhchung']" [multiple]="false"
                                        [state]="1"></app-file-list-local>
                 </div>
@@ -501,7 +559,371 @@
                 (click)="btnAcceptHuyOrder()"></button>
       </div>
 
+
     </ng-container>
   </ng-container>
+
 </p-dialog>
 
+<!-- Phiếu đăng ký điện tử (Flexbox) -->
+<p-dialog header="Phiếu đăng ký điện tử (Flex)" [(visible)]="isShower" [modal]="true" [style]="{width: 'calc(100% - 20px)'}"
+          [maximizable]="true"
+          [draggable]="false" [resizable]="false">
+
+  <ng-template pTemplate="header">
+    <button pButton pRipple label="Xuất phiếu dự thi" (click)="downloadAsPdf()"></button>
+  </ng-template>
+
+  <div *ngIf="phieuduthi" class="w-100 h-100 d-flex flex-column align-phieu "
+       style="background: #fafafa;color: #000000">
+    <div class="phieu_content" style="width:21cm;height:27cm;background: #fff; padding: 20px 40px;" #dataToExport>
+      <table class="w-100 my-3 px-2">
+        <tr>
+          <td>
+            <div class="--font-times-new-roman d-flex justify-content-center align-items-center flex-column">
+              <div class="text-center"> ĐẠI HỌC THÁI NGUYÊN</div>
+              <div><strong><u>HỘI ĐỒNG THI ĐÁNH GIÁ NLNN</u></strong></div>
+            </div>
+          </td>
+          <td>
+            <div class="--font-times-new-roman d-flex justify-content-center align-items-center flex-column">
+              <div class="text-center"><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong></div>
+              <div><strong><u>Độc lập – Tự do – Hạnh phúc</u></strong></div>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <div class="--font-times-new-roman text-center my-1" style="font-size:20px;"><strong>PHIẾU ĐĂNG KÝ DỰ THI</strong>
+      </div>
+      <div class="--font-times-new-roman text-center my-1" style="font-size:18px;"><strong>ĐÁNH GIÁ NĂNG LỰC NGOẠI NGỮ
+        CỦA ĐẠI HỌC THÁI NGUYÊN</strong>
+      </div>
+
+      <div class="row mx-0 mt-2">
+        <div class="col d-flex justify-content-center">
+          <div class="anh-the ">
+            <img [src]="phieuduthi.anh_chandung" alt="">
+          </div>
+        </div>
+        <div class="col">
+          <div class="anh-the">
+            <ng-container *ngIf="!phieuduthi.doituong_anhthe else notAnhThe">
+              <img [src]="phieuduthi.doituong_anhthe" alt="">
+
+            </ng-container>
+            <ng-template #notAnhThe>
+              <div class="d-flex justify-content-center align-items-center flex-column">
+                <span style="font-weight: 500;">Ảnh thẻ sinh viên</span>
+                <span style="font-weight: 500;">(Nếu có)</span>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+<!--      <div class="row mx-0 mt-2">-->
+<!--        <div class="col d-flex justify-content-center">-->
+<!--          <div class="anh-the ">-->
+<!--            <img [src]="phieuduthi.cccd_mattruoc" alt="">-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="col">-->
+<!--          <div class="anh-the">-->
+<!--            <img [src]="phieuduthi.cccd_matsau" alt="">-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+      <div class="table w-100 mt-2">
+        <div class="table-flex w-100">
+          <!-- PHẦN I -->
+          <div class="table-flex-row" style="background: #C1E4F5">
+            <div class="table-flex-cell colspan-3"><strong>PHẦN I - THÔNG TIN CÁ NHÂN</strong></div>
+          </div>
+
+          <div class="table-flex-row">
+            <div class="table-flex-cell ">
+              1. Họ và tên: {{ phieuduthi.hoten }}
+            </div>
+            <div class="table-flex-cell" style="max-width: 240px;">
+              <div>
+                2. Giới tính:
+                <span style="margin-left: 10px;">
+                  <i [ngClass]="phieuduthi.gioitinh !== 'name' ? 'fa fa-square-o' : 'fa fa-check-square-o'"></i>
+                </span> Nam
+                <span style="margin-left: 10px;">
+                  <i [ngClass]="phieuduthi.gioitinh == 'name' ? 'fa fa-square-o' : 'fa fa-check-square-o'"></i>
+                </span> Nữ
+              </div>
+            </div>
+          </div>
+
+          <div class="table-flex-row">
+            <div class="table-flex-cell" style="width: 280px;flex: unset;">
+              3. Ngày sinh: {{phieuduthi.ngaysinh}}
+            </div>
+            <div class="table-flex-cell ">
+              4. Nơi sinh: {{phieuduthi.noisinh}}
+            </div>
+          </div>
+
+          <div class="table-flex-row">
+            <div class="table-flex-cell">
+              5. Số CCCD: {{phieuduthi.cccd_so}}
+            </div>
+            <div class="table-flex-cell">
+              6. ngày cấp: {{phieuduthi.cccd_ngaycap}}
+            </div>
+            <div class="table-flex-cell">
+              7. Nơi cấp: {{phieuduthi.cccd_noicap}}
+            </div>
+          </div>
+
+          <div class="table-flex-row">
+            <div class="table-flex-cell colspan-2">
+              8. Điện thoại: {{phieuduthi.phone}}
+            </div>
+            <div class="table-flex-cell colspan-2">
+              9. Email: {{phieuduthi.email}}
+            </div>
+          </div>
+
+          <div class="table-flex-row">
+            <div class="table-flex-cell colspan-3">
+              10. Địa chỉ thường trú: {{phieuduthi.thuongtru}}
+            </div>
+          </div>
+
+          <div class="table-flex-row">
+            <div class="table-flex-cell colspan-3">
+              11. Đối tượng dự thi:
+            </div>
+          </div>
+
+          <div class="table-flex-row">
+            <div class="table-flex-cell" style="width: 280px;flex: unset;">
+              <span>
+                <i [ngClass]="phieuduthi.doituong !== 'dhtn' ? 'fa fa-square-o' : 'fa fa-check-square-o'"></i>
+              </span> Người học của Đại học Thái Nguyên
+            </div>
+            <div class="table-flex-cell">
+              <span>
+                <i [ngClass]="phieuduthi.doituong !== 'doitac' ? 'fa fa-square-o' : 'fa fa-check-square-o'"></i>
+              </span> Người học của đơn vị đối tác
+            </div>
+            <div class="table-flex-cell">
+              <span>
+                <i [ngClass]="phieuduthi.doituong !== 'tudo' ? 'fa fa-square-o' : 'fa fa-check-square-o'"></i>
+              </span> Thí sinh tự do
+            </div>
+          </div>
+
+          <!-- PHẦN 2 -->
+          <div class="table-flex-row" style="background: #C1E4F5">
+            <div class="table-flex-cell colspan-3">
+              <strong>PHẦN II – THÔNG TIN ĐĂNG KÝ THI</strong>
+            </div>
+          </div>
+
+          <div class="table-flex-row">
+            <div class="table-flex-cell">1. Đợt thi: {{phieuduthi.dothi}}</div>
+          </div>
+
+          <div class="table-flex-row">
+            <div class="table-flex-cell">2. Ngôn ngữ thi: {{phieuduthi.ngonngu}}</div>
+          </div>
+          <div class="table-flex-row">
+            <div class="table-flex-cell">3. Cấp độ thi:</div>
+          </div>
+
+          <div class="table-flex-row flex-wrap" >
+            <div class="table-flex-cell" style="width: 33.33%;height: 36.8px;" *ngFor="let item of phieuduthi.capthi">
+              <div *ngIf="item.label">
+                <i [ngClass]="!item.check ? 'fa fa-square-o' : 'fa fa-check-square-o' " class="mr-2"></i>
+                <span>{{item.label}}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- PHẦN III -->
+          <div class="table-flex-row" style="background: #C1E4F5">
+            <div class="table-flex-cell colspan-3"><strong>PHẦN III - CAM KẾT CỦA THÍ SINH</strong></div>
+          </div>
+
+          <div class="table-flex-row">
+            <div class="table-flex-cell colspan-3">
+              <span><i class="fa fa-check-square-o"></i></span> Thí sinh cam kết chịu trách nhiệm về những thông tin cung cấp ở phía trên, nếu sai sót thí sinh có thể bị hủy tư cách dự thi và kết quả thi
+            </div>
+          </div>
+
+          <div class="table-flex-row">
+            <div class="table-flex-cell colspan-3">
+              <span><i class="fa fa-check-square-o"></i></span> Thí sinh cam kết chấp hành đúng và đầy đủ Quy chế thi và Quy định của Hội đồng thi đánh giá năng lực ngoại ngữ tại Đại học Thái Nguyên.
+            </div>
+          </div>
+
+        </div><!-- end table-flex -->
+      </div>
+    </div>
+  </div>
+</p-dialog>
+
+<!--<p-dialog header="Phiếu đăng ký điện tử" [(visible)]="isShower" [modal]="true" [style]="{width: 'calc(100% - 20px)'}"-->
+<!--          [maximizable]="true"-->
+<!--          [draggable]="false" [resizable]="false">-->
+
+<!--  <ng-template pTemplate="header">-->
+<!--    <button pButton pRipple label="Xuất phiếu dự thi" (click)="downloadAsPdf()"></button>-->
+
+<!--  </ng-template>-->
+<!--  <div *ngIf="phieuduthi" class="w-100 h-100 d-flex flex-column align-phieu "-->
+<!--       style="background: #fafafa;color: #000000">-->
+<!--    &lt;!&ndash;    <div class="m-2 w-100 btn_exportPhieeus" >&ndash;&gt;-->
+<!--    &lt;!&ndash;      <button pButton pRipple label="Xuất phiếu dự thi" (click)="downloadAsPdf(dataToExport)"></button>&ndash;&gt;-->
+<!--    &lt;!&ndash;    </div>&ndash;&gt;-->
+<!--    <div class="phieu_content" style="width:21cm;height:27cm;background: #fff; padding: 20px 40px;" #dataToExport>-->
+<!--      <table class="w-100 my-3 px-2">-->
+<!--        <tr>-->
+<!--          <td>-->
+<!--            <div class="&#45;&#45;font-times-new-roman d-flex justify-content-center align-items-center flex-column">-->
+<!--              <div class="text-center"> ĐẠI HỌC THÁI NGUYÊN</div>-->
+<!--              <div><strong><u>HỘI ĐỒNG THI ĐÁNH GIÁ NLNN</u></strong></div>-->
+<!--            </div>-->
+<!--          </td>-->
+<!--          <td>-->
+<!--            <div class="&#45;&#45;font-times-new-roman d-flex justify-content-center align-items-center flex-column">-->
+<!--              <div class="text-center"><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong></div>-->
+<!--              <div><strong><u>Độc lập – Tự do – Hạnh phúc</u></strong></div>-->
+<!--            </div>-->
+<!--          </td>-->
+<!--        </tr>-->
+
+<!--      </table>-->
+
+<!--      <div class="&#45;&#45;font-times-new-roman text-center my-1" style="font-size:20px;"><strong>PHIẾU ĐĂNG KÝ DỰ THI</strong>-->
+<!--      </div>-->
+<!--      <div class="&#45;&#45;font-times-new-roman text-center my-1" style="font-size:18px;"><strong>ĐÁNH GIÁ NĂNG LỰC NGOẠI NGỮ-->
+<!--        CỦA ĐẠI HỌC THÁI NGUYÊN</strong>-->
+<!--      </div>-->
+
+<!--      <div class="row mx-0 mt-2">-->
+<!--        <div class="col d-flex justify-content-center">-->
+<!--          <div class="anh-the ">-->
+<!--            <img [src]="phieuduthi.anh_chandung" alt="">-->
+<!--          </div>-->
+
+<!--        </div>-->
+<!--        <div class="col">-->
+<!--          <div class="anh-the">-->
+<!--            <img [src]="phieuduthi.doituong_anhthe" alt="">-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="row mx-0 mt-2">-->
+<!--        <div class="col d-flex justify-content-center">-->
+<!--          <div class="anh-the ">-->
+<!--            <img [src]="phieuduthi.cccd_mattruoc" alt="">-->
+<!--          </div>-->
+
+<!--        </div>-->
+<!--        <div class="col">-->
+<!--          <div class="anh-the">-->
+<!--            <img [src]="phieuduthi.cccd_matsau" alt="">-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="table w-100 mt-2">-->
+<!--        <table class="w-100 table-bordered">-->
+<!--          <tr style="background: #C1E4F5">-->
+<!--            <td colspan="3"><strong>PHẦN I - THÔNG TIN CÁ NHÂN</strong></td>-->
+<!--          </tr>-->
+<!--          <tr style="">-->
+<!--            <td colspan="2">-->
+<!--              1. Họ và tên: {{ phieuduthi.hoten }}-->
+<!--            </td>-->
+<!--            <td style="max-width: 150px;">-->
+<!--              <div> 2. Giới tính: <span style="margin-left: 10px;"><i-->
+<!--                [ngClass]="phieuduthi.gioitinh !== 'name' ? 'fa fa-square-o' : 'fa fa-check-square-o' "></i></span> Nam-->
+<!--                <span style="margin-left: 10px;"><i-->
+<!--                  [ngClass]="phieuduthi.gioitinh == 'name' ? 'fa fa-square-o' : 'fa fa-check-square-o' "></i></span> Nữ-->
+<!--              </div>-->
+<!--            </td>-->
+<!--          </tr>-->
+
+<!--          <tr>-->
+<!--            <td>-->
+<!--              3. Ngày sinh: {{phieuduthi.ngaysinh}}-->
+<!--            </td>-->
+<!--            <td colspan="2">-->
+<!--              4. Nơi sinh: {{phieuduthi.noisinh}}-->
+<!--            </td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>-->
+<!--              5. Số CCCD: {{phieuduthi.cccd_so}}-->
+<!--            </td>-->
+<!--            <td colspan="1">-->
+<!--              6. ngày cấp: {{phieuduthi.cccd_ngaycap}}-->
+<!--            </td>-->
+<!--            <td colspan="1">-->
+<!--              7. Nơi cấp: {{phieuduthi.cccd_noicap}}-->
+<!--            </td>-->
+
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>-->
+<!--              8. Điện thoại: {{phieuduthi.phone}}-->
+<!--            </td>-->
+<!--            <td colspan="2">9. Email: {{phieuduthi.email}}</td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td colspan="3">-->
+<!--              10. Địa chỉ thường trú: {{phieuduthi.thuongtru}}-->
+<!--            </td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td colspan="3">-->
+<!--              11. Đối tượng dự thi:-->
+<!--            </td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>-->
+<!--              <span ><i-->
+<!--                [ngClass]="phieuduthi.doituong !== 'dhtn' ? 'fa fa-square-o' : 'fa fa-check-square-o' "></i></span> Người học của Đại học Thái Nguyên-->
+<!--            </td>-->
+<!--            <td colspan="1">-->
+<!--               <span ><i-->
+<!--                 [ngClass]="phieuduthi.doituong !== 'doitac' ? 'fa fa-square-o' : 'fa fa-check-square-o' "></i></span> Người học của đơn vị đối tác-->
+<!--            </td><td colspan="1">-->
+<!--               <span ><i-->
+<!--                 [ngClass]="phieuduthi.doituong !== 'tudo' ? 'fa fa-square-o' : 'fa fa-check-square-o' "></i></span> Thí sinh tự do-->
+<!--            </td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td colspan="3">-->
+<!--              PHẦN 2 – THÔNG TIN ĐĂNG KÝ THI-->
+<!--            </td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td > 1. Đợt thi: {{phieuduthi.dothi}}</td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td > 2. Ngôn ngữ thi: {{phieuduthi.ngonngu}}</td>-->
+<!--          </tr>-->
+<!--          <tr style="background: #C1E4F5">-->
+<!--            <td colspan="3"><strong>PHẦN III - CAM KẾT CỦA THÍ SINH</strong></td>-->
+<!--          </tr>-->
+<!--          <tr >-->
+<!--            <td colspan="3"><span><i class="fa fa-square-o"></i></span> Thí sinh cam kết chịu trách nhiệm về những thông tin cung cấp ở phía trên, nếu sai sót thí sinh có thể bị hủy tư cách dự thi và kết quả thi</td>-->
+<!--          </tr>-->
+<!--          <tr >-->
+<!--            <td colspan="3"><span><i class="fa fa-square-o"></i></span>Thí sinh cam kết chấp hành đúng và đầy đủ Quy chế thi và Quy định của Hội đồng thi đánh giá năng lực ngoại ngữ tại Đại học Thái Nguyên.</td>-->
+<!--          </tr>-->
+<!--        </table>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</p-dialog>-->

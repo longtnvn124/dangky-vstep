@@ -8,6 +8,10 @@ import {Dto, OvicConditionParam, OvicQueryCondition} from "@core/models/dto";
 import {ConditionOption} from "@shared/models/condition-option";
 import {DmDiemduthi} from "@shared/services/dm-diem-du-thi.service";
 
+
+export interface KehoachLevers{
+  label:string,value:string,select:number;
+}
 export interface KeHoachThi {
   id: number;
   nam: number;
@@ -18,7 +22,11 @@ export interface KeHoachThi {
   mota: string;
   status: 1 | 0;
   ngaythi:string;
-  gia:number;
+  gia?:number;
+
+  dongia ?:{label:string,value:number,key:string}[];
+  ngonngu ?:number;
+  levels ?:KehoachLevers[]
 }
 
 @Injectable({

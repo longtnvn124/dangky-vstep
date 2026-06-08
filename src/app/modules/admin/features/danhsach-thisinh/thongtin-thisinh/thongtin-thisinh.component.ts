@@ -26,11 +26,13 @@ import {OvicInputAddressNewComponent} from "@shared/components/ovic-input-addres
 import {AuthService} from "@core/services/auth.service";
 import {ConditionOption} from "@shared/models/condition-option";
 import {OvicQueryCondition} from "@core/models/dto";
+import {OvicAvataTypeThptComponent} from "@shared/components/ovic-avata-type-thpt/ovic-avata-type-thpt.component";
+import {University} from "@shared/services/university.service";
 
 @Component({
   selector: 'app-thongtin-thisinh',
   standalone: true,
-  imports: [CommonModule, TableModule, InputSwitchModule, TooltipModule, MatMenuModule, FormsModule, PaginatorModule, ReactiveFormsModule, InputTextModule, InputMaskModule, ButtonModule, RippleModule, SharedModule, CheckboxModule, MatProgressBarModule, OvicInputAddressNewComponent],
+  imports: [CommonModule, TableModule, InputSwitchModule, TooltipModule, MatMenuModule, FormsModule, PaginatorModule, ReactiveFormsModule, InputTextModule, InputMaskModule, ButtonModule, RippleModule, SharedModule, CheckboxModule, MatProgressBarModule, OvicInputAddressNewComponent, OvicAvataTypeThptComponent],
   templateUrl: './thongtin-thisinh.component.html',
   styleUrls: ['./thongtin-thisinh.component.css']
 })
@@ -66,6 +68,16 @@ export class ThongtinThisinhComponent implements OnInit {
   isTramthi : boolean = false;
 
   isAdmin : boolean = false;
+
+
+
+  listDoituong:{label:string,value:string}[] = [
+    {label:'Thí sinh tự do', value: 'tudo'},
+    {label:'Sinh viên ĐHTN', value: 'dhtn'},
+  ]
+
+  listUniversity : University[];
+
   constructor
   (
     private notificationService: NotificationService,
@@ -77,6 +89,7 @@ export class ThongtinThisinhComponent implements OnInit {
     const observerOnResize = this.notificationService.observeScreenSize.subscribe(size => this.sizeFullWidth = size.width)
     this.subscription.add(observerOnResize);
     this.formSave = this.fb.group({
+      user_id: [this.auth.user.id, Validators.required],
       ten: [''],
       hoten: [this.auth.user.display_name, Validators.required],
       ngaysinh: ['', [Validators.required, DDMMYYYYDateFormatValidator]],
@@ -94,7 +107,12 @@ export class ThongtinThisinhComponent implements OnInit {
       thuongtru_diachi: [{}, ],
       status: [0],
       camket: [0, Validators.required],
-      email: ['', Validators.required],
+      email: [this.auth.user.email, Validators.required],
+      diachi_congtac: [''],
+      doituong:[''],
+      doituong_masv:[''],
+      doituong_truong:[''],
+      doituong_anhthe:[null]
     });
 
     this.isTramthi = this.auth.userHasRole('diem-du-thi');
@@ -233,6 +251,11 @@ export class ThongtinThisinhComponent implements OnInit {
       // quoctich: item.quoctich === 1 ? true : false,
       email:item.email,
 
+      doituong:item.doituong,
+      doituong_masv:item.doituong_masv,
+      doituong_truong:item.doituong_truong,
+      doituong_anhthe:item.doituong_anhthe,
+
     });
     this.notificationService.openSideNavigationMenu({
       name: this.menuName,
@@ -311,4 +334,11 @@ export class ThongtinThisinhComponent implements OnInit {
       }
     })
   }
+
+  onchangedoituong(event){
+    this.f['doituong_truong'].setValue('');
+    this.f['doituong_masv'].setValue('');
+    this.f['doituong_anhthe'].setValue('');
+  }
+
 }

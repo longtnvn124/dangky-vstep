@@ -10,21 +10,25 @@ import {RippleModule} from "primeng/ripple";
 import {SharedModule} from "@shared/shared.module";
 import {TooltipModule} from "primeng/tooltip";
 import { TaiKhoaThiSinhComponent } from './tai-khoa-thi-sinh/tai-khoa-thi-sinh.component';
+import {
+    ThisinhInfoComponent
+} from "@modules/admin/features/quan-ly-tai-khoan/tai-khoa-thi-sinh/thisinh-info/thisinh-info.component";
 
 
 @NgModule({
   declarations: [
      TaiKhoaThiSinhComponent
   ],
-  imports: [
-    CommonModule,
-    QuanLyTaiKhoanRoutingModule,
-    ButtonModule,
-    PaginatorModule,
-    ReactiveFormsModule,
-    RippleModule,
-    SharedModule,
-    TooltipModule
-  ]
+    imports: [
+        CommonModule,
+        QuanLyTaiKhoanRoutingModule,
+        ButtonModule,
+        PaginatorModule,
+        ReactiveFormsModule,
+        RippleModule,
+        SharedModule,
+        TooltipModule,
+        ThisinhInfoComponent
+    ]
 })
 export class QuanLyTaiKhoanModule { }

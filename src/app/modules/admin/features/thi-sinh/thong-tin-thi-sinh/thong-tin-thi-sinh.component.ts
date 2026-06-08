@@ -30,6 +30,9 @@ import {DropdownModule} from "primeng/dropdown";
 import {SharedModule} from "@shared/shared.module";
 import {OvicInputAddressNewComponent} from "@shared/components/ovic-input-address-new/ovic-input-address-new.component";
 import {CheckboxModule} from "primeng/checkbox";
+import {OvicAvataTypeThptComponent} from "@shared/components/ovic-avata-type-thpt/ovic-avata-type-thpt.component";
+import {University, UniversityService} from "@shared/services/university.service";
+import {ConditionOption} from "@shared/models/condition-option";
 
 
 interface FormThisinh extends OvicForm {
@@ -74,7 +77,8 @@ export function replaceCommaValidator(): ValidatorFn {
     OvicInputAddressNewComponent,
     CheckboxModule,
     NgIf,
-    NgSwitchCase
+    NgSwitchCase,
+    OvicAvataTypeThptComponent
   ],
   standalone: true
 })
@@ -103,8 +107,12 @@ export class ThongTinThiSinhComponent implements OnInit {
     [FormType.UPDATE]: {type: FormType.UPDATE, title: 'Cập nhật Thông tin cá nhân ', object: null, data: null}
   };
 
+  listDoituong:{label:string,value:string}[] = [
+    {label:'Thí sinh tự do', value: 'tudo'},
+    {label:'Sinh viên ĐHTN', value: 'dhtn'},
+  ]
 
-
+  listUniversity : University[]
   file_name:string = '';
   constructor(
     private fb: FormBuilder,
@@ -112,6 +120,7 @@ export class ThongTinThiSinhComponent implements OnInit {
     private thisinhInfoService: ThisinhInfoService,
     private notifi: NotificationService,
     private locationService: LocationService,
+    private universityService :UniversityService
   ) {
     const observeProcessFormData = this.OBSERVE_PROCESS_FORM_DATA.asObservable().pipe(debounceTime(100)).subscribe(form => this.__processFrom(form));
     this.subscription.add(observeProcessFormData);
@@ -137,6 +146,10 @@ export class ThongTinThiSinhComponent implements OnInit {
       camket: [0, Validators.required],
       email: [this.auth.user.email, Validators.required],
       diachi_congtac: [''],
+      doituong:[''],
+      doituong_masv:[''],
+      doituong_truong:[''],
+      doituong_anhthe:[null]
 
     });
     this.file_name = this.replaceHoten(this.auth.user.display_name)+ '_' + this.auth.user.username;
@@ -166,10 +179,24 @@ export class ThongTinThiSinhComponent implements OnInit {
 
   getDataCitis() {
     this.checkdata = 0;
-    this.locationService.getListByIdAndKey(null, "regions").subscribe({
-      next: (diadanh) => {
-        this.provinceOptions = diadanh;
 
+    const conditio: ConditionOption = {
+      condition:[
+      ],
+      page:'1',
+      set:[
+        {label:'limit',value:'-1'}
+      ]
+    }
+
+    forkJoin([
+      this.locationService.getListByIdAndKey(null, "regions"),
+      this.universityService.getDataByPageNew(conditio)
+    ])
+    .subscribe({
+      next: ([diadanh,dataUniversity]) => {
+        this.provinceOptions = diadanh;
+        this.listUniversity = dataUniversity.data;
 
         if(this.provinceOptions.length>0 ){
           this._getDataUserInfo(this.auth.user.id);
@@ -215,7 +242,11 @@ export class ThongTinThiSinhComponent implements OnInit {
             thuongtru_diachi: data.thuongtru_diachi,
             status:data.status,
             camket: data.camket === 1 ? true : false,
-            diachi_congtac: data.diachi_congtac
+            diachi_congtac: data.diachi_congtac,
+            doituong:data.doituong,
+            doituong_masv:data.doituong_masv,
+            doituong_truong:data.doituong_truong,
+            doituong_anhthe:data.doituong_anhthe,
 
           });
 
@@ -290,6 +321,22 @@ export class ThongTinThiSinhComponent implements OnInit {
     if(!check){
       return this.notifi.toastError('Thông tin số CCCD của bạn không trùng với tài khoản');
     }
+
+    if(this.f['doituong'].value == 'dhtn' && (!this.f['doituong_masv'].value || !this.f['doituong_truong'].value || !this.f['doituong_anhthe'].value)){
+      return this.notifi.toastError('Vui lòng kiểm tra lại: Mã sinh viên; Trường theo học, ảnh thẻ');
+    }
+
+    // Object.keys(this.formSave.controls).forEach(key => {
+    //   const control = this.formSave.get(key);
+    //
+    //   if (control && control.invalid) {
+    //     console.log(`${key} invalid`, {
+    //       errors: control.errors,
+    //       value: control.value
+    //     });
+    //   }
+    // });
+
     if (this.formSave.valid) {
       this.f['ten'].setValue(this.f['hoten'].value.split(' ').pop());
       this.f['hoten'].setValue(this.f['hoten'].value?.toString().trim());
@@ -375,6 +422,10 @@ export class ThongTinThiSinhComponent implements OnInit {
     this.loadInit()
   }
 
-
+  onchangedoituong(event){
+    this.f['doituong_truong'].setValue('');
+    this.f['doituong_masv'].setValue('');
+    this.f['doituong_anhthe'].setValue('');
+  }
 
 }

@@ -1,0 +1,30 @@
+<div class="dongia-container">
+  <div class="dongia-table-wrapper">
+    <table class="dongia-table">
+      <thead>
+        <tr>
+          <th class="th-doi-tuong">Đối tượng</th>
+          <th class="th-don-gia">Đơn giá (VNĐ)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of data; let i = index">
+          <td class="td-label" [title]="item.label">{{ item.label }}</td>
+          <td class="td-input">
+            <input
+              #dongiaInput
+              type="text"
+              class="dongia-input"
+              [ngModel]="item.value"
+              (ngModelChange)="updateValue(item.key, $event)"
+              (keydown)="numberOnly($event)"
+              (keydown.enter)="onEnter($event, i)"
+              (input)="onInput(item.key, $event)"
+              (blur)="onBlur(item.key, item.value)"
+              placeholder="0">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

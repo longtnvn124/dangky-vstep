@@ -2,7 +2,7 @@ import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FormType, NgPaginateEvent, OvicForm, OvicTableStructure} from "@shared/models/ovic-models";
 import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Paginator, PaginatorModule} from "primeng/paginator";
-import {debounceTime, filter, Observable, Subject, Subscription} from "rxjs";
+import {debounceTime, filter, forkJoin, Observable, Subject, Subscription} from "rxjs";
 import {NotificationService} from "@core/services/notification.service";
 import {BUTTON_NO, BUTTON_YES, OvicButton} from "@core/models/buttons";
 
@@ -25,9 +25,17 @@ import {ConditionOption} from "@shared/models/condition-option";
 import {OvicQueryCondition} from "@core/models/dto";
 import {DialogModule} from "primeng/dialog";
 import {InputTextModule} from "primeng/inputtext";
+import {Languages, LanguagesService} from "@shared/services/languages.service";
+import {ConfigsService} from "@shared/services/configs.service";
 import {
-  KehoachthiDiemthiV2Component
-} from "@modules/admin/features/ke-hoach-thi/kehoachthi-diemthi-v2/kehoachthi-diemthi-v2.component";
+  KehoachFormDongiaComponent
+} from "@modules/admin/features/ke-hoach-thi/kehoach-form-dongia/kehoach-form-dongia.component";
+import {
+  KehoachFormLevelsComponent
+} from "@modules/admin/features/ke-hoach-thi/kehoach-form-levels/kehoach-form-levels.component";
+import {
+  KehoachthiDiemthiV3Component
+} from "@modules/admin/features/ke-hoach-thi/kehoachthi-diemthi-v3/kehoachthi-diemthi-v3.component";
 
 interface FormKehoachthi extends OvicForm {
   object: KeHoachThi;
@@ -51,7 +59,9 @@ interface FormKehoachthi extends OvicForm {
     DanhSachThiSinhComponent,
     DialogModule,
     InputTextModule,
-    KehoachthiDiemthiV2Component
+    KehoachFormDongiaComponent,
+    KehoachFormLevelsComponent,
+    KehoachthiDiemthiV3Component
   ],
   standalone: true
 })
@@ -150,6 +160,10 @@ export class KeHoachThiComponent implements OnInit {
   index = 1;
   search = '';
 
+  listLanguage: Languages[];
+
+
+  configPayers : {label:string,value:string,key:string}[];
   constructor(
 
     private notifi: NotificationService,
@@ -157,6 +171,8 @@ export class KeHoachThiComponent implements OnInit {
     private kehoachthiVstepService: KehoachthiVstepService,
     private auth: AuthService,
     private kehoachthiDiemthiVstepService: KehoachthiDiemthiVstepService,
+    private configsService: ConfigsService,
+    private languagesService: LanguagesService,
   ) {
     const roleAdmin =  this.auth.roles.map(m=>m.name).includes('admin')
 
@@ -245,7 +261,9 @@ export class KeHoachThiComponent implements OnInit {
       mota:[''],
       ngaythi:['',Validators.required],
       status: 1,
-      gia:[null,Validators.required] ,
+      dongia:['',Validators.required],
+      ngonngu:['',Validators.required],
+      levels:[null,Validators.required]
 
     });
   }
@@ -256,7 +274,40 @@ export class KeHoachThiComponent implements OnInit {
 
   loadInit() {
     this.isLoading = true;
-    this.loadData(1);
+
+    const conditionUniver :ConditionOption = {
+      condition:[
+        {
+          conditionName:'status',
+          condition:OvicQueryCondition.equal,
+          value:'1'
+        }
+      ],
+      page: '1',
+      set:[
+        {label : 'limit',value:'-1'}
+      ]
+    };
+
+    forkJoin([
+      this.languagesService.getDataByPageNew(conditionUniver),
+      this.configsService.getdatabyconfig_key('PAYERS')
+    ])
+      .subscribe({
+        next:([lag, config])=>{
+          this.listLanguage= lag.data;
+          this.configPayers = JSON.parse(config.value);
+          this.isLoading = false;
+          this.loadData(1);
+
+        },error:()=>{
+
+          this.isLoading = false;
+          this.notifi.toastError('Mất kết nối với máy chủ ');
+        }
+      })
+
+
   }
 
   loadData(page: number, search?: string) {
@@ -339,7 +390,9 @@ export class KeHoachThiComponent implements OnInit {
           ngaybatdau: '',
           ngayketthuc: '',
           ngaythi:'',
-          gia:null
+          dongia:this.configPayers,
+          ngonngu:'',
+          levels:''
 
         });
         this.formActive = this.listForm[FormType.ADDITION];
@@ -358,9 +411,12 @@ export class KeHoachThiComponent implements OnInit {
           mota:object1.mota,
           status:object1.status,
           ngaythi:object1.ngaythi,
-          gia:object1.gia,
           ngaybatdau: object1.ngaybatdau ? new Date(object1.ngaybatdau) : null,
           ngayketthuc:object1.ngayketthuc ? new Date(object1.ngayketthuc) : null,
+
+          dongia: object1.dongia ? object1.dongia : this.configPayers,
+          ngonngu:object1.ngonngu,
+          levels:object1.levels? object1.levels: [],
         })
 
 
@@ -526,5 +582,9 @@ export class KeHoachThiComponent implements OnInit {
     }else{
       this.notifi.toastError('Vui lòng cài đặt số lượng thí sinh được phép dự thi');
     }
+  }
+
+  onChagelang(event){
+    this.f['levels'].setValue([].concat(event['levels']));
   }
 }

@@ -1,12 +1,28 @@
 .imgchecksize {
-    max-height: 100%;
-    width: auto;
+  max-height : 100%;
+    /*width: auto;*/
 }
 
 /*.imgchecksize.horizontal {*/
 /*  width: unset;*/
 /*  height: 100%;*/
 /*}*/
+@media(max-width:1500px) {
+  .imgchecksize {
+    max-height: unset;
+    width: 100%;
+  }
+
+  .imgchecksize.vertical {
+    width: unset;
+    height: 100%;
+  }
+  .imgchecksize.horizontal {
+    width: unset;
+    height: 100%;
+  }
+
+}
 
 @media(max-width:1024px) {
     .imgchecksize {
@@ -20,8 +36,8 @@
     }
 
   .imgchecksize.horizontal {
-    width: unset;
-    height: 100%;
+    max-height: calc(100% - 10px);
   }
 
 }
+

@@ -1,0 +1,333 @@
+<ng-container [ngSwitch]="ngview">
+  <ng-container *ngSwitchCase="0">
+    <div class=" d-flex flex-column justify-content-center align-items-center"
+         style="background:#ededed;height:calc(100vh - 80px)">
+      <div class=" text-center"
+           style="font-size: 15px;background: #d6def7;padding: 14px 20px;border-radius: 10px;border: 1px solid #ccc;">
+        <p>Đang tải dữ liệu, vui lòng chờ</p>
+        <div style=" width: 300px">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase="-1">
+    <div class="d-flex flex-column justify-content-center align-items-center"
+         style="gap:4px;height:calc(100vh - 80px)">
+      <div class="text-center">
+        <div style="font-size:16px;">Mất kết nối với máy chủ vui lòng bấm 'Tải lại'</div>
+        <button pButton pRipple label="Tải lại" icon="pi pi-sync" class="p-button-warning" (click)="reLoad()"></button>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase="1">
+    <ng-container *ngIf="thisinhInfo !== null , else notInfo">
+      <div class="w-100 d-flex flex-column " style="height: calc(100vh - 60px - 20px)">
+        <div class="overflow-hidden overflow-y-auto" style=" height:1%; flex: 1 1 auto;background: #f9f9f9;border-top: 1px solid #ccc;">
+          <div class="ovic-container">
+            <div class="thpt-form-data ovic-side-navigation-content --no-footer">
+              <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+                <form [formGroup]="formSave" autocomplete="off">
+                  <div class="row tt-canhan">
+                    <div class="col-12" style="margin-top:30px;font-size:16px;font-weight:500;">
+                      I. THÔNG TIN CÁ NHÂN THÍ SINH
+                    </div>
+                  </div>
+                  <div class="row ">
+                    <div class="col-12 ">
+                      <div class="row row-cols-1">
+                        <div class="col col-lg-4 col-xl-4">
+                          <div class="form-row" [class.fieldset--error]="f['hoten'].touched && f['hoten'].invalid"
+                               [class.fieldset--invalid]="f['hoten'].touched && f['hoten'].valid">
+                            <label>Họ và tên <span class="ovic-mark">*</span></label>
+                            <input pInputText type="text" placeholder="Vd: Nguyễn Văn A" formControlName="hoten"
+                                   autocomplete="off">
+                          </div>
+                        </div>
+                        <div class="col col-lg-4 col-xl-4">
+                          <div class="form-row" [class.fieldset--error]="f['ngaysinh'].touched && f['ngaysinh'].invalid"
+                               [class.fieldset--invalid]="f['ngaysinh'].touched && f['ngaysinh'].valid">
+                            <label>Ngày sinh <span class="ovic-mark">*</span></label>
+                            <p-inputMask class="w-100" formControlName="ngaysinh" mask="99/99/9999" placeholder="__/__/____"
+                                         slotChar="dd/mm/yyyy"></p-inputMask>
+                            <span class="test-member__from__col__span"
+                                  *ngIf="f['ngaysinh'].touched && f['ngaysinh'].invalid">{{
+                                f['ngaysinh'].getError(
+                                  'theDateDoesNotExist') ? 'Ngày không tồn tại' : 'Định dạng ngày chưa đúng'
+                              }}</span>
+                          </div>
+
+                        </div>
+                        <div class="col col-lg-4 col-xl-4 ">
+                          <div class="form-row" [class.fieldset--error]="f['gioitinh'].touched && f['gioitinh'].invalid"
+                               [class.fieldset--invalid]="f['gioitinh'].touched && f['gioitinh'].valid">
+                            <label>Giới tính<span class="ovic-mark">*</span></label>
+                            <p-dropdown class="w-100" [style]="{'width':'100%'}" [options]="sex" formControlName="gioitinh"
+                                        optionLabel="name" optionValue="code" placeholder="Chọn..."></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+
+
+                      <div class="row row-cols-1">
+                        <div class="col col-lg-4 col-xl-4">
+                          <div class="form-row" [class.fieldset--error]="f['dantoc'].touched && f['dantoc'].invalid"
+                               [class.fieldset--invalid]="f['dantoc'].touched && f['dantoc'].valid">
+                            <label>Dân tộc </label>
+                            <p-dropdown class="w-100" [filter]="true" [style]="{'width':'100%'}" [options]="dantoc"
+                                        formControlName="dantoc" optionLabel="label" optionValue="label" [showClear]=true
+                                        placeholder="Chọn..."></p-dropdown>
+                          </div>
+
+                        </div>
+                        <div class="col col-lg-4 col-xl-4">
+                          <div class="form-row">
+                            <label>Tôn giáo</label>
+                            <input pInputText type="text" placeholder="Vd: không,..." formControlName="tongiao"
+                                   autocomplete="off">
+                          </div>
+                        </div>
+                        <div class="col col-lg-4 col-xl-4">
+                          <div class="form-row" [class.fieldset--error]="f['noisinh'].touched && f['noisinh'].invalid"
+                               [class.fieldset--invalid]="f['noisinh'].touched && f['noisinh'].valid">
+                            <label>Nơi sinh</label>
+                            <p-dropdown class="w-100" [filter]="true" [style]="{'width':'100%'}" [options]="provinceOptions"
+                                        formControlName="noisinh" optionLabel="name" optionValue="name"
+                                        placeholder="Chọn..."></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row row-cols-1">
+                        <div class="col col-lg-4 col-xl-4">
+                          <div class="form-row" [class.fieldset--error]="f['phone'].touched && f['phone'].invalid"
+                               [class.fieldset--invalid]="f['phone'].touched && f['phone'].valid">
+                            <label>Số điện thoại<span class="ovic-mark">*</span></label>
+                            <input pInputText type="text" placeholder="Vd: 0112233445" formControlName="phone"
+                                   autocomplete="off">
+                          </div>
+                        </div>
+                        <div class="col col-lg-4 col-xl-4">
+                          <div class="form-row" [class.fieldset--error]="f['email'].touched && f['email'].invalid"
+                               [class.fieldset--invalid]="f['email'].touched && f['email'].valid">
+                            <label>Email<span class="ovic-mark">*</span></label>
+                            <input pInputText type="text" placeholder="Vd: nguyenvanA@gmail.com" formControlName="email"
+                                   autocomplete="off">
+                          </div>
+                        </div>
+
+                        <div class="col col-lg-4 col-xl-4">
+                          <div class="form-row"
+                               [class.fieldset--error]="f['diachi_congtac'].touched && f['diachi_congtac'].invalid"
+                               [class.fieldset--invalid]="f['diachi_congtac'].touched && f['diachi_congtac'].valid">
+                            <label>Địa chỉ công tác</label>
+                            <input pInputText type="text" placeholder="Vd:..." formControlName="diachi_congtac"
+                                   autocomplete="off">
+                          </div>
+                        </div>
+
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="mar-14px col-12 col-lg-4">
+
+                      <div class="form-row">
+                        <ovic-avata-type-thpt [resizeToWidth] = "800" class="w-100" [disabled]=" f['status'].value ===1" [formField]="f['anh_chandung']"
+                                              [public]="0"
+                                              [aspectRatio]="2 / 3" [accept]="'.jpg,.png,.jpeg'" [site]="true"
+                                              [textView]="'<span>Tải ảnh chân dung(*)</span><p>(Dung lượng file tối thiểu 21kb và tối đa 100kb.)</p>'"
+                                              [file_size]="100" [file_name]="fileName" [footage]="'vertical'"
+                                              [rotateShow]=true
+                        ></ovic-avata-type-thpt>
+                        <div style="color:red;text-align:center;"
+                             *ngIf="f['anh_chandung'].value && (f['anh_chandung'].value[0].size < 21*1024 || f['anh_chandung'].value[0].size > 100*1024)">
+                          <strong>Kích thước file ảnh thẻ của bạn quá nhỏ, vui lòng tải lại ảnh lên</strong></div>
+                      </div>
+
+                      <!--                <div>-->
+                      <!--                  <button pButton pRipple label="Nội dung "></button>-->
+                      <!--                </div>-->
+                    </div>
+                    <div class="mar-14px col-12 col-lg-8">
+                      <div style="margin-top: 30px;font-size:14px;">
+                        <div><strong>Lưu ý:</strong></div>
+                        <div><strong style="color:#35b90d">1. Ảnh chân dung đúng định dạnh:</strong> yêu cầu ảnh chân dung
+                          có nền màu trắng, không đeo kính
+                        </div>
+                        <div><strong style="color:#b90d0d">2. Ảnh chân dung sai định dạnh:</strong> nền màu xanh, đỏ, phông
+                          ảnh đời thường, ảnh tự sướng, ảnh đeo kính, ảnh có động vật,...
+                        </div>
+                        <div class="avatar-check">
+                          <div class="avatar-check_item">
+                            <img src="assets/files/hsk/avata_hople.jpg" alt="">
+                            <div class="true text-center">
+                              <i class="pi pi-check-circle"></i>
+                              <span>Hợp lệ </span>
+                            </div>
+                          </div>
+                          <div class="avatar-check_item">
+                            <img src="assets/files/hsk/avata_kohople.jpg" alt="">
+                            <div class="false text-center">
+                              <i class="pi pi-times-circle"></i>
+                              <span>Không hợp lệ </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                  <div class="row ">
+                    <div class="col-12">
+                      <div class="form-row">
+                        <label for=></label>
+                        <div class="row w-100 m-0">
+                          <div class="p-0 col-12 col-lg-6 mt-1">
+                            <ovic-avata-type-thpt [resizeToWidth] = "800" [formField]="f['cccd_img_truoc']" [aspectRatio]="5 / 3" [public]="0"
+                                                  [disabled]=" f['status'].value ===1" [accept]="'.jpg,.png,.jpeg'"
+                                                  [textView]="'Tải ảnh CCCD(Hoặc hộ chiếu) mặt trước (*)'"
+                                                  [rotateShow]=true></ovic-avata-type-thpt>
+                          </div>
+                          <div class="p-0 col-12 col-lg-6 mt-1">
+                            <ovic-avata-type-thpt [resizeToWidth] = "800" [formField]="f['cccd_img_sau']" [aspectRatio]="5 / 3" [public]="0"
+                                                  [disabled]=" f['status'].value ===1" [accept]="'.jpg,.png,.jpeg'"
+                                                  [textView]="'Tải ảnh CCCD(Hoặc hộ chiếu) mặt sau(*)'"
+                                                  [rotateShow]=true></ovic-avata-type-thpt>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row  row-cols-1">
+                    <div class="col-12 col-lg-4 col-md-4">
+                      <div class="form-row" [class.fieldset--error]="f['cccd_so'].touched && f['cccd_so'].invalid"
+                           [class.fieldset--invalid]="f['cccd_so'].touched && f['cccd_so'].valid">
+                        <label>Số CCCD(Hoặc hộ chiếu) <span class="ovic-mark">*</span></label>
+                        <input type="text" placeholder="Vd: 0918000112331" formControlName="cccd_so" autocomplete="off">
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-4 col-md-4">
+                      <div class="form-row" [class.fieldset--error]="f['cccd_ngaycap'].touched && f['cccd_ngaycap'].invalid"
+                           [class.fieldset--invalid]="f['cccd_ngaycap'].touched && f['cccd_ngaycap'].valid">
+                        <label>Ngày cấp <span class="ovic-mark">*</span></label>
+                        <p-inputMask class="w-100" formControlName="cccd_ngaycap" mask="99/99/9999" placeholder="__/__/____"
+                                     slotChar="dd/mm/yyyy"></p-inputMask>
+                        <span class="test-member__from__col__span"
+                              *ngIf="f['cccd_ngaycap'].touched && f['cccd_ngaycap'].invalid">{{
+                            f['cccd_ngaycap'].getError(
+                              'theDateDoesNotExist') ? 'Ngày không tồn tại' : 'Định dạng ngày chưa đúng'
+                          }}</span>
+                      </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4 col-md-4">
+                      <div class="form-row" [class.fieldset--error]="f['cccd_noicap'].touched && f['cccd_noicap'].invalid"
+                           [class.fieldset--invalid]="f['cccd_noicap'].touched && f['cccd_noicap'].valid">
+                        <label>Nơi cấp <span class="ovic-mark">*</span></label>
+                        <input type="text" placeholder="Vd: Cục quản lý hành chính về TTXH" formControlName="cccd_noicap"
+                               autocomplete="off">
+
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="form-row">
+                        <label>Địa chỉ thường trú <span class="ovic-mark">*</span></label>
+                        <ovic-input-address-new [disabled]=" f['status'].value ===1" class="w-100"
+                                                [formField]="f['thuongtru_diachi']"
+                                                (onChanges)="changeThuongchu($event)"></ovic-input-address-new>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row row-ctm-2">
+                    <div class="col">
+                      <div class="form-row">
+                        <label>Đối tượng <span class="ovic-mark">*</span></label>
+                        <p-dropdown class="w-100" [filter]="true" [style]="{'width':'100%'}" [options]="listDoituong"
+                                    (onChange)="onchangedoituong($event)"
+                                    formControlName="doituong" optionLabel="label" optionValue="value"
+                                    placeholder="Chọn..."></p-dropdown>
+
+                      </div>
+                    </div>
+                    <div class="col" *ngIf="f['doituong'].value !== 'dhtn'">
+                      <div class="form-row">
+                        <label>Trường đang theo học </label>
+                        <input pInputText type="text" placeholder="Vd: Trường ..." formControlName="doituong_truong"
+                               autocomplete="off">
+                      </div>
+                    </div>
+                    <div class="col" *ngIf="f['doituong'].value == 'dhtn'">
+                      <div class="form-row">
+                        <label>Trường đang theo học <span class="ovic-mark">*</span></label>
+                        <p-dropdown class="w-100" [filter]="true" [style]="{'width':'100%'}" [options]="listUniversity"
+                                    formControlName="doituong_truong" optionLabel="title" optionValue="title"
+                                    placeholder="Chọn..."></p-dropdown>
+                      </div>
+                    </div>
+
+                    <div class="col" *ngIf="f['doituong'].value == 'dhtn'">
+                      <div class="form-row">
+                        <label>Mã sinh viên <span class="ovic-mark">*</span></label>
+                        <input pInputText type="text" placeholder="Vd: TNU..." formControlName="doituong_masv"
+                               autocomplete="off">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row justify-content-center" *ngIf="f['doituong'].value == 'dhtn'">
+                    <div class="col-4">
+                      <div class="form-row">
+                        <ovic-avata-type-thpt [resizeToWidth] = "800" class="w-100" [disabled]=" f['status'].value ===1"
+                                              [formField]="f['doituong_anhthe']" [public]="0"
+                                              [aspectRatio]="3 / 2" [accept]="'.jpg,.png,.jpeg'" [site]="true"
+                                              [textView]="'<span>Tải ảnh thẻ sinh viên(*)</span>'"
+                                              [file_size]="100" [file_name]="fileName" [footage]="'vertical'"
+                                              [rotateShow]=true
+                        ></ovic-avata-type-thpt>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-12 d-flex align-items-center">
+                      <div class="checkCamket">
+                        <p-checkbox formControlName="camket" [binary]="true" inputId="binary"></p-checkbox>
+
+                        <div>Thí sinh cam kết những thông tin kê khai ở trên là đúng, nếu sai thí sinh có thể sẽ bị hủy tư
+                          cách dự thi và kết quả thi.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="d-flex justify-content-center align-items-center" style="height: 60px;">
+          <button pButton pRipple label=" Cập nhật" (click)="btnSaveForm()"></button>
+        </div>
+      </div>
+
+    </ng-container>
+    <ng-template #notInfo>
+
+      <div>
+        Thí sinh chưa cập nhật thông tin cá nhân
+      </div>
+
+    </ng-template>
+
+  </ng-container>
+</ng-container>

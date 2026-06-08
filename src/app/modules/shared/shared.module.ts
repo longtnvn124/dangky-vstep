@@ -122,7 +122,6 @@ import { NgxMapboxGLModule } from "ngx-mapbox-gl";
 import { TreeCustomComponent } from '@shared/components/tree-custom/tree-custom.component';
 import { AutoFocusDirective } from "@shared/directives/auto-focus.directive";
 import { OvicResizeDropdowDirective } from './directives/ovic-resize-dropdow.directive';
-import { OvicAvataTypeThptComponent } from "@shared/components/ovic-avata-type-thpt/ovic-avata-type-thpt.component";
 import { OvicCountdownComponent } from "@shared/components/ovic-countdown/ovic-countdown.component";
 import { NumberToVndCurrencuyPipe } from './pipes/number-to-vnd-currencuy.pipe';
 
@@ -212,7 +211,7 @@ import { OvicAvataMakerV2Component } from './components/ovic-avata-maker-v2/ovic
     TreeCustomComponent,
     AutoFocusDirective,
     OvicResizeDropdowDirective,
-    OvicAvataTypeThptComponent,
+
     NumberToVndCurrencuyPipe,
 
     ThptFormTraketquaComponent,
@@ -341,7 +340,7 @@ import { OvicAvataMakerV2Component } from './components/ovic-avata-maker-v2/ovic
         TreeCustomComponent,
         AutoFocusDirective,
         OvicResizeDropdowDirective,
-        OvicAvataTypeThptComponent,
+
         OvicCountdownComponent,
         NumberToVndCurrencuyPipe,
         OvicTestOneAnswerComponent

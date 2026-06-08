@@ -12,7 +12,7 @@ export interface config {
   id?: number;
   config_key:string;
   title:string;
-  value:string;
+  value:any;
 }
 @Injectable({
   providedIn: 'root'

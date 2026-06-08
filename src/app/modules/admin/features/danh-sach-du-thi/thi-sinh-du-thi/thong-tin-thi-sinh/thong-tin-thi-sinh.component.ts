@@ -7,6 +7,7 @@ import { ThiSinhInfo } from '@modules/shared/models/thi-sinh';
 import { LocationService } from '@modules/shared/services/location.service';
 import { ThisinhInfoService } from '@modules/shared/services/thisinh-info.service';
 import {NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
+import {ImageModule} from "primeng/image";
 
 @Component({
   selector: 'app-thong-tin-thi-sinh',
@@ -15,14 +16,15 @@ import {NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
   imports: [
     NgSwitch,
     NgSwitchCase,
-    NgIf
+    NgIf,
+    ImageModule
   ],
   standalone: true
 })
 export class ThongTinThiSinhComponent implements OnInit {
   @Input() set user_id(id: number){
     if (id) {
-      this.locationService.listProvinces().subscribe({
+      this.locationService.getListByIdAndKey(1,'provinces').subscribe({
         next: (data) => {
           this.provinceOptions = data;
           this.loadData(id);
@@ -82,9 +84,9 @@ export class ThongTinThiSinhComponent implements OnInit {
       next: (data) => {
 
         this.userInfo =data.length>0? data.map(m => {
-          m['__anh_chandung_covented'] = m.anh_chandung && m.anh_chandung[0] ? this.fileSerive.getPreviewLinkLocalFileNotToken(m.anh_chandung[0]) : '';
-          m['__cccd_mattruoc_covented'] = m.cccd_img_truoc && m.cccd_img_truoc[0] ? this.fileSerive.getPreviewLinkLocalFileNotToken(m.cccd_img_truoc[0]) : '';
-          m['__cccd_matsau_covented'] = m.cccd_img_sau && m.cccd_img_sau[0] ? this.fileSerive.getPreviewLinkLocalFileNotToken(m.cccd_img_sau[0]) : '';
+          m['__anh_chandung_covented'] = m.anh_chandung && m.anh_chandung[0] ? this.fileSerive.getPreviewLinkLocalFile(m.anh_chandung[0]) : '';
+          m['__cccd_mattruoc_covented'] = m.cccd_img_truoc && m.cccd_img_truoc[0] ? this.fileSerive.getPreviewLinkLocalFile(m.cccd_img_truoc[0]) : '';
+          m['__cccd_matsau_covented'] = m.cccd_img_sau && m.cccd_img_sau[0] ? this.fileSerive.getPreviewLinkLocalFile(m.cccd_img_sau[0]) : '';
           return m;
         })[0] : null;
 

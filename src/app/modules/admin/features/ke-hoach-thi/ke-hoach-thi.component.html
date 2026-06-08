@@ -30,7 +30,7 @@
       <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
         <form [formGroup]="formSave" autocomplete="off">
           <div class="d-block w-100" style="height: calc(100vh - 60px - 60px - 20px);">
-            <p-splitter [style]="{'height': '100%'}" [panelSizes]="[35,65]">
+            <p-splitter [style]="{'height': '100%'}" [panelSizes]="[25,75]">
               <ng-template pTemplate>
                 <div class="w-100 d-block ovic-scroll-style overflow-hidden overflow-y-auto">
                   <div class="row m-0">
@@ -96,15 +96,15 @@
                       </div>
                     </div>
                   </div>
-                  <div class="row m-0">
-                    <div class="col-12">
-                      <div class="form-row">
-                        <label>Đơn giá theo đợt(VNĐ) <span class="ovic-mark">*</span></label>
-                        <input type="number" placeholder="Vd: 1000000 " formControlName="gia" autocomplete="off">
+<!--                  <div class="row m-0">-->
+<!--                    <div class="col-12">-->
+<!--                      <div class="form-row">-->
+<!--                        <label>Đơn giá theo đợt(VNĐ) <span class="ovic-mark">*</span></label>-->
+<!--                        <input type="number" placeholder="Vd: 1000000 " formControlName="gia" autocomplete="off">-->
 
-                      </div>
-                    </div>
-                  </div>
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
                 </div>
               </ng-template>
               <ng-template pTemplate>
@@ -115,6 +115,29 @@
                         <label>Mô tả </label>
                         <ovic-editor [formField]="f['mota']" [height]="'200px'" class="w-100"></ovic-editor>
                       </p>
+                    </div>
+                  </div>
+                  <div class="row m-0">
+                    <div class="col-4">
+                      <div class="form-row">
+                        <label >Giá đăng ký với mỗi đối tượng <span class="ovic-mark">*</span></label>
+
+                        <app-kehoach-form-dongia class="w-100 d-block" [formFild]="f['dongia']"></app-kehoach-form-dongia>
+                      </div>
+                    </div>
+                    <div class="col-8">
+                      <div class="form-row">
+                        <label >Ngôn ngữ và cấp độ thi <span class="ovic-mark">*</span></label>
+                        <div class="languages-ctn">
+                          <div>
+                            <ovic-dropdown [showClear]="false" class="w-100" [options]="listLanguage" [formField]="f['ngonngu']" optionLabel="title" optionId="id" placeholder="Chọn ngôn ngữ ..." (onChange)="onChagelang($event)"></ovic-dropdown>
+                          </div>
+
+                          <div class="mt-3">
+                            <app-kehoach-form-levels class="w-100 d-block" [formFild]="f['levels']"></app-kehoach-form-levels>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -171,8 +194,9 @@
               class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
     </div>
     <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style">
+<!--      <app-kehoachthi-diemthi [kehoachthi]="kehoach_select"></app-kehoachthi-diemthi>-->
+<!--      <app-kehoachthi-diemthi-v3 [kehoachthi]="kehoach_select"></app-kehoachthi-diemthi-v3>-->
       <app-kehoachthi-diemthi [kehoachthi]="kehoach_select"></app-kehoachthi-diemthi>
-<!--      <app-kehoachthi-diemthi-v2 [kehoachthi]="kehoach_select"></app-kehoachthi-diemthi-v2>-->
     </div>
   </div>
 </ng-template>

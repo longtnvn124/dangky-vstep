@@ -8,7 +8,7 @@ import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/form
 import {Router} from "@angular/router";
 import {SenderEmailService} from "@shared/services/sender-email.service";
 import {HelperService} from "@core/services/helper.service";
-import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {KehoachLevers, KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
 import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/kehoachthi-diemthi-vstep.service";
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
 import {DmDiemduthi, DmDiemDuThiService} from "@shared/services/dm-diem-du-thi.service";
@@ -20,6 +20,10 @@ import {DonViService} from "@shared/services/don-vi.service";
 import {HuyOrders, HuyOrdersService} from "@shared/services/huy-orders.service";
 import {BUTTON_NO, BUTTON_YES} from "@core/models/buttons";
 import {DateTimeServer, ServerTimeService} from "@shared/services/server-time.service";
+import {Languages, LanguagesService} from "@shared/services/languages.service";
+import {FileService} from "@core/services/file.service";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 export interface SumMonThi {
   diemduthi_id: string,
@@ -30,7 +34,29 @@ export interface SumDiemduthi {
   diemduthi_id: number,
   total: number,
 }
+interface Phieuduthi {
+  anh_chandung:string;
+  doituong_anhthe:string;
+  cccd_mattruoc:string;
+  cccd_matsau:string;
 
+  doituong:string;
+
+  hoten: string;
+  gioitinh: string;
+  ngaysinh: string;
+  noisinh: string;
+  cccd_so: string;
+  cccd_ngaycap:string;
+  cccd_noicap:string;
+  phone: string;
+  email: string;
+  thuongtru: string;
+
+  dothi:string;
+  ngonngu:string,
+  capthi:any[]
+}
 
 @Component({
   selector: 'app-thi-sinh-dang-ky',
@@ -38,7 +64,7 @@ export interface SumDiemduthi {
   styleUrls: ['./thi-sinh-dang-ky.component.css']
 })
 export class ThiSinhDangKyComponent implements OnInit {
-  @ViewChild('dataToExport', {static: true}) dataToExport: ElementRef;
+  @ViewChild( 'dataToExport' , { static : false } ) dataToExport : ElementRef;
   ngType: 1 | 0 | -1 = 0;//0: form,1:thanh toasn thanh coong, -1:chờ thanh toán,
   isLoading         : boolean = true;
   loadInitFail      : boolean = false;
@@ -60,9 +86,13 @@ export class ThiSinhDangKyComponent implements OnInit {
   kehoachDiemduthi          : KehoachthiDiemduthi [] = [];
   kehoach_select            : KeHoachThi = null;
   kehoach_diemduthi_select  : KehoachthiDiemduthi = null;
+  capthi_select             : KehoachLevers = null;
   limit                     : number = 20;
   formHuyOrder              : FormGroup;
   isCheckCCCD               :  boolean = false;
+  listLanguages             : Languages[];
+
+  listLever                 : KehoachLevers[];
   constructor(
     private kehoachthiVstepService: KehoachthiVstepService,
     private kehoachthiDiemthiVstepService: KehoachthiDiemthiVstepService,
@@ -78,14 +108,18 @@ export class ThiSinhDangKyComponent implements OnInit {
     private dmDiemDuThiService: DmDiemDuThiService,
     private donviService: DonViService,
     private huyOrdersService:HuyOrdersService,
-    private serverTimeService :ServerTimeService
+    private serverTimeService :ServerTimeService,
+    private languagesService: LanguagesService,
+    private fileService :FileService
   ) {
     this.formSave = this.fb.group({
       user_id: [null, Validators.required],
       kehoach_id: [null, Validators.required],
       diemduthi_id: [null, Validators.required],
       lephithi: [null, Validators.required],
-      thisinh_id:[null,Validators.required]
+      thisinh_id:[null,Validators.required],
+      capthi:['',Validators.required],
+      trangthai_duyet:[null, Validators.required],
 
     })
     this.formHuyOrder = this.fb.group({
@@ -114,6 +148,7 @@ export class ThiSinhDangKyComponent implements OnInit {
   loadInit() {
     this.kehoach_select = null;
     this.kehoach_diemduthi_select = null;
+    this.capthi_select = null;
     this.getDataDanhMuc();
   }
 
@@ -132,14 +167,25 @@ export class ThiSinhDangKyComponent implements OnInit {
         { label:'order', value:'ASC'},
       ]
     }
-    forkJoin<[ThiSinhInfo, KeHoachThi[],DateTimeServer]>(
+
+    const condition: ConditionOption = {
+      condition:[
+      ],
+      page:'1',
+      set:[
+        { label:'limit',value:'-1'}
+      ]
+    }
+    forkJoin<[ThiSinhInfo, KeHoachThi[],DateTimeServer, Languages[]]>(
       [
         this.thisinhInfoService.getUserInfo(this.auth.user.id),
         this.kehoachthiVstepService.getDataByPageNew(conditonKehoach).pipe(map(m=>m.data)),
-        this.serverTimeService.getTime()
+        this.serverTimeService.getTime(),
+        this.languagesService.getDataByPageNew(condition).pipe(switchMap(m=>of(m.data)))
       ]
     ).subscribe({
-      next: ([ thisinhInfo, keHoachThi,dateTimeService]) => {
+      next: ([ thisinhInfo, keHoachThi,dateTimeService, listLang]) => {
+        this.listLanguages = listLang;
         this.dateTimeService = dateTimeService;
         this.userInfo = thisinhInfo;
         this.isCheckCCCD = thisinhInfo.cccd_so.toLowerCase() == this.auth.user.username.toLowerCase();
@@ -152,6 +198,8 @@ export class ThiSinhDangKyComponent implements OnInit {
         const kehoachthiParam = keHoachThi.map(m => {
           m['_time_convertd'] = this.strToTime(m.ngaybatdau) + ' - ' + this.strToTime(m.ngayketthuc);
           m['_date_convertd'] = this.strToTime(m.ngaybatdau) + ' - ' + this.strToTime(m.ngayketthuc);
+
+          m['_ngonngu'] = listLang.find(f=>f.id == m.ngonngu) ? listLang.find(f=>f.id == m.ngonngu).title : '';
           return m;
         })
 
@@ -274,6 +322,7 @@ export class ThiSinhDangKyComponent implements OnInit {
   resetForm() {
     this.kehoach_select= null;
     this.kehoach_diemduthi_select= null;
+    this.capthi_select= null;
     this.f['diemduthi_id'].setValue(null);
     this.f['kehoach_id'].setValue(null);
     this.formSave.reset({
@@ -292,6 +341,9 @@ export class ThiSinhDangKyComponent implements OnInit {
   SaveForm() {
     this.f['user_id'].setValue(this.auth.user.id);
     this.f['thisinh_id'].setValue(this.userInfo.id);
+    this.f['trangthai_duyet'].setValue(this.userInfo.doituong == 'dhtn' ? 0 : 1);
+    this.f['lephithi'].setValue(this.kehoach_select.dongia.find(f=>f.key == this.userInfo.doituong) ? this.kehoach_select.dongia.find(f=>f.key == this.userInfo.doituong).value : '');
+    console.log(this.formSave.value);
 
     if (this.formSave.valid) {
       this.isLoading = true;
@@ -321,16 +373,21 @@ export class ThiSinhDangKyComponent implements OnInit {
             }else{
               this.ordersService.create(formadd).subscribe({
                 next:(id)=>{
+
+
+
                   const order = {
                     id: id,
                     thisinh_id: this.userInfo ? this.userInfo.id : 0,
                     user_id: this.auth.user.id,
                     kehoach_id: formadd.kehoach_id,
-                    mota: '',
-                    lephithi: formadd.lephithi,
-                    status: 1,
+                    lephithi: this.kehoach_select.dongia.find(f=>f.key == this.userInfo.doituong) ? this.kehoach_select.dongia.find(f=>f.key == this.userInfo.doituong).value : '' ,
                     diemduthi: formadd.diemduthi_id,
+                    capthi:this.capthi_select.value,
+                    trangthai_duyet: this.userInfo.doituong == 'dhtn' ? 0 : 1,
+
                   }
+
                   this.sendEmail(this.userInfo,order).subscribe({
                     next: () => {
                       this.loadInit();
@@ -515,6 +572,7 @@ export class ThiSinhDangKyComponent implements OnInit {
 
     message += `
     </table>
+    <p > Với thí sinh là sinh viên của ĐHTN sẽ phải chờ xét duyệt thông tin sinh viên.</p>
     <p style="color: #ce3b04;">- Trạng thái thanh toán: Chưa thanh toán.</p>
     <p>- Bạn vui lòng thanh toán lệ phí thi để hoàn tất quá trình đăng ký .</p>
     `;
@@ -536,8 +594,9 @@ export class ThiSinhDangKyComponent implements OnInit {
 
   //===========new ====================
   selectKehoachthi(event){
-    this.f['lephithi'].setValue(event.gia);
     this.kehoach_select = event;
+    this.capthi_select = null;
+    this.kehoachDiemduthi = null;
     if(!event){
       return;
     }
@@ -577,6 +636,8 @@ export class ThiSinhDangKyComponent implements OnInit {
 
           return m;
         }).filter(f=>f['_soluong_conlai'] > 0);
+
+        this.listLever = this.kehoachDiemduthi.length > 0 ? this.kehoach_select.levels.filter(f=>f.select==1) : [];
         this.notifi.isProcessing(false);
 
 
@@ -643,6 +704,10 @@ export class ThiSinhDangKyComponent implements OnInit {
     this.kehoach_diemduthi_select =event;
 
 
+  }
+
+  selectCapthi(event){
+    this.capthi_select = event;
   }
   paginate({page}: NgPaginateEvent) {
     this.page = page + 1;
@@ -920,6 +985,95 @@ export class ThiSinhDangKyComponent implements OnInit {
     link.href = 'assets/files/dkVstep/don-hoan-lephi.doc';
     link.download = 'don-hoan-lephi.doc';
     link.click();
+  }
+
+  conventGiabyKehoach(kehoach:KeHoachThi){
+
+    const isDuyet = this.userInfo.doituong;
+
+    return kehoach.dongia.find(f=>f.key == isDuyet ) ? kehoach.dongia.find(f=>f.key == isDuyet ).value : 0;
+  }
+
+  isShower:boolean = false;
+
+  phieuduthi: Phieuduthi = null;
+  viewPhieudangky(item:OrdersVstep){
+
+    const dothi = this.keHoachThi.find(f=>f.id == item.kehoach_id);
+    console.log(dothi);
+
+    // const levels = dothi.levels.map(m=>{
+    //   m['check'] = m.value == item.capthi
+    //   return m
+    // }).filter(f=>f.select == 1);
+
+
+
+    const phieuduthi:Phieuduthi = {
+      anh_chandung:this.fileService.getPreviewLinkLocalFile(this.userInfo.anh_chandung[0]),
+      doituong_anhthe:this.fileService.getPreviewLinkLocalFile(this.userInfo.doituong_anhthe[0]),
+      cccd_mattruoc:this.fileService.getPreviewLinkLocalFile(this.userInfo.cccd_img_truoc[0]),
+      cccd_matsau:this.fileService.getPreviewLinkLocalFile(this.userInfo.cccd_img_sau[0]),
+      hoten:this.userInfo.hoten ?this.userInfo.hoten :'' ,
+      gioitinh:this.userInfo.gioitinh ?this.userInfo.gioitinh :'' ,
+      ngaysinh:this.userInfo.ngaysinh ?this.userInfo.ngaysinh :'' ,
+      noisinh:this.userInfo.noisinh ?this.userInfo.noisinh :'' ,
+      cccd_so:this.userInfo.cccd_so ?this.userInfo.cccd_so :'' ,
+      cccd_ngaycap:this.userInfo.cccd_ngaycap ?this.userInfo.cccd_ngaycap :'' ,
+      cccd_noicap:this.userInfo.cccd_noicap ?this.userInfo.cccd_noicap :'' ,
+      phone:this.userInfo.phone ?this.userInfo.phone :'' ,
+      email:this.userInfo.email ?this.userInfo.email :'' ,
+      thuongtru:this.userInfo.thuongtru_diachi.fullAddress,
+      doituong : item.parent_id !== 0 ? 'doitac' : this.userInfo.doituong,
+      dothi:dothi.title,
+      capthi:dothi.levels.map(m=>{
+        m['check'] = m.value == item.capthi
+        return m
+      }).filter(f=>f.select == 1).concat(
+        Array(6).fill({
+          label: '',
+          value: '',
+          check: false,
+          select : 1
+        })
+      )
+        .slice(0, 6),
+      ngonngu:dothi['_ngonngu']
+
+    }
+
+    console.log(phieuduthi);
+
+    this.phieuduthi = phieuduthi
+    this.isShower =true;
+  }
+
+  public downloadAsPdf(): void {
+    if(this.phieuduthi){
+
+
+      html2canvas(this.dataToExport.nativeElement, {
+        scale: 3, // Tăng chất lượng ảnh
+        allowTaint: true,
+        useCORS: true,
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const imgWidth = 210; // Chiều rộng trang A4 (mm)
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        const pdf = new jsPDF({
+          orientation: 'portrait', // Hoặc 'landscape' nếu cần
+          unit: 'mm',
+          format: 'a4'
+        });
+
+        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+        pdf.save('phieuduthi.pdf');
+      });
+    }else{
+      this.notifi.toastError('Tải xuống không thành công');
+    }
+
   }
 
 }

@@ -1,0 +1,71 @@
+.levels-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #ededed;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.level-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid #d0d0d0;
+  border-radius: 20px;
+  background: #fff;
+  color: #555;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  user-select: none;
+}
+
+.level-btn:hover {
+  border-color: #1976d2;
+  color: #1976d2;
+  background: #f0f7ff;
+  box-shadow: 0 1px 4px rgba(25, 118, 210, 0.12);
+}
+
+.level-btn.selected {
+  border-color: #1976d2;
+  background: #1976d2;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(25, 118, 210, 0.25);
+}
+
+.level-btn.selected:hover {
+  background: #1565c0;
+  border-color: #1565c0;
+}
+
+.level-icon {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.level-label {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.levels-empty {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  color: #999;
+  font-size: 13px;
+  font-style: italic;
+  text-align: center;
+  user-select: none;
+}

@@ -1,0 +1,170 @@
+<div class="row">
+  <div class="col-12 ovic-ui-table site-thpt" style="height:calc(100vh - 90px)" [class.ovic-is-loading]="isLoading">
+    <div class="p-datatable-header" style="height:65px; border-bottom:1px solid #CCC;">
+      <h3 class="tbl-title ">Kết quả đăng ký</h3>
+      <div class="search-block ui-table-globalfilter-container ">
+        <div class="d-flex align-items-center">
+          <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+            <div class="d-flex" style="gap:10px;">
+<!--              <div class="">-->
+<!--                <p-dropdown [options]="statusTT" placeholder="Trạng thái thanh toán" optionValue="value"-->
+<!--                            optionLabel="title" [showClear]="true"-->
+<!--                            (onChange)="loadDropdowStatusTT($event.value)">-->
+
+<!--                </p-dropdown>-->
+<!--              </div>-->
+              <div class="">
+                <!--                <p-dropdown [options]="dsKehoachthi" placeholder="Chọn đợt thi" optionValue="id" optionLabel="title" [showClear]="true"-->
+                <!--                            (onChange)="loadDropdow($event.value)" [filter]="true" [filterBy]="'title'"-->
+                <!--                >-->
+
+                <!--                </p-dropdown>-->
+                <ovic-dropdown [options]="dsKehoachthi" placeholder="Chọn đợt thi" optionId="id" optionLabel="title"
+                               [showClear]="true"
+                               (onChange)="loadDropdow($event)" [filter]="true" [filterBy]="'title'"></ovic-dropdown>
+
+              </div>
+              <div  class="">
+                <button pButton pRipple icon="pi pi-check" label="Duyệt TT" style="height:42px;" (click)="viewFormDuyet()"
+                       ></button>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ovic-wrap-table-rps ovic-scroll-style" style="height:calc(100% - 65px - 60px);background: #dedede;">
+      <div class="ovic-wrap-table-rps__inner">
+        <p-table [(selection)]="dataSelct" styleClass="p-datatable-gridlines" [value]="listData" [rowHover]="true"
+                 [rows]="rows" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="isLoading">
+          <ng-template pTemplate="header" class="d-bock">
+            <tr>
+              <th class="ovic-w-50px text-center">
+                <p-checkbox [binary]="true" (onChange)="selectDataByCheckbox($event)"></p-checkbox>
+              </th>
+              <th class="ovic-w-40px text-center ">STT</th>
+              <th class="ovic-w-40px text-center ">$$</th>
+              <th class="ovic-w-100px text-center ">
+                <div>Xác nhận</div>
+                <div>Thông tin</div>
+              </th>
+              <th class="ovic-w-100px text-center ">Mã đăng ký</th>
+              <th class="ovic-w-180px text-center">Họ và tên</th>
+              <th class="ovic-w-80px text-center">CCCD (hoặc hộ chiếu)</th>
+              <th class="ovic-w-120px text-center">Số điện thoại</th>
+              <th class="text-center">Lệ phí thi</th>
+              <th class="text-center">Điểm dự thi</th>
+              <th class="ovic-w-150px text-center">Đợt thi</th>
+              <th class="ovic-w-130px text-center">Cấp thi</th>
+              <th class="ovic-w-150px text-center">Thời gian TT</th>
+              <th class="ovic-w-150px text-center">Ghi chú</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td *ngIf="item.trangthai_thanhtoan !== 1,else haveTT" class="text-center">
+                <p-tableCheckbox [value]="item" [disabled]="item['__status_converted'] ===1"></p-tableCheckbox>
+              </td>
+              <ng-template #haveTT>
+                <td class="text-center">
+                  <p-checkbox [disabled]="true"></p-checkbox>
+                </td>
+              </ng-template>
+              <!--              <td>-->
+              <!--                <p-tableCheckbox [value]="item" ></p-tableCheckbox>-->
+              <!--              </td>-->
+              <td class="text-center">{{ item['_indexTable'] }}</td>
+              <td class="text-center">
+
+                <ng-container [ngSwitch]="item['__status_converted']">
+                  <div *ngSwitchCase="2" class="thanh-toan check text-center" pTooltip="Giao dịch đang xử lý"
+                       tooltipPosition="right">
+                    <i class="pi pi-history"></i></div>
+                  <div *ngSwitchCase="1" class="thanh-toan true text-center" pTooltip="Đăng ký thành công"
+                       tooltipPosition="right">
+                    <i class="pi pi-check-circle"></i></div>
+                  <div *ngSwitchCase="-1" class="thanh-toan wait text-center" pTooltip="Đã chuyển khoản, chờ duyệt"
+                       tooltipPosition="right">
+                    <i class="pi pi-file-edit"></i></div>
+                  <div *ngSwitchCase="0" class="thanh-toan false text-center" pTooltip="Chưa thanh toán"
+                       tooltipPosition="right">
+                    <i class="pi pi-exclamation-triangle"></i>
+                  </div>
+                </ng-container>
+
+              </td>
+
+              <td class="text-center">
+                <div class="w-100 d-flex justify-content-center align-items-center">
+
+
+                  <ng-container [ngSwitch]="item.trangthai_duyet">
+                    <div *ngSwitchCase="-1" class="thanh-toan check "
+                         pTooltip="Thông tin sinh viên của thí sinh chưa đúng">
+                      <i class="pi pi-times-circle"></i>
+                    </div>
+                    <div *ngSwitchCase="0" class="thanh-toan check "
+                         pTooltip="Chờ duyệt thông tin sinh viên của ĐHTN">
+                      <i class="pi pi-circle"></i>
+
+                    </div>
+                    <div *ngSwitchCase="1" class="thanh-toan true ">
+                      <i class="pi pi-check-circle" pTooltip="Xác nhận thông tin"></i>
+
+                    </div>
+                  </ng-container>
+                </div>
+              </td>
+              <td class="text-center">{{ item['__order_id_coverted'] }}</td>
+              <td><span class="tt-hover" > {{ item['__thisinh_hoten'] }}</span></td>
+              <td class="text-center">{{ item['__thisinh_cccd'] }}</td>
+              <td class="ovic-w-80px text-right">{{ item['__thisinh_phone'] }}</td>
+              <td class="text-right">{{ item['lephithi'] | numberToVndCurrencuy }}</td>
+
+              <td>
+                <div>{{ item['__diemthi_convenrtd'] }}</div>
+              </td>
+              <td class="text-left">{{ item['__dotthi_coverted'] }}</td>
+
+              <td class="text-center">{{ item['__capthi'] }}</td>
+              <td class="text-right">{{ item['__time_thanhtoan'] }}</td>
+              <td class="text-left">{{ item['__ghichu'] }}</td>
+
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="20">
+                Không có dữ liệu thí sinh!
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    <p-paginator class="duthi_panigator" [showCurrentPageReport]="true" [rows]="rows" [totalRecords]="recordsTotal"
+                 [pageLinkSize]="5"
+                 (onPageChange)="paginate($event)"></p-paginator>
+  </div>
+</div>
+
+
+
+<!--<ng-template #formregister>-->
+<!--  <div class="ovic-side-navigation-content">-->
+<!--    <div class="ovic-side-navigation-content__head">-->
+<!--      <h4 class="ovic-side-navigation-content__head__title"></h4>-->
+<!--      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"-->
+<!--              class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>-->
+<!--    </div>-->
+<!--    <div class="ovic-side-navigation-content__body &#45;&#45;no-footer ovic-scroll-style">-->
+<!--      <app-thi-sinh-dang-ky-thi [thiSinh_id]="thisinh_id" class="w-100 h-100"></app-thi-sinh-dang-ky-thi>-->
+<!--    </div>-->
+
+<!--  </div>-->
+<!--</ng-template>-->
+
+

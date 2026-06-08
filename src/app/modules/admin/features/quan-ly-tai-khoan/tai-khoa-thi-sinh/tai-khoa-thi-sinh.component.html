@@ -116,3 +116,17 @@
 
 </ng-template>
 
+<ng-template #formInfo let-c="close" let-d="dismiss">
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head">
+      <h4 class="ovic-side-navigation-content__head__title">Thông tin thí sinh > {{userSelect.username}} </h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
+    </div>
+    <div class="ovic-side-navigation-content__body ovic-scroll-style --no-footer">
+
+          <app-thisinh-info class="d-block" [user]="userSelect"></app-thisinh-info>
+
+    </div>
+  </div>
+</ng-template>

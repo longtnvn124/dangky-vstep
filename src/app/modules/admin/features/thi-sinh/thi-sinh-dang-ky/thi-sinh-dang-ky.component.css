@@ -341,3 +341,45 @@
 .info .count.err {
   background: #ffec6e;
 }
+/*----------------------------------------*/
+.anh-the{
+  padding:10px;
+  border: 1px solid #0f1419;
+  background: #fff;
+  height:200px;
+  min-width:160px;
+  display: flex;
+  justify-content: center;
+}
+.anh-the img{
+  height:100%;
+}
+
+/* Table Flexbox - Phiếu đăng ký điện tử (Flex) */
+.table-flex {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-top: 1px solid #dee2e6;
+  border-left: 1px solid #dee2e6;
+}
+
+.table-flex-row {
+  display: flex;
+  width: 100%;
+}
+
+.table-flex-cell {
+  flex: 1 1 auto;
+  padding:  6px 8px;
+  border-bottom: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+}
+
+.table-flex-cell.colspan-2 {
+  flex: 2 1 66.666%;
+}
+
+.table-flex-cell.colspan-3 {
+  flex: 3 1 100%;
+}

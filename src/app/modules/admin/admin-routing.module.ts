@@ -10,6 +10,9 @@ import {MailCheckComponent} from "@modules/admin/features/mail-check/mail-check.
 import {
   DuyetThanhToanTramComponent
 } from "@modules/admin/features/duyet-thanh-toan-tram/duyet-thanh-toan-tram.component";
+import {
+  DuyetThongtinDangkyDuthiComponent
+} from "@modules/admin/features/duyet-thongtin-dangky-duthi/duyet-thongtin-dangky-duthi.component";
 
 const routes : Routes = [
 	{
@@ -88,6 +91,11 @@ const routes : Routes = [
 			// 	path         : 'message' ,
 			// 	loadChildren : () => import('@modules/admin/features/ovic-message/ovic-message.module').then( m => m.OvicMessageModule )
 			// } ,
+
+      {
+      	path         : 'duyet-thongtin-dangky' ,
+        component : DuyetThongtinDangkyDuthiComponent
+      } ,
       {
         path         : 'quan-ly-tai-khoan' ,
         loadChildren : () => import('@modules/admin/features/quan-ly-tai-khoan/quan-ly-tai-khoan.module').then( m => m.QuanLyTaiKhoanModule )

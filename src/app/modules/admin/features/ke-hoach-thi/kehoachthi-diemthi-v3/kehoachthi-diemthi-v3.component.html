@@ -1,0 +1,83 @@
+<div class="w-100 h-100">
+  <ng-container [ngSwitch]="ngType">
+    <ng-container *ngSwitchCase="-1">
+      <div class="d-flex flex-column justify-content-center align-items-center h-100" style="gap:4px;background:#c1ccd8">
+        <div>Mất kết nối với máy chủ vui lòng bấm 'Tải lại'</div>
+        <button pButton pRipple label="Tải lại" icon="pi pi-sync" (click)="reLoad()"></button>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="0">
+   <div class="h-100 d-flex flex-column justify-content-center align-items-center"
+           style="background:#ededed">
+        <div class=" text-center"
+             style="font-size: 15px;background: #d6def7;padding: 14px 20px;border-radius: 10px;border: 1px solid #ccc;">
+          <p>Đang tải dữ liệu, vui lòng chờ</p>
+          <div style=" width: 300px">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="1">
+      <div class="v3-container">
+        <!-- Left panel: select diem thi to add -->
+        <div class="v3-left-panel">
+          <div class="v3-panel-header">
+            <span>Thêm điểm dự thi</span>
+          </div>
+          <div class="v3-panel-body">
+            <ng-container *ngIf="dmDiemduthi.length > 0; else noDiemthi">
+              <div class="v3-checkbox-list">
+                <label class="v3-checkbox-item" *ngFor="let item of dmDiemduthi">
+                  <input type="checkbox" [checked]="item['checked']" (change)="onSelectDiemthi($event, item)" [value]="item.id">
+                  <span>{{ item.title }}</span>
+                </label>
+              </div>
+            </ng-container>
+            <ng-template #noDiemthi>
+              <div class="v3-empty-text">Không có điểm dự thi nào để thêm</div>
+            </ng-template>
+          </div>
+          <div class="v3-panel-footer">
+            <button pButton pRipple label="Thêm điểm thi" icon="pi pi-plus" (click)="createNew()" class="p-button-sm p-button-success"></button>
+          </div>
+        </div>
+
+        <!-- Right panel: list of diem thi with levels -->
+        <div class="v3-right-panel">
+          <div class="v3-panel-header">
+            <span>Danh sách điểm dự thi và số lượng theo cấp độ</span>
+            <button pButton pRipple icon="pi pi-sync" (click)="reLoad()" class="p-button-sm p-button-text"></button>
+          </div>
+          <div class="v3-panel-body">
+            <ng-container *ngIf="listData.length > 0; else noData">
+              <div class="v3-card" *ngFor="let item of listData">
+                <div class="v3-card-header">
+                  <span class="v3-card-title">{{ item.diemduthi_title }}</span>
+                  <button pButton pRipple icon="pi pi-trash" class="p-button-danger p-button-sm p-button-text" (click)="deleteItem(item)"></button>
+                </div>
+                <div class="v3-card-body">
+                  <div class="v3-level-row" *ngFor="let level of item.levels">
+                    <span class="v3-level-chip selected">{{ level.label }}</span>
+                    <span class="v3-level-label">Số lượng:</span>
+                    <input
+                      type="text"
+                      class="v3-level-input"
+                      [value]="level.soluong"
+                      (input)="updateLevelSoluong(item, level.value, $event)"
+                      placeholder="0">
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #noData>
+              <div class="v3-empty-text">Không có dữ liệu</div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>

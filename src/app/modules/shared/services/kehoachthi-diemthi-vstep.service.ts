@@ -14,6 +14,7 @@ export interface KehoachthiDiemduthi {
   kehoach_id:number;
   diemduthi_id:number;
   soluong:number;
+  levels?: {value:string; soluong:number}[];
 }
 
 @Injectable({

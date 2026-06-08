@@ -15,9 +15,18 @@
         <div class=" info-item">
           <div class="w-25">
             <div class="info-image">
-              <img
-                [src]=" userInfo['__anh_chandung_covented'] ? userInfo['__anh_chandung_covented'] : 'assets/images/avatar-size-4x6.png'"
-                alt="">
+<!--              <img-->
+<!--                [src]=" userInfo['__anh_chandung_covented'] ? userInfo['__anh_chandung_covented'] : 'assets/images/avatar-size-4x6.png'"-->
+<!--                alt="">-->
+
+              <div class="w-100">
+                <p-image
+                  [src]="userInfo['__anh_chandung_covented'] ? userInfo['__anh_chandung_covented'] : 'assets/images/avatar-size-4x6.png'"
+                  alt="Image"
+                  width="100%"
+                  [preview]="true" >
+                </p-image>
+              </div>
 
             </div>
           </div>
@@ -77,18 +86,31 @@
                 <div class="cccd-text">CCCD mặt trước</div>
                 <div class="info-image border-0">
 
-                  <img
-                    [src]=" userInfo['__cccd_mattruoc_covented'] ? userInfo['__cccd_mattruoc_covented'] : 'assets/images/avatar-size-6x4.png'"
-                    alt="">
+
+                  <div class="w-100">
+                    <p-image
+                      [src]="userInfo['__cccd_mattruoc_covented'] ? userInfo['__cccd_mattruoc_covented'] : 'assets/images/avatar-size-6x4.png'"
+                      alt="Image"
+                      width="100%"
+                      [preview]="true" >
+                    </p-image>
+                  </div>
 
                 </div>
               </div>
               <div class="col-12 col-xl-6 border-left">
                 <div class="cccd-text">CCCD mặt sau</div>
                 <div class="info-image border-0">
-                  <img
-                    [src]=" userInfo['__cccd_matsau_covented'] ? userInfo['__cccd_matsau_covented'] : 'assets/images/avatar-size-6x4.png'"
-                    alt="">
+
+
+                  <div class="w-100">
+                    <p-image
+                      [src]="userInfo['__cccd_matsau_covented'] ? userInfo['__cccd_matsau_covented'] : 'assets/images/avatar-size-6x4.png'"
+                      alt="Image"
+                      width="100%"
+                      [preview]="true" >
+                    </p-image>
+                  </div>
 
                 </div>
               </div>

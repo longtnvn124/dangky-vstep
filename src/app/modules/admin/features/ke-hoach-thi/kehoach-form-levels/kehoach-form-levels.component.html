@@ -1,0 +1,19 @@
+<div class="levels-wrapper">
+  <ng-container *ngIf="data && data.length > 0; else emptyState">
+    <button
+      *ngFor="let item of data"
+      class="level-btn"
+      [class.selected]="item.select === 1"
+      (click)="toggleSelect(item)"
+      type="button"
+    >
+      <span class="level-icon">
+        {{ item.select === 1 ? '✓' : '+' }}
+      </span>
+      <span class="level-label">{{ item.label }}</span>
+    </button>
+  </ng-container>
+  <ng-template #emptyState>
+    <span class="levels-empty">Vui lòng chọn ngôn ngữ trước</span>
+  </ng-template>
+</div>

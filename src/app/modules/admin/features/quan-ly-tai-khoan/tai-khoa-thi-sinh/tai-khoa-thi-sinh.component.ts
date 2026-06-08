@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators} from "@angular/forms";
 import {Paginator} from "primeng/paginator";
 import {SimpleRole} from "@core/models/auth";
@@ -47,7 +47,11 @@ export class TaiKhoaThiSinhComponent implements OnInit {
 
   @ViewChild(Paginator) paginator: Paginator;
   @ViewChild('tplCreateAccount') tplCreateAccount: ElementRef;
+  @ViewChild('formInfo', {static: true}) formInfo: TemplateRef<any>;
   @Input() roleName : string= 'thi-sinh';
+
+  subscription          : Subscription = new Subscription();
+  sizeFullWidth         : number = 1024;
 
   formSave: FormGroup;
 
@@ -137,9 +141,16 @@ export class TaiKhoaThiSinhComponent implements OnInit {
       checker: 'fieldName',
       header: 'Thao tác',
       sortable: false,
-      rowClass: 'ovic-w-150px text-center',
-      headClass: 'ovic-w-150px text-center',
+      rowClass: 'ovic-w-200px text-center',
+      headClass: 'ovic-w-200px text-center',
       buttons: [
+        {
+          tooltip: 'Thông tin thí sinh',
+          label: '',
+          icon: 'pi pi-id-card',
+          name: 'INFO_DECISION',
+          cssClass: 'btn-success rounded'
+        },
         {
           tooltip: 'Gửi email xác nhận tài khoản',
           label: '',
@@ -212,6 +223,9 @@ export class TaiKhoaThiSinhComponent implements OnInit {
     private registerAccountService:RegisterAccountService,
     private router: Router
   ) {
+    const observerOnResize = this.notificationService.observeScreenSize.subscribe(size => this.sizeFullWidth = size.width)
+    this.subscription.add(observerOnResize);
+
     this.formSave = this.fb.group({
       display_name: ['', Validators.required],
       // username     : [ '' , [ Validators.required , Validators.pattern( '^(?=.{3,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$' ) ] ] ,
@@ -312,6 +326,9 @@ export class TaiKhoaThiSinhComponent implements OnInit {
     }
     const decision = button.data && this.data ? this.data.find(f => f.id === button.data) : null;
     switch (button.name) {
+      case 'INFO_DECISION':
+        void this.viewThisinhInfo(decision);
+        break;
       case 'DELETE_DECISION':
         void this.deleteUser(decision.id);
         break;
@@ -352,6 +369,16 @@ export class TaiKhoaThiSinhComponent implements OnInit {
         }
       );
     }
+  }
+
+  userSelect: User ;
+  viewThisinhInfo(item : User){
+    this.userSelect= {...item};
+    this.notificationService.openSideNavigationMenu({
+      offsetTop:'0px',
+      size:this.sizeFullWidth,
+      template: this.formInfo
+    })
   }
 
   editUser(user) {
@@ -584,8 +611,8 @@ export class TaiKhoaThiSinhComponent implements OnInit {
 
   sendEmailActive(item:User){
     const dataParram: {} = {
-      // url: `${location.origin}${this.router.serializeUrl(this.router.createUrlTree(['verification/']))}`
-      url: `https://hsk.tnu.edu.vn/verification`
+      url: `${location.origin}${this.router.serializeUrl(this.router.createUrlTree(['verification/']))}`
+      // url: `https://hsk.tnu.edu.vn/verification`
     }
     this.notificationService.isProcessing(true);
 
@@ -599,6 +626,10 @@ export class TaiKhoaThiSinhComponent implements OnInit {
         this.notificationService.isProcessing(false);
       }
     })
+  }
+
+  closeForm(){
+    this.notificationService.closeSideNavigationMenu();
   }
 
 }

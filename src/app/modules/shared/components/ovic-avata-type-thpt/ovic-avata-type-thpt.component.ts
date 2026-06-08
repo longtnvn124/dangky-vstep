@@ -7,28 +7,38 @@ import {AvatarMakerSetting, MediaService} from "@shared/services/media.service";
 import {map} from "rxjs/operators";
 import {TYPE_FILE_IMAGE} from "@shared/utils/syscat";
 import imageCompression from 'browser-image-compression';
+import {NgClass, NgIf} from "@angular/common";
+import {RippleModule} from "primeng/ripple";
+import {ButtonModule} from "primeng/button";
 @Component({
   selector: 'ovic-avata-type-thpt',
   templateUrl: './ovic-avata-type-thpt.component.html',
-  styleUrls: ['./ovic-avata-type-thpt.component.css']
+  styleUrls: ['./ovic-avata-type-thpt.component.css'],
+  imports: [
+    NgClass,
+    NgIf,
+    RippleModule,
+    ButtonModule
+  ],
+  standalone: true
 })
 export class OvicAvataTypeThptComponent implements OnInit {
   @Input() site:boolean = false;
   @Input() disabled:boolean = false;
   @Input() formField: AbstractControl;
   @Input() multiple = true;
-  @Input() accept = []; // only file extension eg. .jpg, .png, .jpeg, .gif, .pdf
+  @Input() accept:string = ''; // only file extension eg. .jpg, .png, .jpeg, .gif, .pdf
   @Input() aspectRatio:number;// 3 / 2, 2 / 3
   @Input() textView:string='Upload file';
   @Input() height:string;//300px;
   @Input() file_size:number= null;//50kb
   @Input() file_name:string;
   @Input() footage:string ='horizontal';//horizontal :ngang,vertical:dài
-
+  @Input() resizeToWidth : number = null;
   @Input() public:number = 1;
   characterAvatar: string = '';
   fileList:OvicFile[]=[];
-  _accept = '';
+
   @Input()rotateShow : boolean =false;
   constructor(
     private fileService: FileService,
@@ -36,13 +46,6 @@ export class OvicAvataTypeThptComponent implements OnInit {
     private mediaService: MediaService
   ) { }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['accept']) {
-      if (this.accept && this.accept.length) {
-        this._accept = this.accept.join(',');
-      }
-    }
-  }
 
   ngOnInit(): void {
     if (this.formField) {
@@ -62,16 +65,14 @@ export class OvicAvataTypeThptComponent implements OnInit {
       }
 
     }
-    if (this.accept && this.accept.length) {
-      this._accept = this.accept.join(',');
-    }
+
   }
 
   async makeCharacterAvatar(file: File, characterName: string): Promise<File> {
     try {
       const options: AvatarMakerSetting = {
         aspectRatio: this.aspectRatio ? this.aspectRatio : 2 / 3,
-        resizeToWidth: 300,
+        resizeToWidth: this.resizeToWidth ?? undefined,
         format: 'jpeg',
         cropperMinWidth: 10,
         dirRectImage: {

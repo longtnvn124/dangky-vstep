@@ -1,30 +1,37 @@
-<input type="file" #fileChooser hidden="true" (change)="onInputAvatar($event , fileChooser,0)">
+<input type="file" #fileChooser [accept]="accept" hidden="true" (change)="onInputAvatar($event , fileChooser,0)">
 <div class="w-100 h-100 ">
   <div class="row m-0 h-100">
-    <div class="col" >
-      <div class="h-100 d-flex flex-column justify-content-center align-items-center btn-avata" >
+    <div class="col">
+      <div class="h-100 d-flex flex-column justify-content-center align-items-center btn-avata">
 
-        <div style="height: 262px;" class="btn w-100 d-flex justify-content-center align-items-center">
-          <img *ngIf="characterAvatar; else showIcon" class="imgchecksize" [ngClass]="footage == 'vertical' ? 'vertical' : 'horizontal'"  [src]="characterAvatar " alt="">
-          <ng-template #showIcon>
+        <div *ngIf="characterAvatar; else showIcon" style="height: 262px;"
+             class="btn w-100 d-flex justify-content-center align-items-center">
+          <img *ngIf="characterAvatar; else showIcon" class="imgchecksize"
+               [ngClass]="footage == 'vertical' ? 'vertical' : 'horizontal'" [src]="characterAvatar " alt="">
+
+        </div>
+        <ng-template #showIcon>
+          <div class=" btn text-center d-flex flex-column justify-content-center" style="height: 262px;">
             <i class="pi pi-upload"></i>
             <div [innerHTML]="textView"></div>
-          </ng-template>
-        </div>
+          </div>
+        </ng-template>
 
         <div class="my-4 d-flex justify-content-center" style=" gap:10px;">
-          <button pRipple pButton icon="pi pi-camera" class="p-button-secondary" label="Chụp ảnh" (click)="btnCamera()"></button>
-          <button pButton pRipple icon="pi pi-upload" class="p-button-warning" label="Tải lên" (click)="fileChooser.click()"></button>
+          <button pRipple pButton icon="pi pi-camera" class="p-button-secondary" label="Chụp ảnh"
+                  (click)="btnCamera()"></button>
+          <button pButton pRipple icon="pi pi-upload" class="p-button-warning" label="Tải lên"
+                  (click)="fileChooser.click()"></button>
         </div>
 
-<!--        <button pRipple [disabled]="disabled" class="btn w-100 btn-avata"-->
-<!--          style="margin-top: 30px;height: 262px;" (click)="fileChooser.click()">-->
-<!--          <img *ngIf="characterAvatar; else showIcon" class="imgchecksize" [ngClass]="footage == 'vertical' ? 'vertical' : 'horizontal'"  [src]="characterAvatar " alt="">-->
-<!--          <ng-template #showIcon>-->
-<!--            <i class="pi pi-upload"></i>-->
-<!--            <div [innerHTML]="textView"></div>-->
-<!--          </ng-template>-->
-<!--        </button>-->
+        <!--        <button pRipple [disabled]="disabled" class="btn w-100 btn-avata"-->
+        <!--          style="margin-top: 30px;height: 262px;" (click)="fileChooser.click()">-->
+        <!--          <img *ngIf="characterAvatar; else showIcon" class="imgchecksize" [ngClass]="footage == 'vertical' ? 'vertical' : 'horizontal'"  [src]="characterAvatar " alt="">-->
+        <!--          <ng-template #showIcon>-->
+        <!--            <i class="pi pi-upload"></i>-->
+        <!--            <div [innerHTML]="textView"></div>-->
+        <!--          </ng-template>-->
+        <!--        </button>-->
       </div>
     </div>
   </div>

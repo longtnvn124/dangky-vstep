@@ -11,6 +11,9 @@ import {
 import {
   RegisterAccountComponent
 } from "@modules/public/features/home-thi-thpt/layouts/register-account/register-account.component";
+import {
+  RegisterAccountGlasslineComponent
+} from "@modules/public/features/home-thi-thpt/layouts/register-account-glassline/register-account-glassline.component";
 import {TraCuuKetQuaComponent} from "@modules/public/features/tra-cuu-ket-qua/tra-cuu-ket-qua.component";
 
 
@@ -39,6 +42,10 @@ const routes: Routes = [
   {
     path:"register-account",
     component:RegisterAccountComponent,
+  },
+  {
+    path:"register-account-glassline",
+    component:RegisterAccountGlasslineComponent,
   },
   {
     path:"verification",

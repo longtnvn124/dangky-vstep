@@ -1,0 +1,7 @@
+{
+  "tool_name": "PowerShell",
+  "tool_input_preview": "{\"command\":\"try { $response = Invoke-WebRequest -Uri 'http://localhost:8010/register-account' -UseBasicParsing -TimeoutSec 10; Write-Output \\\"STATUS $($response.StatusCode)\\\"; if ($response.Content -m...",
+  "error": "Exit code 1\nERROR The remote server returned an error: (404) Not Found.",
+  "timestamp": "2026-05-20T09:03:30.898Z",
+  "retry_count": 1
+}

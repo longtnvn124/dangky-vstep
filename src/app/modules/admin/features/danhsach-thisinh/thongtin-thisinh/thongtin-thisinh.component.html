@@ -203,14 +203,25 @@
                     </div>
                   </div>
 
+                  <div class="col col-lg-4 col-xl-4">
+                    <div class="form-row" [class.fieldset--error]="f['diachi_congtac'].touched && f['diachi_congtac'].invalid"
+                         [class.fieldset--invalid]="f['diachi_congtac'].touched && f['diachi_congtac'].valid">
+                      <label>Địa chỉ công tác</label>
+                      <input pInputText type="text" placeholder="Vd:..." formControlName="diachi_congtac"
+                             autocomplete="off">
+                    </div>
+                  </div>
+
 
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="mar-14px col-12 col-lg-4">
-                <ovic-avata-type-thpt [disabled]=" f['status'].value ===1" [formField]="f['anh_chandung']" [public]="0"
-                                      [aspectRatio]="2 / 3" [accept]="['.jpg', '.png', '.jpeg']" [site]="true"
+
+
+                <ovic-avata-type-thpt [resizeToWidth] = "800" [disabled]=" f['status'].value ===1" [formField]="f['anh_chandung']" [public]="0"
+                                      [aspectRatio]="2 / 3" [accept]="'.jpg,.png,.jpeg'" [site]="true"
                                       [textView]="'<span>Tải ảnh chân dung(*)</span><p>(Dung lượng file tối thiểu 21kb và tối đa 100kb.)</p>'"
                                       [file_size]="100" [file_name]="file_name" [footage]="'vertical'" [rotateShow] = true
                 ></ovic-avata-type-thpt>
@@ -250,13 +261,13 @@
                   <label for=></label>
                   <div class="row w-100 m-0">
                     <div class="p-0 col-12 col-lg-6 mt-1">
-                      <ovic-avata-type-thpt [formField]="f['cccd_img_truoc']" [aspectRatio]="5 / 3" [public]="0"
-                                            [disabled]=" f['status'].value ===1" [accept]="['.jpg', '.png', '.jpeg']"
+                      <ovic-avata-type-thpt [resizeToWidth] = "800" [formField]="f['cccd_img_truoc']" [aspectRatio]="5 / 3" [public]="0"
+                                            [disabled]=" f['status'].value ===1" [accept]="'.jpg,.png,.jpeg'"
                                             [textView]="'Tải ảnh CCCD(Hoặc hộ chiếu) mặt trước (*)'" [rotateShow] = true></ovic-avata-type-thpt>
                     </div>
                     <div class="p-0 col-12 col-lg-6 mt-1">
-                      <ovic-avata-type-thpt [formField]="f['cccd_img_sau']" [aspectRatio]="5 / 3" [public]="0"
-                                            [disabled]=" f['status'].value ===1" [accept]="['.jpg', '.png', '.jpeg']"
+                      <ovic-avata-type-thpt [resizeToWidth] = "800" [formField]="f['cccd_img_sau']" [aspectRatio]="5 / 3" [public]="0"
+                                            [disabled]=" f['status'].value ===1" [accept]="'.jpg,.png,.jpeg'"
                                             [textView]="'Tải ảnh CCCD(Hoặc hộ chiếu) mặt sau(*)'" [rotateShow] = true></ovic-avata-type-thpt>
                     </div>
                   </div>
@@ -308,6 +319,50 @@
               </div>
             </div>
 
+            <div class="row row-ctm-2" >
+              <div class="col">
+                <div class="form-row">
+                  <label>Đối tượng <span class="ovic-mark">*</span></label>
+                  <p-dropdown class="w-100" [filter]="true" [style]="{'width':'100%'}" [options]="listDoituong" (onChange)="onchangedoituong($event)"
+                              formControlName="doituong" optionLabel="label" optionValue="value"
+                              placeholder="Chọn..."></p-dropdown>
+
+                </div>
+              </div>
+              <div class="col" *ngIf="f['doituong'].value !== 'dhtn'">
+                <div class="form-row">
+                  <label>Trường đang theo học </label>
+                  <input pInputText type="text" placeholder="Vd: Trường ..." formControlName="doituong_truong" autocomplete="off">
+                </div>
+              </div>
+              <div class="col" *ngIf="f['doituong'].value == 'dhtn'">
+                <div class="form-row">
+                  <label>Trường đang theo học <span class="ovic-mark">*</span></label>
+                  <p-dropdown class="w-100" [filter]="true" [style]="{'width':'100%'}" [options]="listUniversity"
+                              formControlName="doituong_truong" optionLabel="title" optionValue="title"
+                              placeholder="Chọn..."></p-dropdown>
+                </div>
+              </div>
+
+              <div class="col" *ngIf="f['doituong'].value == 'dhtn'">
+                <div class="form-row">
+                  <label>Mã sinh viên <span class="ovic-mark">*</span></label>
+                  <input pInputText type="text" placeholder="Vd: TNU..." formControlName="doituong_masv" autocomplete="off">
+                </div>
+              </div>
+            </div>
+
+            <div class="row justify-content-center" *ngIf="f['doituong'].value == 'dhtn'">
+              <div class="col-4">
+                <div class="form-row">
+                  <ovic-avata-type-thpt [resizeToWidth] = "800" class="w-100" [disabled]=" f['status'].value ===1" [formField]="f['doituong_anhthe']" [public]="0"
+                                        [aspectRatio]="3 / 2" [accept]="'.jpg,.png,.jpeg'" [site]="true"
+                                        [textView]="'<span>Tải ảnh thẻ sinh viên(*)</span>'"
+                                        [file_size]="100" [file_name]="file_name" [footage]="'vertical'" [rotateShow] = true
+                  ></ovic-avata-type-thpt>
+                </div>
+              </div>
+            </div>
 
             <div class="row">
               <div class="col-12 d-flex align-items-center" >
@@ -320,10 +375,6 @@
             </div>
 
           </form>
-
-
-
-
 
         </div>
       </div>
