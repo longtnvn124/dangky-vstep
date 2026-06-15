@@ -7,6 +7,7 @@ import {AuthService} from "@core/services/auth.service";
 import {map, Observable} from "rxjs";
 import {Dto, OvicConditionParam, OvicQueryCondition} from "@core/models/dto";
 import {OvicFile} from "@core/models/file";
+import {ConditionOption} from "@shared/models/condition-option";
 
 export interface HuyOrders{
   id?:number;
@@ -18,6 +19,7 @@ export interface HuyOrders{
   content:string;
   file: OvicFile[];
   state?:number;
+  minhchung:OvicFile[]
 }
 @Injectable({
   providedIn: 'root'
@@ -177,5 +179,18 @@ export class HuyOrdersService {
   ActiveChangeDotthi(id:number):Observable<any>{
 
     return this.http.post<Dto>(this.api + 'accept-change/' + id, {});
+  }
+
+  getDataByPageNew(option: ConditionOption): Observable<{ data: HuyOrders[], recordsFiltered: number }> {
+    let filter = option.page ? this.httpParamsHelper.paramsConditionBuilder(option.condition).set("paged", option.page) : this.httpParamsHelper.paramsConditionBuilder(option.condition);
+    if (option.set && option.set.length)
+      option.set.forEach(f => {
+        filter = filter.set(f.label, f.value);
+      })
+    return this.http.get<Dto>(this.api, {params: filter}).pipe(
+      map(res => {
+        return {data: res.data, recordsFiltered: res.recordsFiltered}
+      })
+    );
   }
 }

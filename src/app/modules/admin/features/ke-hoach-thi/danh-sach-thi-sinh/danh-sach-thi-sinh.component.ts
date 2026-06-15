@@ -12,7 +12,7 @@ import {DmDiemduthi, DmDiemDuThiService} from "@shared/services/dm-diem-du-thi.s
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
 import {ConditionOption} from "@shared/models/condition-option";
 import {OvicQueryCondition} from "@core/models/dto";
-import {KeHoachThi} from "@shared/services/kehoachthi-vstep.service";
+import {KeHoachThi} from "@shared/services/vstep/kehoachthi-vstep.service";
 import {HskSummaryService} from "@shared/services/hsk-summary.service";
 import {NotificationService} from "@core/services/notification.service";
 import {User} from "@core/models/user";

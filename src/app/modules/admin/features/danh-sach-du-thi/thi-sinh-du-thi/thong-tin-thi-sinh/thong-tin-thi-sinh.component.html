@@ -1,150 +1,176 @@
 <ng-container [ngSwitch]="ngchangeType">
   <ng-container *ngSwitchCase="'0'">
-    <div class="d-flex flex-column justify-content-center align-items-center">
+    <div class="d-flex flex-column justify-content-center align-items-center py-4">
       <div>
-        <i class="pi pi-spin pi-spinner"></i>
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #2196f3;"></i>
       </div>
-      <div>Đang load dữ liệu vui lòng chờ</div>
+      <div class="mt-2 text-muted">Đang load dữ liệu vui lòng chờ</div>
     </div>
-
   </ng-container>
+
   <ng-container *ngSwitchCase="'1'">
-    <div class="container h-100">
+    <div *ngIf="userInfo else notInfo" class="tsinfo-container" [style]="maxWidth ? {'max-width' : maxWidth,'margin' : '0 auto'} : ''">
 
-      <div *ngIf="userInfo else notInfo" class="info-container">
-        <div class=" info-item">
-          <div class="w-25">
-            <div class="info-image">
-<!--              <img-->
-<!--                [src]=" userInfo['__anh_chandung_covented'] ? userInfo['__anh_chandung_covented'] : 'assets/images/avatar-size-4x6.png'"-->
-<!--                alt="">-->
-
-              <div class="w-100">
-                <p-image
-                  [src]="userInfo['__anh_chandung_covented'] ? userInfo['__anh_chandung_covented'] : 'assets/images/avatar-size-4x6.png'"
-                  alt="Image"
-                  width="100%"
-                  [preview]="true" >
-                </p-image>
-              </div>
-
-            </div>
+      <!-- Profile Header -->
+      <div class="tsinfo-profile-header">
+        <div class="tsinfo-avatar">
+          <p-image
+            [src]="userInfo['__anh_chandung_covented'] ? userInfo['__anh_chandung_covented'] : 'assets/images/avatar-size-4x6.png'"
+            alt="Ảnh thí sinh"
+            width="100%"
+            [preview]="true">
+          </p-image>
+        </div>
+        <div class="tsinfo-profile-info">
+          <h4 class="tsinfo-name">{{ userInfo.hoten }}</h4>
+          <div class="tsinfo-badge-list">
+            <span class="tsinfo-badge" [class.badge-male]="userInfo.gioitinh === 'nam'" [class.badge-female]="userInfo.gioitinh !== 'nam'">
+              <i class="pi" [class.pi-mars]="userInfo.gioitinh === 'nam'" [class.pi-venus]="userInfo.gioitinh !== 'nam'"></i>
+              {{ userInfo.gioitinh === 'nam' ? 'Nam' : 'Nữ' }}
+            </span>
+            <span class="tsinfo-badge badge-info">
+              <i class="pi pi-calendar"></i>
+              {{ userInfo.ngaysinh }}
+            </span>
+            <span class="tsinfo-badge badge-primary">
+              <i class="pi pi-id-card"></i>
+              {{ userInfo.cccd_so }}
+            </span>
+            <span class="tsinfo-badge badge-success" *ngIf="userInfo.doituong">
+              <i class="pi pi-tag"></i>
+              {{ userInfo['_doituong_name'] }}
+            </span>
           </div>
-          <div class=" w-75">
-            <div class="d-flex flex-row">
-              <div class="info-imlement">
-                <span class="font-weight-bold">Họ và tên: </span>
-                <span>{{ userInfo.hoten }}</span>
-              </div>
-              <div class="info-imlement">
-                <span class="font-weight-bold">Điện thoại: </span>
-                <span>{{ userInfo.phone }}</span>
-              </div>
+          <div class="tsinfo-contact-row">
+            <div class="tsinfo-contact-item">
+              <i class="pi pi-phone"></i>
+              <span>{{ userInfo.phone }}</span>
             </div>
-            <div class="d-flex flex-row">
-              <div class="info-imlement">
-                <span class="font-weight-bold">Ngày sinh: </span>
-                <span>{{ userInfo.ngaysinh }}</span>
-              </div>
-              <div class="info-imlement">
-                <span class="font-weight-bold">Giới tính: </span>
-                <span>{{ userInfo.gioitinh === 'nam' ? "Nam" : "Nữ" }}</span>
-              </div>
+            <div class="tsinfo-contact-item">
+              <i class="pi pi-envelope"></i>
+              <span>{{ userInfo.email || 'Chưa cập nhật' }}</span>
             </div>
-            <div class="d-flex flex-row">
-              <div class="info-imlement">
-                <span class="font-weight-bold">Nơi sinh: </span>
-                <span>{{ userInfo.noisinh }}</span>
-              </div>
-<!--              <div class="info-imlement">-->
-<!--                <span class="font-weight-bold">Nơi sinh khác: </span>-->
-<!--                <span>{{ userInfo.noisinhkhac }}</span>-->
-<!--              </div>-->
-            </div>
-            <div class="d-flex flex-row">
-              <div class="info-imlement">
-                <span class="font-weight-bold">Dân tộc: </span>
-                <span>{{ userInfo.dantoc ? userInfo.dantoc : '' }}</span>
-              </div>
-              <div class="info-imlement">
-                <span class="font-weight-bold">Tôn giáo: </span>
-                <span>{{ userInfo.tongiao ? userInfo.tongiao : 'Không' }}</span>
-              </div>
-            </div>
-            <div class="info-imlement">
-              <span class="font-weight-bold">Quê quán : </span>
-              <span>{{ userInfo.quequan ? userInfo.quequan['fullAddress'] : 'Không' }}</span>
-            </div>
-
-            <div class="info-imlement">
-              <span class="font-weight-bold">Thông tin CCCD: </span>
-
-            </div>
-            <div class="row m-0 " style="padding:0 10px">
-
-              <div class="col-12 col-xl-6">
-                <div class="cccd-text">CCCD mặt trước</div>
-                <div class="info-image border-0">
-
-
-                  <div class="w-100">
-                    <p-image
-                      [src]="userInfo['__cccd_mattruoc_covented'] ? userInfo['__cccd_mattruoc_covented'] : 'assets/images/avatar-size-6x4.png'"
-                      alt="Image"
-                      width="100%"
-                      [preview]="true" >
-                    </p-image>
-                  </div>
-
-                </div>
-              </div>
-              <div class="col-12 col-xl-6 border-left">
-                <div class="cccd-text">CCCD mặt sau</div>
-                <div class="info-image border-0">
-
-
-                  <div class="w-100">
-                    <p-image
-                      [src]="userInfo['__cccd_matsau_covented'] ? userInfo['__cccd_matsau_covented'] : 'assets/images/avatar-size-6x4.png'"
-                      alt="Image"
-                      width="100%"
-                      [preview]="true" >
-                    </p-image>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-
-            <div class="d-flex flex-row">
-              <div class="info-imlement">
-                <span class="font-weight-bold">Số CCCD: </span>
-                <span>{{ userInfo.cccd_so }}</span>
-              </div>
-              <div class="info-imlement">
-                <span class="font-weight-bold">Ngày cấp: </span>
-                <span>{{ userInfo.cccd_ngaycap }}</span>
-              </div>
-              <div class="info-imlement">
-                <span class="font-weight-bold">Nơi cấp: </span>
-                <span>{{ userInfo.cccd_noicap }}</span>
-              </div>
-            </div>
-
-            <div class="info-imlement">
-              <span class="font-weight-bold">Địa chỉ thường trú: </span>
-              <span>{{ userInfo.thuongtru_diachi ? userInfo.thuongtru_diachi['fullAddress'] : 'Không' }}</span>
-            </div>
-
           </div>
         </div>
       </div>
-      <ng-template #notInfo>
-        <div class="d-flex justify-content-center align-items-center h-100 w-100">
-          <div>Chưa có thông tin thí sinh</div>
-        </div>
-      </ng-template>
-    </div>
 
+      <!-- Personal Information Grid -->
+      <div class="tsinfo-section">
+        <h5 class="tsinfo-section-title">
+          <i class="pi pi-user"></i> Thông tin cá nhân
+        </h5>
+        <div class="tsinfo-grid">
+          <div class="tsinfo-field">
+            <label>Nơi sinh</label>
+            <span>{{ userInfo.noisinh || 'Chưa cập nhật' }}</span>
+          </div>
+          <div class="tsinfo-field">
+            <label>Dân tộc</label>
+            <span>{{ userInfo.dantoc || 'Chưa cập nhật' }}</span>
+          </div>
+          <div class="tsinfo-field">
+            <label>Tôn giáo</label>
+            <span>{{ userInfo.tongiao || 'Không' }}</span>
+          </div>
+          <div class="tsinfo-field">
+            <label>Địa chỉ thường trú</label>
+            <span>{{ userInfo.thuongtru_diachi ? userInfo.thuongtru_diachi['fullAddress'] : 'Chưa cập nhật' }}</span>
+          </div>
+<!--          <div class="tsinfo-field tsinfo-field-full">-->
+<!--            <label>Địa chỉ thường trú</label>-->
+<!--            <span>{{ userInfo.thuongtru_diachi ? userInfo.thuongtru_diachi['fullAddress'] : 'Chưa cập nhật' }}</span>-->
+<!--          </div>-->
+        </div>
+      </div>
+
+      <!-- CCCD Information -->
+      <div class="tsinfo-section">
+        <h5 class="tsinfo-section-title">
+          <i class="pi pi-id-card"></i> Thông tin CCCD
+        </h5>
+        <div class="tsinfo-grid">
+          <div class="tsinfo-field">
+            <label>Số CCCD</label>
+            <span class="fw-bold">{{ userInfo.cccd_so }}</span>
+          </div>
+          <div class="tsinfo-field">
+            <label>Ngày cấp</label>
+            <span>{{ userInfo.cccd_ngaycap }}</span>
+          </div>
+          <div class="tsinfo-field tsinfo-field-full">
+            <label>Nơi cấp</label>
+            <span>{{ userInfo.cccd_noicap }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- School Info (nếu là sinh viên ĐHTN) -->
+      <div class="tsinfo-section" *ngIf="userInfo.doituong == 'dhtn'">
+        <h5 class="tsinfo-section-title">
+          <i class="pi pi-building"></i> Thông tin sinh viên
+        </h5>
+        <div class="tsinfo-grid">
+          <div class="tsinfo-field">
+            <label>Trường</label>
+            <span>{{ userInfo.doituong_truong || 'ĐHTN' }}</span>
+          </div>
+          <div class="tsinfo-field">
+            <label>Mã số sinh viên</label>
+            <span class="fw-bold">{{ userInfo.doituong_masv || 'Chưa cập nhật' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Gallery -->
+      <div class="tsinfo-section">
+        <h5 class="tsinfo-section-title">
+          <i class="pi pi-images"></i> Hình ảnh
+        </h5>
+        <div class="tsinfo-image-gallery">
+          <div class="tsinfo-image-card">
+            <div class="tsinfo-image-label">CCCD mặt trước</div>
+            <div class="tsinfo-image-wrapper">
+              <p-image
+                [src]="userInfo['__cccd_mattruoc_covented'] ? userInfo['__cccd_mattruoc_covented'] : 'assets/images/avatar-size-6x4.png'"
+                alt="CCCD mặt trước"
+                width="100%"
+                [preview]="true">
+              </p-image>
+            </div>
+          </div>
+          <div class="tsinfo-image-card">
+            <div class="tsinfo-image-label">CCCD mặt sau</div>
+            <div class="tsinfo-image-wrapper">
+              <p-image
+                [src]="userInfo['__cccd_matsau_covented'] ? userInfo['__cccd_matsau_covented'] : 'assets/images/avatar-size-6x4.png'"
+                alt="CCCD mặt sau"
+                width="100%"
+                [preview]="true">
+              </p-image>
+            </div>
+          </div>
+          <div class="tsinfo-image-card" *ngIf="userInfo.doituong == 'dhtn' && userInfo['__doituong_anhthe']">
+            <div class="tsinfo-image-label">Ảnh thẻ sinh viên</div>
+            <div class="tsinfo-image-wrapper">
+              <p-image
+                [src]="userInfo['__doituong_anhthe']"
+                alt="Ảnh thẻ SV"
+                width="100%"
+                [preview]="true">
+              </p-image>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <ng-template #notInfo>
+      <div class="d-flex justify-content-center align-items-center py-5">
+        <div class="text-center text-muted">
+          <i class="pi pi-info-circle" style="font-size: 2rem;"></i>
+          <p class="mt-2">Chưa có thông tin thí sinh</p>
+        </div>
+      </div>
+    </ng-template>
   </ng-container>
 </ng-container>

@@ -126,7 +126,7 @@ export class ExWordVstepService {
     }
   }
 
-  async  tuidungHosophongthi(phongthis:any[],fileName:string) {
+  async  tuidungHosophongthi(phongthis:any[],fileName:string, ngonnguName:string) {
     let htmlContent = `
   <!DOCTYPE html>
   <html lang="en">
@@ -166,13 +166,13 @@ export class ExWordVstepService {
 
         <br>
         <p style="font-size:18px; text-align:center;margin:40px 0;"><strong>NGÀY THI:</strong> ${this.convertDateTimeByPhong(item['ngaythi'])}
-        ; <strong>CA THI:</strong> ${item['thoigian_duthi']}; <strong>NGÔN NGỮ:</strong> Tiếng anh</p>
+        ; <strong>CA THI:</strong> ${item['thoigian_duthi']}; <strong>NGÔN NGỮ:</strong> {{ngonnguNam ? ngonnguName :'Tiếng anh'}}</p>
 
         <p><br></p>
 
         <p style="text-align: left;font-size: 17px;margin:6px 0;"><strong>- TỔNG SỐ THÍ SINH(THEO DANH SÁCH): ${item['_listThisinh'].length}</strong> </p>
         <p style="text-align: left;font-size: 17px;margin:6px 0;"><strong>- TỔNG SỐ THÍ SINH DỰ THI:</strong>.............................</p>
-        <p style="text-align: left;font-size: 17px;margin:6px 0;"><strong>- TỔNG SỐ THÍ SINH VẮNG:</strong>..................................</p>
+        <p style="text-align: left;font-size: 17px;margin:6px 0;"><strong>- TỔNG SỐ THÍ SINH VẮNG:</strong>................................</p>
 
 
          <p><br></p>
@@ -233,7 +233,7 @@ export class ExWordVstepService {
     }
   }
 
-  async  tuidungPhieutaikhoan(phongthis:any[],fileName:string) {
+  async  tuidungPhieutaikhoan(phongthis:any[],fileName:string, ngonnguName:string) {
     let htmlContent = `
   <!DOCTYPE html>
   <html lang="en">
@@ -273,7 +273,7 @@ export class ExWordVstepService {
 
         <br>
         <p style="font-size:18px; text-align:center;margin:10px 0 40px;"><strong>NGÀY THI:</strong> ${this.convertDateTimeByPhong(item['ngaythi'])}
-        ; <strong>CA THI:</strong> ${item['thoigian_duthi']}; <strong>NGÔN NGỮ:</strong> Tiếng anh</p>
+        ; <strong>CA THI:</strong> ${item['thoigian_duthi']}; <strong>NGÔN NGỮ:</strong> {{ ngonnguName ? ngonnguName : 'Tiếng anh'}}</p>
 
         <p><br></p>
 
@@ -371,6 +371,77 @@ export class ExWordVstepService {
     }
   }
 
+
+  async  hosoLuutruThisinh(data:any[],fileName:string) {
+    let htmlContent = `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+      * {
+              font-family: "Times New Roman"  !important;
+      }
+
+      .table-border{border-collapse: collapse;border:1px solid #000;}
+      .table-border tr,.table-border td,.table-border th{font-size: 14px; border:1px solid #000;padding:4px;}
+    </style>
+  </head>
+  <body>
+  `;
+
+    for (let item of data) {
+      htmlContent += `
+
+
+    <div style=" width:100%; height:100%;  page-break-after: always;">
+    <table style=" width:100%; height:100%;  page-break-after: always;">
+    <tr>
+        <td style="width:40%">
+            <p style="font-size:18px; text-align:center;margin-bottom:0;padding-bottom: 0">ĐẠI HỌC THÁI NGUYÊN</p>
+            <p style="font-size:18px; text-align:center;margin:0;"><strong>HỘI ĐỒNG THI ĐÁNH GIÁ NLNN</strong></p>
+            <p style="margin:50px">
+            <br>
+        </td>
+        <td style="width:60%">
+        <p style="font-size:18px; text-align:center;margin-bottom:0;padding-bottom: 0">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+        <p style="font-size:18px; text-align:center;margin:0;"><strong>Độc lập – Tự do – Hạnh phúc</strong></p>
+        <p style="margin:50px">
+            <br>
+            </p>
+        </td>
+    </tr>
+    </table>
+
+    </div>
+
+
+
+    `;
+    }
+
+    htmlContent += `</body></html>`;
+    try {
+      const fileBuffer = await asBlob(htmlContent , {
+        orientation : 'portrait' ,
+        size: 'A4Doc',
+        margins     : {
+          top    : 1000 ,
+          right  : 1500 ,
+          bottom : 1000 ,
+          left   : 1500 ,
+          header : 0 ,
+          footer : 0 ,
+          gutter : 0
+        },
+      } );
+      saveAs( fileBuffer , fileName + '.docx' );
+
+    } catch ( e ) {
+      console.log( e );
+    }
+  }
 
 
 }

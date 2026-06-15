@@ -12,7 +12,7 @@ import {User} from "@core/models/user";
 import {ThiSinhInfo} from "@shared/models/thi-sinh";
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
 import {DmDiemDuThiService} from "@shared/services/dm-diem-du-thi.service";
-import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/vstep/kehoachthi-vstep.service";
 import {ConditionOption} from "@shared/models/condition-option";
 import {OvicQueryCondition} from "@core/models/dto";
 import {map} from "rxjs/operators";
@@ -118,10 +118,7 @@ export class ThiSinhDuThiComponent implements OnInit {
 
     private ordersService:VstepOrdersService,
     private notifi: NotificationService,
-
-    private dmDiemDuThiService:DmDiemDuThiService,
     private kehoachthiVstepService : KehoachthiVstepService,
-
     private modalService: NgbModal,
     private expThisinhDuthiService: ExpThisinhDuthiService,
     private donViService:DonViService,

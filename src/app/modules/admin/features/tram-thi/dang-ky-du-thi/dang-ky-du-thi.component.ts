@@ -6,7 +6,7 @@ import {RippleModule} from "primeng/ripple";
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
 import {NotificationService} from "@core/services/notification.service";
 import {AuthService} from "@core/services/auth.service";
-import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/vstep/kehoachthi-vstep.service";
 import {ConditionOption} from "@shared/models/condition-option";
 import {OvicQueryCondition} from "@core/models/dto";
 import {SummaryService} from "@shared/services/summary.service";
@@ -19,7 +19,7 @@ import * as XLSX from "xlsx";
 import {CheckboxModule} from "primeng/checkbox";
 import {DialogModule} from "primeng/dialog";
 import {catchError, finalize, map} from "rxjs/operators";
-import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/kehoachthi-diemthi-vstep.service";
+import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/vstep/kehoachthi-diemthi-vstep.service";
 import {Router} from "@angular/router";
 import {RegisterUserService} from "@shared/services/register-user.service";
 import {ThisinhInfoService} from "@shared/services/thisinh-info.service";
@@ -304,6 +304,7 @@ export class DangKyDuThiComponent implements OnInit {
     datafile.forEach(row => {
       const cell = {
         ordering: row[0],
+        capthi: this.getCapthi(row[1]),
         hodem: row[2],
         ten: row[3],
         ngaysinh: this.convertDateByXlsx(row[4]),
@@ -332,6 +333,17 @@ export class DangKyDuThiComponent implements OnInit {
     const date = XLSX.SSF.parse_date_code(excelDate);
     return date.y + '-'+ (date.m<10 ? '0' + date.m : date.m) +'-' + (date.d<10 ? '0' + date.d : date.d)
       ;
+  }
+
+  getCapthi( str: string): string{
+      if (!str?.trim()) {
+        return '';
+      }
+      const value = str.trim();
+      const index = value.lastIndexOf(' ');
+
+      return index === -1 ? value : value.substring(index + 1).toLowerCase();
+
   }
 
 
@@ -487,7 +499,10 @@ export class DangKyDuThiComponent implements OnInit {
   }
 
   getDongia(kehoach_id:number){
-    return this.listKehoachClone.find(f=>f.id == kehoach_id) ?this.listKehoachClone.find(f=>f.id == kehoach_id).gia : 0;
+    const kehoach = this.listKehoachClone.find(f=>f.id == kehoach_id)
+
+    return kehoach ? (kehoach.dongia.find(f=>f.key == 'doitac') ? kehoach.dongia.find(f=>f.key == 'doitac').value : 0) : 0;
+
   }
   getTongDongia(soluong:number, kehoach_id:number){
     if(kehoach_id == 0){
@@ -495,7 +510,7 @@ export class DangKyDuThiComponent implements OnInit {
     }
 
     const kehoach = this.listKehoachClone.find(f=>f.id == kehoach_id);
-    return kehoach ? kehoach.gia * soluong : 0;
+    return kehoach ? kehoach.dongia.find(f=>f.key == 'doitac').value * soluong : 0;
   }
 
   btnPayment(){
@@ -642,7 +657,7 @@ export class DangKyDuThiComponent implements OnInit {
       user_id: this.auth.user.id,
       kehoach_id: this.kehoach_id_select,
       lephithi: this.getTongDongia(this.listCheckResult.length, this.kehoach_id_select),
-      is_child_payment: this.objectFilter.paymentMethod
+      is_child_payment: this.objectFilter.paymentMethod,
     }
     return this.ordersService.create(itemCreated).pipe(switchMap(m => {
       itemCreated['id'] = m;
@@ -663,8 +678,8 @@ export class DangKyDuThiComponent implements OnInit {
         user_id: item['__user_id'],
         lephithi: this.getDongia(this.kehoach_id_select),
         thisinh_id: item['__thisinh_id'],
-        is_child_payment: this.objectFilter.paymentMethod
-
+        is_child_payment: this.objectFilter.paymentMethod,
+        capthi : item['capthi']
       }
       data[index]['__canOrder'] = true;
 
@@ -837,6 +852,7 @@ export class DangKyDuThiComponent implements OnInit {
     this.listCheckResult = [];
     this.dataUpload = [];
     this.notifi.closeSideNavigationMenu();
+    this.loadInit();
   }
 
 

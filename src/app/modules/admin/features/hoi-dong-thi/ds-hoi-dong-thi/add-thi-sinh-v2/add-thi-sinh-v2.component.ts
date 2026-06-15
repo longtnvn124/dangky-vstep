@@ -23,7 +23,7 @@ import {NgPaginateEvent} from "@shared/models/ovic-models";
 import {BUTTON_NO, BUTTON_YES} from "@core/models/buttons";
 import {map} from "rxjs/operators";
 import {SplitterModule} from "primeng/splitter";
-import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/kehoachthi-diemthi-vstep.service";
+import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/vstep/kehoachthi-diemthi-vstep.service";
 import {DialogModule} from "primeng/dialog";
 import {RadioButtonModule} from "primeng/radiobutton";
 import {SharedModule} from "@shared/shared.module";
@@ -136,11 +136,12 @@ export class AddThiSinhV2Component implements OnInit {
           m['_cccd'] = thisinh ? thisinh.cccd_so : '';
           m['_email'] = thisinh ? thisinh.email:'';
           m['_phone'] = thisinh ? thisinh.phone:'';
-          m['_gioitinh'] = thisinh && thisinh.gioitinh ? thisinh.gioitinh == 'nam' ? 'Nam' : 'Nữ' :'';
+          m['_gioitinh'] = thisinh && thisinh.gioitinh ? (thisinh.gioitinh == 'nam' ? 'Nam' : 'Nữ') :'';
           m['_ngaysinh'] = thisinh ? thisinh.ngaysinh:'';
 
           return m;
         }): [];
+
         this.notifi.isProcessing(false);
         this.ngtype =  'data';
       },error:()=>{
@@ -291,22 +292,6 @@ export class AddThiSinhV2Component implements OnInit {
             condition:OvicQueryCondition.equal,
             value:this.hoidong_select.kehoach_id.toString()
           },
-          // {
-          //   conditionName:'hoidong_id',
-          //   condition:OvicQueryCondition.notEqual,
-          //   value:this.hoidong_select.id.toString(),
-          //   orWhere:"or"
-          //
-          // },
-          //
-          // {
-          //   conditionName:'hoidong_id',
-          //   condition:OvicQueryCondition.equal,
-          //   value:this.hoidong_select.id.toString(),
-          //   orWhere:"or"
-          // },
-
-
         ],
         page:'1',
         set:[
@@ -332,7 +317,7 @@ export class AddThiSinhV2Component implements OnInit {
           }) ;
 
           const idsHoidongThisinhKhac = hoidongThisinhKhac.length >0 ? hoidongThisinhKhac.map(m=>m.thisinh_id) : [] ;
-          const ordersNotUse = orders.filter(f=>  !idsHoidongThisinhKhac.includes(f.thisinh_id)).map(m=>{
+          const ordersNotUse = orders.filter(f=>  !idsHoidongThisinhKhac.includes(f.thisinh_id) && !f['huy']).map(m=>{
 
             m['_hoten'] = m['thisinh'] ? m['thisinh']['hoten'] : '';
             m['_email'] = m['thisinh'] ? m['thisinh']['email'] : '';
@@ -340,8 +325,11 @@ export class AddThiSinhV2Component implements OnInit {
             m['_cccd'] = m['thisinh'] ? m['thisinh']['cccd_so'] : '';
             m['_ngaysinh'] = m['thisinh'] ? m['thisinh']['ngaysinh'] : '';
             m['_diemduthi'] = kehoach_dienduthi.find(f=>f.diemduthi_id == m.diemduthi_id) ? kehoach_dienduthi.find(f=>f.diemduthi_id == m.diemduthi_id)['donvi']['title'] :'';
+            m['_gioitinh'] = m['thisinh'] && m['thisinh'].gioitinh ? (m['thisinh'].gioitinh == 'nam' ? 'Nam' : 'Nữ') :'';
+            m['_capthi'] = m.capthi && this.hoidong_select['_kehoach']['levels'].find(f=>f.value == m.capthi ) ? this.hoidong_select['_kehoach']['levels'].find(f=>f.value == m.capthi ).label : '';
             return m;
           })
+
           this.objectAdd = {
             searchByAdd:'',
             diemduthiSelect_id:null,
@@ -412,10 +400,7 @@ export class AddThiSinhV2Component implements OnInit {
   }
 
   eventSearch(event){
-    console.log(event);
-
     this.objectAdd.searchByAdd = event;
-
     if(this.objectAdd.diemduthiSelect_id){
       this.objectAdd.orders = [... this.objectAdd.ordersClone.filter(f=>f.diemduthi_id == this.objectAdd.diemduthiSelect_id && this.removeTextVietnamese(f['_hoten']).includes(this.removeTextVietnamese(event)))]
     }else{
@@ -469,6 +454,9 @@ export class AddThiSinhV2Component implements OnInit {
 
   addThisinh(){
     const listThisinh = this.objectAdd.ordersSelect;
+
+
+    // return  console.log(listThisinh);
     const objercheck = this.objectAdd.objectCheck;
 
     if (!listThisinh || listThisinh.length === 0){
@@ -502,6 +490,7 @@ export class AddThiSinhV2Component implements OnInit {
 
         thisinh_id:data[index].thisinh_id ,
         diemduthi_id:objectCheck.type == 'change' ? objectCheck.diemduthi_change_id : data[index].diemduthi_id ,
+        capthi:data[index]['_capthi'] ? data[index]['_capthi'] : '' ,
         hoten:data[index]['_hoten'] ,
         user_id:data[index].user_id ,
         hoidong_id:this.hoidong_select.id,

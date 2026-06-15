@@ -104,6 +104,15 @@
 
 
                     <ng-container *ngIf="isAdmin" >
+                      <button class="btn-menu-material excel" (click)="btnKetquathi(item)">
+                        <i class="pi pi-file-import"></i>
+                        <span>Kết quả dự thi của thí sinh</span>
+                      </button>
+                      <button class="btn-menu-material excel" (click)="btnExportHoso(item)">
+                        <i class="pi pi-file-export"></i>
+                        <span>Xuất hồ sơ thí sinh</span>
+                      </button>
+
                       <button *ngIf="item['lock'] === 0" class="btn-menu-material warning"
                               (click)="btnAddNew('update' , item)">
                         <i class="pi pi-file-edit"></i>
@@ -202,6 +211,15 @@
           <div class="row">
             <div class="col-12 ">
               <p class="form-row">
+                <label>Url chi tiết lịch thi</label>
+                <input type="text" placeholder="Vd:..."
+                       formControlName="url" autocomplete="off">
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12 ">
+              <p class="form-row">
                 <label>Mô tả</label>
                 <ovic-editor [formField]="f['mota']" class="w-100"></ovic-editor>
               </p>
@@ -262,7 +280,7 @@
     </div>
     <div class="ovic-side-navigation-content__body --no-footer ovic-scroll-style ">
 
-      <!--      <app-ket-qua-thi class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-ket-qua-thi>-->
+            <app-ket-qua-thi class="w-100 h-100 d-block" [hoidong]="hoidong_select"></app-ket-qua-thi>
     </div>
 
   </div>

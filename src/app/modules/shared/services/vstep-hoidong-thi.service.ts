@@ -15,6 +15,7 @@ export interface Hoidongthi{
   mota: string;
   kehoach_id:number;
   tiento_sbd?:string;
+  url?:string
 }
 @Injectable({
   providedIn: 'root'

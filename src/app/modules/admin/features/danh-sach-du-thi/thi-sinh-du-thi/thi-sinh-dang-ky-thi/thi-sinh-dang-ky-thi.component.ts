@@ -5,7 +5,7 @@ import {TableModule} from "primeng/table";
 import {SharedModule} from "@shared/shared.module";
 import {NgForOf, NgIf} from "@angular/common";
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
-import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/vstep/kehoachthi-vstep.service";
 import {ConditionOption} from "@shared/models/condition-option";
 import {map} from "rxjs/operators";
 import {OvicQueryCondition} from "@core/models/dto";

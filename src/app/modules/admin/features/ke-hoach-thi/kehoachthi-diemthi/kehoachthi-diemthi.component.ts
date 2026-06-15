@@ -1,9 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 
 import {NotificationService} from "@core/services/notification.service";
-import {KeHoachThi} from "@shared/services/kehoachthi-vstep.service";
+import {KeHoachThi} from "@shared/services/vstep/kehoachthi-vstep.service";
 import {DmDiemduthi, DmDiemDuThiService} from "@shared/services/dm-diem-du-thi.service";
-import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/kehoachthi-diemthi-vstep.service";
+import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/vstep/kehoachthi-diemthi-vstep.service";
 import {ConditionOption} from "@shared/models/condition-option";
 import {OvicQueryCondition} from "@core/models/dto";
 import {forkJoin, Observable, of, switchMap} from "rxjs";

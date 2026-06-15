@@ -26,7 +26,7 @@ export interface KeHoachThi {
 
   dongia ?:{label:string,value:number,key:string}[];
   ngonngu ?:number;
-  levels ?:KehoachLevers[]
+  levels ?:KehoachLevers[];
 }
 
 @Injectable({

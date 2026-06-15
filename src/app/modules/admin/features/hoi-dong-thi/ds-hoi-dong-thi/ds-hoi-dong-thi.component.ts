@@ -2,7 +2,7 @@ import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {FormType, NgPaginateEvent, OvicForm} from '@modules/shared/models/ovic-models';
 import {Paginator, PaginatorModule} from 'primeng/paginator';
-import {debounceTime, filter, Observable, Subject, Subscription, switchMap} from 'rxjs';
+import {debounceTime, filter, forkJoin, Observable, of, Subject, Subscription, switchMap} from 'rxjs';
 import {HskHoidongthi,} from "@shared/services/hsk-hoidongthi.service";
 import {NotificationService} from "@core/services/notification.service";
 import {HelperService} from "@core/services/helper.service";
@@ -18,7 +18,7 @@ import {InputTextModule} from "primeng/inputtext";
 import {SharedModule} from "@shared/shared.module";
 import {CalendarModule} from "primeng/calendar";
 import {Hoidongthi, VstepHoidongThiService} from "@shared/services/vstep-hoidong-thi.service";
-import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/vstep/kehoachthi-vstep.service";
 import {ConditionOption} from "@shared/models/condition-option";
 import {OvicQueryCondition} from "@core/models/dto";
 import {
@@ -27,7 +27,6 @@ import {
 import {
   HoidongthiPhongthiComponent
 } from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/hoidongthi-phongthi/hoidongthi-phongthi.component";
-import {Auth} from "@core/models/auth";
 import {AuthService} from "@core/services/auth.service";
 import {
   HoidongthiBieumauComponent
@@ -35,7 +34,20 @@ import {
 import {
   AddThiSinhV2Component
 } from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/add-thi-sinh-v2/add-thi-sinh-v2.component";
-import {VstepHoidongThisinhService} from "@shared/services/vstep-hoidong-thisinh.service";
+import {HoidongThisinh, VstepHoidongThisinhService} from "@shared/services/vstep-hoidong-thisinh.service";
+import {Languages, LanguagesService} from "@shared/services/vstep/languages.service";
+import {
+  KetQuaThiComponent
+} from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/ket-qua-thi/ket-qua-thi.component";
+import {FileService} from "@core/services/file.service";
+import {ThisinhInfoService} from "@shared/services/thisinh-info.service";
+import {
+  HoidongPhongthiThisinh,
+  VstepHoidongPhongthiThisinhService
+} from "@shared/services/vstep-hoidong-phongthi-thisinh.service";
+import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
+import {ExWordVstepService} from "@shared/services/export/ex-word-vstep.service";
+import {ExpThisinhDuthiService} from "@shared/services/export/exp-thisinh-duthi.service";
 
 interface FormHoiDong extends OvicForm {
   object: HskHoidongthi;
@@ -61,6 +73,7 @@ interface FormHoiDong extends OvicForm {
     HoidongthiPhongthiComponent,
     HoidongthiBieumauComponent,
     AddThiSinhV2Component,
+    KetQuaThiComponent,
 
   ],
   standalone: true
@@ -118,7 +131,7 @@ export class DsHoiDongThiComponent implements OnInit {
 
   isAdmin           : boolean = false;
   isTramthi         : boolean = false;
-
+  listLanguage      : Languages[];
 
   constructor(
     private kehoachthiVstepService: KehoachthiVstepService,
@@ -127,7 +140,13 @@ export class DsHoiDongThiComponent implements OnInit {
     private fb: FormBuilder,
     private helperService: HelperService,
     private auth: AuthService,
-    private hoidongThisinhService: VstepHoidongThisinhService
+    private hoidongThisinhService: VstepHoidongThisinhService,
+    private languagesService: LanguagesService,
+    private fileService: FileService,
+    private thisinhInfoService: ThisinhInfoService,
+    private hoidongPhongthiThisinhService: VstepHoidongPhongthiThisinhService,
+    private orderService: VstepOrdersService,
+    private expThisinhDuthiService: ExpThisinhDuthiService
   ) {
     const observeProcessFormData = this.OBSERVE_PROCESS_FORM_DATA.asObservable().pipe(debounceTime(100)).subscribe(form => this.__processFrom(form));
     this.subscription.add(observeProcessFormData);
@@ -143,6 +162,7 @@ export class DsHoiDongThiComponent implements OnInit {
       state: [1, Validators.required],
       ngaythi: ['', Validators.required],
       tiento_sbd: ['', Validators.required],
+      url:['']
     })
 
     this.isAdmin= this.auth.userHasRole('admin');
@@ -170,10 +190,32 @@ export class DsHoiDongThiComponent implements OnInit {
         }
       ]
     }
+    const conditionLang : ConditionOption ={
+      condition: [
+        {
+          conditionName:'status',
+          condition:OvicQueryCondition.equal,
+          value:'1'
+        }
+      ],
+      page: '1',
+      set:[
+        {label: 'limit',value: '-1'}
+      ]
+    }
 
-    this.kehoachthiVstepService.getDataByPageNew(conditon).subscribe({
-      next:({data})=>{
-        this.dataKeHoach = data;
+    forkJoin([
+      this.kehoachthiVstepService.getDataByPageNew(conditon),
+      this.languagesService.getDataByPageNew(conditionLang),
+    ])
+
+      .subscribe({
+      next:([{data},langs])=>{
+        this.dataKeHoach = data.map(m=>{
+          m['_ngonngu'] = langs.data.find(f=>f.id == m.ngonngu) ?langs.data.find(f=>f.id == m.ngonngu).title : '';
+          return m;
+        });
+        this.listLanguage = langs.data
         if (this.dataKeHoach) {
           this.loadData()
         }
@@ -230,15 +272,19 @@ export class DsHoiDongThiComponent implements OnInit {
         this.recordsTotal = recordsFiltered;
         this.listData = data.map((m, index) => {
           m['__indexTable'] = (index + 1) + (this.page - 1) * 10;
-          m['__kehoach_coverted'] = this.dataKeHoach && this.dataKeHoach.find(f => f.id === m.kehoach_id) ? this.dataKeHoach.find(f => f.id === m.kehoach_id).title : '';
+
+          const kehoach = this.dataKeHoach && this.dataKeHoach.find(f => f.id === m.kehoach_id) ? this.dataKeHoach.find(f => f.id === m.kehoach_id) : null;
+          m['__kehoach'] = kehoach ;
+          m['__kehoach_coverted'] = kehoach ? kehoach.title : '';
           const sIndex = this.statusList.findIndex(i => i.value === m.state);
           m['__status_converted'] = sIndex !== -1 ? this.statusList[sIndex].color : '';
           m['__ngaythi'] = m.ngaythi ? this.helperService.formatSQLToDateDMY(new Date(m.ngaythi)) : "";
           // const thisinhData = m['thisinhData'];
           // m['__total'] = m['totalThisinh'];
-
+          m['__ngonngu'] = kehoach && kehoach.ngonngu ? (this.listLanguage.find(f=>f.id == kehoach.ngonngu) ? this.listLanguage.find(f=>f.id == kehoach.ngonngu).title : ''  ) : '';
           return m;
         })
+
         this.isLoading = false;
         this.notifi.isProcessing(false);
       },
@@ -283,7 +329,8 @@ export class DsHoiDongThiComponent implements OnInit {
             mota: '',
             status: 1,
             ngaythi: '',
-            tiento_sbd: ''
+            tiento_sbd: '',
+            url: '',
           });
         }
         this.notifi.closeSideNavigationMenu();
@@ -324,7 +371,8 @@ export class DsHoiDongThiComponent implements OnInit {
         mota: '',
         state: 1,
         ngaythi: '',
-        tiento_sbd:''
+        tiento_sbd:'',
+        url:'',
 
       });
     } else if (type === 'update') {
@@ -336,7 +384,8 @@ export class DsHoiDongThiComponent implements OnInit {
         mota: object1.mota,
         state: object1.state,
         ngaythi: object1.ngaythi ? new Date(object1.ngaythi) : null,
-        tiento_sbd:object1.tiento_sbd
+        tiento_sbd:object1.tiento_sbd,
+        url:object1.url,
       });
       this.formActive = this.listForm[FormType.UPDATE];
       this.formActive.object = object1;
@@ -385,6 +434,7 @@ export class DsHoiDongThiComponent implements OnInit {
       mota: this.f['mota'].value,
       state: this.f['state'].value,
       tiento_sbd: this.f['tiento_sbd'].value,
+      url: this.f['url'].value,
     }
 
     if (this.formSave.valid) {
@@ -482,7 +532,7 @@ export class DsHoiDongThiComponent implements OnInit {
     }
   }
 
-  btnKetquathi(item: HskHoidongthi) {
+  btnKetquathi(item: Hoidongthi) {
     this.notifi.isProcessing(false);
     this.hoidong_select = {...item};
     this.hoidong_id = item.id;
@@ -492,6 +542,114 @@ export class DsHoiDongThiComponent implements OnInit {
       size: this.sizeFullWidth,
       offsetTop: '0px'
     });
+  }
+
+
+  btnExportHoso(item: Hoidongthi){
+    this.hoidong_select = {...item};
+    this.notifi.loadingAnimationV2({process:{percent: 0}})
+
+    this.loopgetPhongthiThisinh(item.id,[],1,200,1).pipe(
+      switchMap(m=>{
+        this.notifi.loadingAnimationV2({process:{percent: 50}})
+
+        return forkJoin([
+          of(m),
+
+          this.loopGetOrder(item.kehoach_id,[],1,200,1)
+        ])
+      })
+    )
+
+      .subscribe({
+      next:([data,orders])=>{
+        this.notifi.loadingAnimationV2({process:{percent: 100}})
+        const dataMap = [];
+        data.forEach((e,index)=>{
+          const orderbyMap= orders.find(f=>f.diemduthi_id == e.diemduthi_id && f.thisinh_id == e.thisinh_id);
+          const itemmap  = {
+            index:index+1,
+            hoten: e['thisinh'] ? (e['thisinh']['hoten'] ? e['thisinh']['hoten']: '' ) : e['hoten'],
+            gioitinh: e['thisinh'] && e['thisinh']['gioitinh'] ? (e['thisinh']['gioitinh'] == 'nu' ? 'Nu' : 'Nam') : '',
+            ngaysinh: e['thisinh']  && e['thisinh']['ngaysinh']  ? e['thisinh']['ngaysinh'] : '',
+            noisinh: e['thisinh']  && e['thisinh']['noisinh']  ? e['thisinh']['noisinh'] : '',
+            cccd_so: e['thisinh']  && e['thisinh']['cccd_so']  ? e['thisinh']['cccd_so'] : '',
+            cccd_ngaycap: e['thisinh']  && e['thisinh']['cccd_ngaycap']  ? e['thisinh']['cccd_ngaycap'] : '',
+            cccd_noicap: e['thisinh']  && e['thisinh']['cccd_noicap']  ? e['thisinh']['cccd_noicap'] : '',
+            phone: e['thisinh']  && e['thisinh']['phone']  ? e['thisinh']['phone'] : '',
+            email: e['thisinh']  && e['thisinh']['email']  ? e['thisinh']['email'] : '',
+            thuongtru: e['thisinh']  && e['thisinh']['thuongtru_diachi']  ? e['thisinh']['thuongtru_diachi']['fullAddress'] : '',
+            doituong : orderbyMap && orderbyMap.parent_id !== 0 ? 'Đối tác đăng ký ' :( e['thisinh']['doituong'] == 'tudo'? 'Thí sinh Tự do' : 'Sinh viên Thuộc ĐHTN'),
+            capthi:e.capthi,
+            anh_chandung: e['thisinh'] && e['thisinh']['anh_chandung'] ? this.fileService.getPreviewLinkLocalFileNotToken(e['thisinh']['anh_chandung'][0]) : '',
+            doituong_anhthe: e['thisinh'] && e['thisinh']['doituong_anhthe'] ? this.fileService.getPreviewLinkLocalFileNotToken(e['thisinh']['doituong_anhthe'][0]) : '',
+            cccd_mattruoc: e['thisinh'] && e['thisinh']['cccd_img_truoc'] ? this.fileService.getPreviewLinkLocalFileNotToken(e['thisinh']['cccd_img_truoc'][0]) : '',
+            cccd_matsau: e['thisinh'] && e['thisinh']['cccd_img_sau'] ? this.fileService.getPreviewLinkLocalFileNotToken(e['thisinh']['cccd_img_sau'][0]) : '',
+          }
+
+          dataMap.push(itemmap);
+        })
+
+        const header = ['STT', 'Họ và tên','Giới tính','Ngày sinh','Nơi sinh','CCCD','Ngày cấp','Nơi cấp','Điện thoại','Email','Địa chủ thường trú','Đối tượng','Cấp thi','Ảnh chân dung','Ảnh thẻ SV','CCCD mặt trước','CCCD mặt sau'];
+        this.expThisinhDuthiService.exportHosoLuuTru(dataMap,'HosoLuutruThisinh','Hosoluutru_' + item.title,[header],'Hồ sơ lưu trữ đợt thi ' + item['__kehoach_coverted'] )
+        // this.expThisinhDuthiService.export(dataMap,'Hosoluutru_' + item.title,header,'vstep',header,'');
+      },error:()=>{
+          this.notifi.isProcessing(false);
+          this.notifi.toastError('Mất kết nối với máy chủ');
+        }
+    })
+  }
+
+  private loopgetPhongthiThisinh(hoidong_id:number, arr:HoidongPhongthiThisinh[], recordTotal:number, limit:number,page:number):Observable<HoidongPhongthiThisinh[]>{
+    if(arr.length < recordTotal){
+      const condition: ConditionOption = {
+        condition:[
+          {
+            conditionName:'hoidong_id',
+            condition:OvicQueryCondition.equal,
+            value:hoidong_id.toString()
+          }
+        ],
+        page:page.toString(),
+        set:[
+          {label:'limit',value :limit.toString()},
+          {label:'with',value :'thisinh'},
+        ]
+      }
+      return this.hoidongPhongthiThisinhService.getDataByPageNew(condition).pipe(switchMap(m=>{
+        return this.loopgetPhongthiThisinh(hoidong_id,arr.concat(m.data),m.recordsFiltered,limit,page+1)
+      }))
+    }else{
+      return of(arr)
+    }
+  }
+
+  private loopGetOrder(kehoach_id:number, arr:OrdersVstep[], recordTotal:number, limit:number,page:number):Observable<OrdersVstep[]>{
+    if(arr.length < recordTotal){
+      const condition: ConditionOption = {
+        condition:[
+          {
+            conditionName:'kehoach_id',
+            condition:OvicQueryCondition.equal,
+            value:kehoach_id.toString()
+          },
+          {
+            conditionName:'trangthai_thanhtoan',
+            condition:OvicQueryCondition.equal,
+            value:'1'
+          }
+        ],
+        page:page.toString(),
+        set:[
+          {label:'limit',value :limit.toString()},
+        ]
+      }
+      return this.orderService.getDataByPageNew(condition).pipe(switchMap(m=>{
+        return this.loopGetOrder(kehoach_id,arr.concat(m.data),m.recordsFiltered,limit,page+1)
+      }))
+    }else{
+      return of(arr)
+    }
   }
 
 

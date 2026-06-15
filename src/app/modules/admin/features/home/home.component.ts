@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {ChartComponent} from 'ng-apexcharts';
 import {NotificationService} from "@core/services/notification.service";
 import {HskSummaryService} from "@shared/services/hsk-summary.service";
-import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/vstep/kehoachthi-vstep.service";
 
 @Component({
   selector: 'app-home',

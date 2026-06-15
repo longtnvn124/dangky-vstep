@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1780476208929,
+  "lastScanned": 1781454067368,
   "projectRoot": "d:\\data\\project\\angular\\v14\\dangky-vstep",
   "techStack": {
     "languages": [
@@ -68,14 +68,14 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 0,
-      "lastAccessed": 1780476208875,
+      "lastAccessed": 1781454067322,
       "keyFiles": []
     },
     "src": {
       "path": "src",
       "purpose": "Source code",
       "fileCount": 7,
-      "lastAccessed": 1780476208876,
+      "lastAccessed": 1781454067323,
       "keyFiles": [
         "custom-theme.scss",
         "favicon.ico",
@@ -88,7 +88,7 @@
       "path": "src\\app",
       "purpose": "Application code",
       "fileCount": 5,
-      "lastAccessed": 1780476208891,
+      "lastAccessed": 1781454067331,
       "keyFiles": [
         "app-routing.module.ts",
         "app.component.css",
@@ -99,10 +99,125 @@
       "path": "src\\assets",
       "purpose": "Static assets",
       "fileCount": 1,
-      "lastAccessed": 1780476208891,
+      "lastAccessed": 1781454067331,
       "keyFiles": []
     }
   },
-  "hotPaths": [],
+  "hotPaths": [
+    {
+      "path": "src\\app\\modules\\public\\features\\tra-cuu-ket-qua\\tra-cuu-ket-qua.component.html",
+      "accessCount": 5,
+      "lastAccessed": 1781166463765,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\public\\features\\tra-cuu-ket-qua\\tra-cuu-ket-qua.component.ts",
+      "accessCount": 4,
+      "lastAccessed": 1781166371640,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\hoi-dong-thi\\ds-hoi-dong-thi\\ket-qua-thi\\ket-qua-thi.component.html",
+      "accessCount": 3,
+      "lastAccessed": 1781143340296,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\hoi-dong-thi\\ds-hoi-dong-thi\\ket-qua-thi\\ket-qua-thi.component.css",
+      "accessCount": 3,
+      "lastAccessed": 1781143340487,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\public\\features\\tra-cuu-ket-qua\\tra-cuu-ket-qua.component.css",
+      "accessCount": 3,
+      "lastAccessed": 1781166550977,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\thi-sinh\\tra-cuu-ket-qua\\tra-cuu-ket-qua.component.html",
+      "accessCount": 2,
+      "lastAccessed": 1781164152957,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\public\\public.module.ts",
+      "accessCount": 2,
+      "lastAccessed": 1781164789243,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\shared\\services\\vstep\\hoidong-ketqua.service.ts",
+      "accessCount": 2,
+      "lastAccessed": 1781165497939,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\hoi-dong-thi\\ds-hoi-dong-thi\\ket-qua-thi\\ket-qua-thi.component.ts",
+      "accessCount": 1,
+      "lastAccessed": 1781143139955,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\thi-sinh\\tra-cuu-ket-qua\\tra-cuu-ket-qua.component.ts",
+      "accessCount": 1,
+      "lastAccessed": 1781164002133,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\thi-sinh\\tra-cuu-ket-qua\\tra-cuu-ket-qua.component.css",
+      "accessCount": 1,
+      "lastAccessed": 1781164002258,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\shared\\models\\thi-sinh.ts",
+      "accessCount": 1,
+      "lastAccessed": 1781164100236,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\public\\public-routing.module.ts",
+      "accessCount": 1,
+      "lastAccessed": 1781164128959,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\public\\features\\login-video\\login-video.component.css",
+      "accessCount": 1,
+      "lastAccessed": 1781164153211,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\public\\features\\login-video\\login-video.component.html",
+      "accessCount": 1,
+      "lastAccessed": 1781164153276,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\shared\\services\\kehoachthi-vstep.service.ts",
+      "accessCount": 1,
+      "lastAccessed": 1781164208557,
+      "type": "directory"
+    },
+    {
+      "path": "src\\styles.css",
+      "accessCount": 1,
+      "lastAccessed": 1781164245840,
+      "type": "directory"
+    },
+    {
+      "path": "src\\app\\modules\\shared\\shared.module.ts",
+      "accessCount": 1,
+      "lastAccessed": 1781164245938,
+      "type": "directory"
+    },
+    {
+      "path": "preview-tra-cuu-ket-qua.html",
+      "accessCount": 1,
+      "lastAccessed": 1781165713096,
+      "type": "file"
+    }
+  ],
   "userDirectives": []
 }

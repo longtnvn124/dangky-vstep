@@ -3,12 +3,10 @@ import { RouterModule, Routes } from '@angular/router';
 import {
   CapNhatThongTinThiSinhComponent
 } from "@modules/admin/features/yeu-cau/cap-nhat-thong-tin-thi-sinh/cap-nhat-thong-tin-thi-sinh.component";
-import {HuyDangKyComponent} from "@modules/admin/features/yeu-cau/huy-dang-ky/huy-dang-ky.component";
-import {HoanDangKyComponent} from "@modules/admin/features/yeu-cau/hoan-dang-ky/hoan-dang-ky.component";
-import {DuyetHuyDuThiComponent} from "@modules/admin/features/yeu-cau/duyet-huy-du-thi/duyet-huy-du-thi.component";
+
+// import {PhieuYeuCauComponent} from "@modules/admin/features/yeu-cau/phieu-yeu-cau/phieu-yeu-cau.component";
+// import {VanDonComponent} from "@modules/admin/features/yeu-cau/van-don/van-don.component";
 import {HoanHuyDangKyComponent} from "@modules/admin/features/yeu-cau/hoan-huy-dang-ky/hoan-huy-dang-ky.component";
-import {PhieuYeuCauComponent} from "@modules/admin/features/yeu-cau/phieu-yeu-cau/phieu-yeu-cau.component";
-import {VanDonComponent} from "@modules/admin/features/yeu-cau/van-don/van-don.component";
 
 const routes: Routes = [
   {
@@ -16,15 +14,19 @@ const routes: Routes = [
     component:CapNhatThongTinThiSinhComponent
   },
 
+  // {
+  //   path:'phieu-chuyen-phat',
+  //   component:PhieuYeuCauComponent
+  // },
   {
-    path:'phieu-chuyen-phat',
-    component:PhieuYeuCauComponent
+    path:'hoan-huy-dang-ky',
+    component:HoanHuyDangKyComponent
   },
-  {
-    path: 'ketqua-vandon',
-    component: VanDonComponent,
-    // data: {state: 'danh-muc--le-phi-thi'}
-  },
+  // {
+  //   path: 'ketqua-vandon',
+  //   component: VanDonComponent,
+  //   // data: {state: 'danh-muc--le-phi-thi'}
+  // },
 
 
 ];

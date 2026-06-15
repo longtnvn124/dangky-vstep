@@ -23,7 +23,7 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {InputTextModule} from "primeng/inputtext";
 import {DonViService} from "@shared/services/don-vi.service";
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
-import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/vstep/kehoachthi-vstep.service";
 import {AuthService} from "@core/services/auth.service";
 import {ConditionOption} from "@shared/models/condition-option";
 import {map} from "rxjs/operators";

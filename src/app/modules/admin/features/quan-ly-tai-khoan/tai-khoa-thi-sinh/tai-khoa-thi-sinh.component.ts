@@ -246,7 +246,7 @@ export class TaiKhoaThiSinhComponent implements OnInit {
     // const dataParram: {} = {
     //   url: `${location.origin}${this.router.serializeUrl(this.router.createUrlTree(['verification/']))}`
     // }
-    // console.log(dataParram)
+
   }
 
   ngOnInit(): void {

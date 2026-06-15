@@ -26,7 +26,6 @@ import {DropdownModule} from "primeng/dropdown";
 
 import {PdfViewerModule} from "ng2-pdf-viewer";
 
-import { TraCuuKetQuaComponent } from './features/tra-cuu-ket-qua/tra-cuu-ket-qua.component';
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 @NgModule({
@@ -38,7 +37,6 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
     UnauthorizedComponent,
     ClearComponent,
     LoginVideoComponent,
-    TraCuuKetQuaComponent
   ],
   exports: [
 

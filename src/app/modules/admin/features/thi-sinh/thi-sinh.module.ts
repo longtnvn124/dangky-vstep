@@ -13,7 +13,6 @@ import {MultiSelectModule} from "primeng/multiselect";
 import {TableModule} from "primeng/table";
 import {InputTextModule} from "primeng/inputtext";
 import {PaginatorModule} from "primeng/paginator";
-import { TraCuuKetQuaComponent } from './tra-cuu-ket-qua/tra-cuu-ket-qua.component';
 import {CheckboxModule} from "primeng/checkbox";
 import {TooltipModule} from "primeng/tooltip";
 import {DialogModule} from "primeng/dialog";
@@ -34,8 +33,6 @@ import {
 @NgModule({
     declarations: [
         ThiSinhDangKyComponent,
-
-        TraCuuKetQuaComponent,
         YeuCauTraKetQuaComponent
     ],
     exports: [

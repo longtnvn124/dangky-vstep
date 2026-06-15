@@ -39,6 +39,8 @@
               <th class="text-center">Email</th>
               <th class="ovic-w-120px text-center">Số điện thoại</th>
               <th class="ovic-w-150px text-center">Số CCCD</th>
+              <th class="ovic-w-150px text-center">Điểm dự thi</th>
+              <th class="ovic-w-150px text-center">Cấp thi</th>
               <th class="ovic-w-150px text-center">Lệ phí thi</th>
 
             </tr>
@@ -51,6 +53,8 @@
               <td class="ovic-w-80px text-center">{{ item['_email'] }}</td>
               <td class="text-center">{{ item['_phone'] }}</td>
               <td class="ovic-w-80px text-right">{{ item['_cccd_so'] }}</td>
+              <td class="text-left">{{item['__diemduthi'] }} </td>
+              <td class="text-center ">{{item['__capthi']}} </td>
               <td class="text-right">{{item['__lephithi'] | numberToVndCurrencuy}} </td>
 
             </tr>

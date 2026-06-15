@@ -34,7 +34,14 @@ export class ThongTinThiSinhComponent implements OnInit {
     }
   };
 
+  @Input() maxWidth:string ;
+
   ngchangeType: 0 | 1 = 0;//o :load
+
+    listDoituong:{label:string,value:string}[] = [
+    {label:'Thí sinh tự do', value: 'tudo'},
+    {label:'Sinh viên ĐHTN', value: 'dhtn'},
+  ]
 
   provinceOptions: DiaDanh[];
   constructor(
@@ -46,32 +53,9 @@ export class ThongTinThiSinhComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // if (this.thiSinh_id) {
-    //   this.loadData(this.thiSinh_id);
-    // }
-    // if (this.thiSinh_id) {
-    //
-    //   this.locationService.listProvinces().subscribe({
-    //     next: (data) => {
-    //       this.provinceOptions = data;
-    //       this.loadData(this.thiSinh_id);
-    //     }
-    //   })
-    //
-    // }
+
   }
-  // ngOnChanges(changes: SimpleChanges) {
-  //   if (this.thiSinh_id) {
-  //
-  //     this.locationService.listProvinces().subscribe({
-  //       next: (data) => {
-  //         this.provinceOptions = data;
-  //         this.loadData(this.thiSinh_id);
-  //       }
-  //     })
-  //
-  //   }
-  // }
+
 
   loadInit() {
     // this.loadData()
@@ -87,6 +71,9 @@ export class ThongTinThiSinhComponent implements OnInit {
           m['__anh_chandung_covented'] = m.anh_chandung && m.anh_chandung[0] ? this.fileSerive.getPreviewLinkLocalFile(m.anh_chandung[0]) : '';
           m['__cccd_mattruoc_covented'] = m.cccd_img_truoc && m.cccd_img_truoc[0] ? this.fileSerive.getPreviewLinkLocalFile(m.cccd_img_truoc[0]) : '';
           m['__cccd_matsau_covented'] = m.cccd_img_sau && m.cccd_img_sau[0] ? this.fileSerive.getPreviewLinkLocalFile(m.cccd_img_sau[0]) : '';
+          m['__doituong_anhthe'] = m.doituong_anhthe && m.doituong_anhthe[0] ? this.fileSerive.getPreviewLinkLocalFile(m.doituong_anhthe[0]) : '';
+
+          m['_doituong_name'] = this.listDoituong.find(f => f.value === m.doituong)?.label || '';
           return m;
         })[0] : null;
 

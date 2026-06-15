@@ -15,16 +15,12 @@ import {InputTextModule} from "primeng/inputtext";
 import {MatMenuModule} from "@angular/material/menu";
 import {CheckboxModule} from "primeng/checkbox";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
-import { KetQuaThiComponent } from './ds-hoi-dong-thi/ket-qua-thi/ket-qua-thi.component';
 
 
 @NgModule({
   declarations: [
-
-    KetQuaThiComponent
   ],
   exports: [
-    KetQuaThiComponent
   ],
   imports: [
     CommonModule,

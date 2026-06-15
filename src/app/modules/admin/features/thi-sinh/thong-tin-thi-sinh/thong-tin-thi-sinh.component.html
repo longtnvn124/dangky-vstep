@@ -130,7 +130,7 @@
               <div class="mar-14px col-12 col-lg-4">
 
 
-                <ovic-avata-type-thpt [resizeToWidth] = "800" [disabled]=" f['status'].value ===1" [formField]="f['anh_chandung']" [public]="0"
+                <ovic-avata-type-thpt [resizeToWidth] = "800" [disabled]=" f['status'].value ===1" [formField]="f['anh_chandung']" [public]="1"
                                       [aspectRatio]="2 / 3" [accept]="'.jpg,.png,.jpeg'" [site]="true"
                                       [textView]="'<span>Tải ảnh chân dung(*)</span><p>(Dung lượng file tối thiểu 21kb và tối đa 100kb.)</p>'"
                                       [file_size]="100" [file_name]="file_name" [footage]="'vertical'" [rotateShow] = true
@@ -171,12 +171,12 @@
                   <label for=></label>
                   <div class="row w-100 m-0">
                     <div class="p-0 col-12 col-lg-6 mt-1">
-                      <ovic-avata-type-thpt [resizeToWidth] = "800" [formField]="f['cccd_img_truoc']" [aspectRatio]="5 / 3" [public]="0"
+                      <ovic-avata-type-thpt [resizeToWidth] = "800" [formField]="f['cccd_img_truoc']" [aspectRatio]="5 / 3" [public]="1"
                         [disabled]=" f['status'].value ===1" [accept]="'.jpg,.png,.jpeg'"
                         [textView]="'Tải ảnh CCCD(Hoặc hộ chiếu) mặt trước (*)'" [rotateShow] = true></ovic-avata-type-thpt>
                     </div>
                     <div class="p-0 col-12 col-lg-6 mt-1">
-                      <ovic-avata-type-thpt [resizeToWidth] = "800" [formField]="f['cccd_img_sau']" [aspectRatio]="5 / 3" [public]="0"
+                      <ovic-avata-type-thpt [resizeToWidth] = "800" [formField]="f['cccd_img_sau']" [aspectRatio]="5 / 3" [public]="1"
                         [disabled]=" f['status'].value ===1" [accept]="'.jpg,.png,.jpeg'"
                         [textView]="'Tải ảnh CCCD(Hoặc hộ chiếu) mặt sau(*)'" [rotateShow] = true></ovic-avata-type-thpt>
                     </div>
@@ -265,7 +265,7 @@
             <div class="row justify-content-center" *ngIf="f['doituong'].value == 'dhtn'">
               <div class="col-4">
                 <div class="form-row">
-                  <ovic-avata-type-thpt [resizeToWidth] = "800" class="w-100" [disabled]=" f['status'].value ===1" [formField]="f['doituong_anhthe']" [public]="0"
+                  <ovic-avata-type-thpt [resizeToWidth] = "800" class="w-100" [disabled]=" f['status'].value ===1" [formField]="f['doituong_anhthe']" [public]="1"
                                         [aspectRatio]="3 / 2" [accept]="'.jpg,.png,.jpeg'" [site]="true"
                                         [textView]="'<span>Tải ảnh thẻ sinh viên(*)</span>'"
                                         [file_size]="100" [file_name]="file_name" [footage]="'vertical'" [rotateShow] = true

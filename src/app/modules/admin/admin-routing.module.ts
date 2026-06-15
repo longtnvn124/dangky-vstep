@@ -83,10 +83,10 @@ const routes : Routes = [
       //   path         : 'duyet-thanh-toan-doi-tac' ,
       //   loadChildren : () => import('@modules/admin/features/duyet-thanh-toan-doi-tac/duyet-thanh-toan-doi-tac.module').then( m => m.DuyetThanhToanDoiTacModule )
       // } ,
-      // {
-      //   path         : 'yeu-cau' ,
-      //   loadChildren : () => import('@modules/admin/features/yeu-cau/yeu-cau.module').then( m => m.YeuCauModule )
-      // } ,
+      {
+        path         : 'yeu-cau' ,
+        loadChildren : () => import('@modules/admin/features/yeu-cau/yeu-cau.module').then( m => m.YeuCauModule )
+      } ,
 			// {
 			// 	path         : 'message' ,
 			// 	loadChildren : () => import('@modules/admin/features/ovic-message/ovic-message.module').then( m => m.OvicMessageModule )
@@ -100,6 +100,7 @@ const routes : Routes = [
         path         : 'quan-ly-tai-khoan' ,
         loadChildren : () => import('@modules/admin/features/quan-ly-tai-khoan/quan-ly-tai-khoan.module').then( m => m.QuanLyTaiKhoanModule )
       } ,
+
       {
         path         : 'duyet-thanh-toan-tram' ,
         component : DuyetThanhToanTramComponent

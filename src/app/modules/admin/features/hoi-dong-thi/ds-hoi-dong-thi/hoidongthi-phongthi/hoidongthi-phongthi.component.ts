@@ -3,7 +3,6 @@ import {CommonModule} from '@angular/common';
 import {HskHoidongthi} from "@shared/services/hsk-hoidongthi.service";
 import {HoidongPhongthi, VstepHoidongPhongthiService} from "@shared/services/vstep-hoidong-phongthi.service";
 import {NotificationService} from "@core/services/notification.service";
-
 import {Hoidongthi} from "@shared/services/vstep-hoidong-thi.service";
 import {ButtonModule} from "primeng/button";
 import {RippleModule} from "primeng/ripple";
@@ -13,7 +12,7 @@ import {FormsModule} from "@angular/forms";
 import {SharedModule} from "@shared/shared.module";
 import {TooltipModule} from "primeng/tooltip";
 import {PaginatorModule} from "primeng/paginator";
-import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/kehoachthi-diemthi-vstep.service";
+import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/vstep/kehoachthi-diemthi-vstep.service";
 import {ConditionOption} from "@shared/models/condition-option";
 import {OvicQueryCondition} from "@core/models/dto";
 import {forkJoin, Observable, of, switchMap} from "rxjs";
@@ -31,14 +30,13 @@ import {VstepHoidongPhongthiThisinhService} from "@shared/services/vstep-hoidong
 import {
   HoidongthiPhongthiThisinhComponent
 } from "@modules/admin/features/hoi-dong-thi/ds-hoi-dong-thi/hoidongthi-phongthi/hoidongthi-phongthi-thisinh/hoidongthi-phongthi-thisinh.component";
-import {FocusInputPipe} from "@shared/pipes/focus-input.pipe";
 
 type AOA = any[][];
 
 @Component({
   selector: 'app-hoidongthi-phongthi',
   standalone: true,
-  imports: [CommonModule, ButtonModule, RippleModule, DropdownModule, TableModule, FormsModule, SharedModule, TooltipModule, PaginatorModule, MatProgressBarModule, DialogModule, InputTextModule, HoidongthiPhongthiThisinhComponent, FocusInputPipe],
+  imports: [CommonModule, ButtonModule, RippleModule, DropdownModule, TableModule, FormsModule, SharedModule, TooltipModule, PaginatorModule, MatProgressBarModule, DialogModule, InputTextModule, HoidongthiPhongthiThisinhComponent],
   templateUrl: './hoidongthi-phongthi.component.html',
   styleUrls: ['./hoidongthi-phongthi.component.css']
 })
@@ -279,7 +277,7 @@ export class HoidongthiPhongthiComponent implements OnInit {
         }
         this.dataUpload = arrData;
         this.datauploadView = Array.from(arrData).slice(0,50);
-        // console.log(this.datauploadView)
+
       };
       reader.readAsBinaryString(file);
     } else {
@@ -320,7 +318,7 @@ export class HoidongthiPhongthiComponent implements OnInit {
   }
 
   paginateViewUpload(event){
-    // console.log(event)
+
     const first:number = event['first']  ;
     const late:number = event['first'] + 50  ;
     const cloneArr =  Array.from(this.dataUpload);
@@ -341,7 +339,6 @@ export class HoidongthiPhongthiComponent implements OnInit {
   }
 
   async btnSubmitData(){
-    console.log(this.dataUpload);
 
     if(this.dataUpload.length == 0){
       this.notifi.toastWarning('Vui lòng tải file lên');
@@ -365,7 +362,7 @@ export class HoidongthiPhongthiComponent implements OnInit {
       const step: number = 100 / dataUploadTrue.length;
       this.notifi.loadingAnimationV2({process: {percent: 0}});
       this.loopCreatedPhongthiByHoidong(dataUploadTrue, step, 0).subscribe({
-        next: (mess) => {
+        next: () => {
           this.notifi.toastSuccess('Thao tác thành công');
           this.notifi.isProcessing(false);
           this.notifi.disableLoadingAnimationV2();
@@ -421,7 +418,7 @@ export class HoidongthiPhongthiComponent implements OnInit {
     const ketQua:any[] = [];
     for (const thiSinh of thisinhs) {
       if (phongIndex >= phongThis.length) {
-        console.warn('Hết phòng thi, không đủ chỗ');
+        this.notifi.toastWarning('Hết phòng thi, không đủ chỗ')
         return [];
       }
       const phongHienTai = phongThis[phongIndex];
@@ -596,7 +593,6 @@ export class HoidongthiPhongthiComponent implements OnInit {
           return m;
         });
 
-        console.log(diemduthi);
         this.dataPhonthiDiemthi= {
           phongthi:dataPhongthi,
           thisinh:dataThisinh,
@@ -641,7 +637,7 @@ export class HoidongthiPhongthiComponent implements OnInit {
         this.notifi.disableLoadingAnimationV2();
 
       },error:(e)=>{
-        console.log(e)
+
         this.notifi.toastError('Mất kết nối với máy chủ');
         this.notifi.isProcessing(false);
         this.notifi.disableLoadingAnimationV2();
@@ -653,13 +649,13 @@ export class HoidongthiPhongthiComponent implements OnInit {
 
   private loopCreatedHoidongPhongthi(data: any[],step:number,percent:number):Observable<any>{
     const index = data.findIndex(a=>!a['isCreated']);
-    console.log(index);
     if(index !== -1){
       const item  = {
 
         thisinh_id:data[index].thisinh_id ,
         user_id:data[index].user_id,
         diemduthi_id:data[index].diemduthi_id ,
+        capthi:data[index].capthi ,
         hoidong_phongthi_id:data[index].hoidong_phongthi_id ,
         hoidong_id:this.hoidongSelect.id,
         kehoach_id:this.hoidongSelect.kehoach_id,
@@ -729,9 +725,6 @@ export class HoidongthiPhongthiComponent implements OnInit {
       if (row.soluong || row.soluong === 0) {
         if (event.key === 'Enter') {
           this.notifi.isProcessing(true);
-          console.log(this.index_focus)
-          console.log(row)
-          console.log(event)
           this.hoidongPhongthiService.update(row.id, { soluong: row.soluong }).subscribe({
             next: () => {
               this.notifi.isProcessing(false);

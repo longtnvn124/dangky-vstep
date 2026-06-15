@@ -230,7 +230,7 @@ export class DoiTacComponent implements OnInit {
       // email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$')]],
       email: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6),customInputValidator()]],
-      donvi_id: ['',Validators.required],
+      // donvi_id: ['',Validators.required],
       role_ids: [[], Validators.required],
       status: [1, Validators.required],
       verified:[0]
@@ -258,7 +258,6 @@ export class DoiTacComponent implements OnInit {
     ])
       .subscribe({
       next:([data,dataDonvi])=>{
-        console.log(dataDonvi);
         this.dataDonvi=dataDonvi.length > 0 ? dataDonvi.filter(f=>f.id !== this.auth.user.donvi_id): [];
         this.dsNhomQuyen = data;
         this.dataRoles = [].concat(data, this.auth.roles).map(m=>{
@@ -267,7 +266,7 @@ export class DoiTacComponent implements OnInit {
         });
 
         this.role_use = data.find(f=>f.name === 'diem-du-thi')? data.find(f=>f.name === 'diem-du-thi').id.toString() :null;
-        // console.log(this.role_use);
+
         if(this.dataRoles){
           this.loadData()
 
@@ -377,7 +376,7 @@ export class DoiTacComponent implements OnInit {
       this.f['phone'].setValue(user.phone);
       this.f['email'].setValue(user.email);
       this.f['password'].setValue(user.password);
-      this.f['donvi_id'].setValue(user.donvi_id);
+      // this.f['donvi_id'].setValue(user.donvi_id);
       this.f['status'].setValue(user.status);
       this.f['verified'].setValue(user.verified);
       this.callActionForm(this.tplCreateAccount);

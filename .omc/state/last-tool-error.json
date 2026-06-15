@@ -1,7 +1,7 @@
 {
-  "tool_name": "PowerShell",
-  "tool_input_preview": "{\"command\":\"try { $response = Invoke-WebRequest -Uri 'http://localhost:8010/register-account' -UseBasicParsing -TimeoutSec 10; Write-Output \\\"STATUS $($response.StatusCode)\\\"; if ($response.Content -m...",
-  "error": "Exit code 1\nERROR The remote server returned an error: (404) Not Found.",
-  "timestamp": "2026-05-20T09:03:30.898Z",
+  "tool_name": "mcp__plugin_everything-claude-code_playwright__browser_navigate",
+  "tool_input_preview": "{\"url\":\"file:///d:/data/project/angular/v14/dangky-vstep/preview-tra-cuu-ket-qua.html\"}",
+  "error": "### Error\nError: Extension connection timeout. Make sure the \"Playwright MCP Bridge\" extension is installed. See https://github.com/microsoft/playwright-mcp/blob/main/packages/extension/README.md for installation instructions.",
+  "timestamp": "2026-06-11T08:18:15.867Z",
   "retry_count": 1
 }

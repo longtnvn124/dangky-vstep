@@ -6,8 +6,7 @@ import {debounceTime, filter, forkJoin, Observable, Subject, Subscription} from 
 import {NotificationService} from "@core/services/notification.service";
 import {BUTTON_NO, BUTTON_YES, OvicButton} from "@core/models/buttons";
 
-import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
-import {SharedModule} from "@shared/shared.module";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/vstep/kehoachthi-vstep.service";
 import {ButtonModule} from "primeng/button";
 import {RippleModule} from "primeng/ripple";
 import {SplitterModule} from "primeng/splitter";
@@ -20,12 +19,12 @@ import {
   DanhSachThiSinhComponent
 } from "@modules/admin/features/ke-hoach-thi/danh-sach-thi-sinh/danh-sach-thi-sinh.component";
 import {AuthService} from "@core/services/auth.service";
-import {KehoachthiDiemthiVstepService} from "@shared/services/kehoachthi-diemthi-vstep.service";
+import {KehoachthiDiemthiVstepService} from "@shared/services/vstep/kehoachthi-diemthi-vstep.service";
 import {ConditionOption} from "@shared/models/condition-option";
 import {OvicQueryCondition} from "@core/models/dto";
 import {DialogModule} from "primeng/dialog";
 import {InputTextModule} from "primeng/inputtext";
-import {Languages, LanguagesService} from "@shared/services/languages.service";
+import {Languages, LanguagesService} from "@shared/services/vstep/languages.service";
 import {ConfigsService} from "@shared/services/configs.service";
 import {
   KehoachFormDongiaComponent
@@ -36,6 +35,7 @@ import {
 import {
   KehoachthiDiemthiV3Component
 } from "@modules/admin/features/ke-hoach-thi/kehoachthi-diemthi-v3/kehoachthi-diemthi-v3.component";
+import {SharedModule} from "@shared/shared.module";
 
 interface FormKehoachthi extends OvicForm {
   object: KeHoachThi;
@@ -47,7 +47,6 @@ interface FormKehoachthi extends OvicForm {
   templateUrl: './ke-hoach-thi.component.html',
   styleUrls: ['./ke-hoach-thi.component.css'],
   imports: [
-    SharedModule,
     ButtonModule,
     RippleModule,
     PaginatorModule,
@@ -61,7 +60,7 @@ interface FormKehoachthi extends OvicForm {
     InputTextModule,
     KehoachFormDongiaComponent,
     KehoachFormLevelsComponent,
-    KehoachthiDiemthiV3Component
+    SharedModule,
   ],
   standalone: true
 })
@@ -262,7 +261,7 @@ export class KeHoachThiComponent implements OnInit {
       ngaythi:['',Validators.required],
       status: 1,
       dongia:['',Validators.required],
-      ngonngu:['',Validators.required],
+      ngonngu:[null,Validators.required],
       levels:[null,Validators.required]
 
     });
@@ -404,7 +403,7 @@ export class KeHoachThiComponent implements OnInit {
 
         this.formActive = this.listForm[FormType.UPDATE];
         this.formActive.object = object1;
-        this.preSetupForm(this.menuName);
+
         this.formSave.reset({
           nam:object1.nam,
           title:object1.title,
@@ -415,11 +414,13 @@ export class KeHoachThiComponent implements OnInit {
           ngayketthuc:object1.ngayketthuc ? new Date(object1.ngayketthuc) : null,
 
           dongia: object1.dongia ? object1.dongia : this.configPayers,
-          ngonngu:object1.ngonngu,
+          ngonngu:object1.ngonngu ? object1.ngonngu : null ,
           levels:object1.levels? object1.levels: [],
         })
 
+        console.log(this.formSave.value);
 
+        this.preSetupForm(this.menuName);
         break;
       case 'DELETE_DECISION':
         const confirm = await this.notifi.confirmDelete();
@@ -585,6 +586,11 @@ export class KeHoachThiComponent implements OnInit {
   }
 
   onChagelang(event){
+    if(event){
+
     this.f['levels'].setValue([].concat(event['levels']));
+    }else{
+      this.f['levels'].setValue([]);
+    }
   }
 }

@@ -12,7 +12,7 @@ import {SharedModule} from "@shared/shared.module";
 import {Paginator, PaginatorModule} from "primeng/paginator";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {DmCapdo, DonVi} from "@shared/models/danh-muc";
-import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/vstep/kehoachthi-vstep.service";
 import {OrdersHsk, OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
 import {NgPaginateEvent, OvicTableStructure} from "@shared/models/ovic-models";
 import {debounceTime, forkJoin, Subject, Subscription} from "rxjs";

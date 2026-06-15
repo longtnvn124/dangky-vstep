@@ -1,170 +1,169 @@
 <div class="row">
-  <div class="col-12 ovic-ui-table site-thpt" style="height:calc(100vh - 90px)" [class.ovic-is-loading]="isLoading">
-    <div class="p-datatable-header" style="height:65px; border-bottom:1px solid #CCC;">
-      <h3 class="tbl-title ">Kết quả đăng ký</h3>
-      <div class="search-block ui-table-globalfilter-container ">
-        <div class="d-flex align-items-center">
-          <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
-            <div class="d-flex" style="gap:10px;">
-<!--              <div class="">-->
-<!--                <p-dropdown [options]="statusTT" placeholder="Trạng thái thanh toán" optionValue="value"-->
-<!--                            optionLabel="title" [showClear]="true"-->
-<!--                            (onChange)="loadDropdowStatusTT($event.value)">-->
+  <div class="col-12 duyet-approve-layout" style="height:calc(100vh - 90px)" [class.ovic-is-loading]="isLoading">
 
-<!--                </p-dropdown>-->
-<!--              </div>-->
-              <div class="">
-                <!--                <p-dropdown [options]="dsKehoachthi" placeholder="Chọn đợt thi" optionValue="id" optionLabel="title" [showClear]="true"-->
-                <!--                            (onChange)="loadDropdow($event.value)" [filter]="true" [filterBy]="'title'"-->
-                <!--                >-->
+    <!-- Header with filters -->
+    <div class="approve-header">
+      <div class="header-left">
+        <h3 class="header-title">DUYỆT THÔNG TIN ĐĂNG KÝ DỰ THI</h3>
+        <span class="header-summary">
+          Đã duyệt: <span class="text-success fw-bold">{{approvedCount}}</span> |
+          Không duyệt: <span class="text-danger fw-bold">{{rejectedCount}}</span> |
+          Chờ duyệt: <span class="text-warning fw-bold">{{pendingCount}}</span> |
+          Tổng: <span class="fw-bold">{{totalCandidates}}</span>
+        </span>
+      </div>
+      <div class="header-actions d-flex" style="gap:10px;">
+        <ovic-dropdown [options]="dsKehoachthi" placeholder="Chọn đợt thi" optionId="id" optionLabel="title"
+                       [showClear]="true" (onChange)="loadDropdow($event)" [filter]="true"
+                       [filterBy]="'title'"></ovic-dropdown>
+        <button pButton pRipple icon="pi pi-refresh" label="Tải lại" class="p-button-outlined"
+                style="height:42px;" (click)="reloadData()"></button>
+      </div>
+    </div>
 
-                <!--                </p-dropdown>-->
-                <ovic-dropdown [options]="dsKehoachthi" placeholder="Chọn đợt thi" optionId="id" optionLabel="title"
-                               [showClear]="true"
-                               (onChange)="loadDropdow($event)" [filter]="true" [filterBy]="'title'"></ovic-dropdown>
+    <!-- Body: 2 columns layout -->
+    <div class="approve-body">
+      <!-- Left Panel: Candidate List -->
+      <div class="candidate-list-panel">
+        <div class="panel-header">
+          <span class="panel-title">Danh sách thí sinh</span>
+          <span class="candidate-count">{{selectedIndex + 1}} / {{totalCandidates}}</span>
+        </div>
+        <div class="candidate-list ovic-scroll-style">
+          <div *ngFor="let candidate of listData; let i = index"
+               class="candidate-item"
+               [class.active]="i === selectedIndex"
+               [class.approved]="approveStatus[candidate.id] === 1"
+               [class.rejected]="approveStatus[candidate.id] === -1"
+               (click)="selectCandidate(i)">
+            <div class="candidate-item-header">
+              <span class="candidate-index">#{{i + 1}}</span>
+              <span class="candidate-name">{{candidate['__thisinh_hoten'] || 'Chưa có tên'}}</span>
+            </div>
+            <div class="candidate-item-info">
+              <span class="candidate-code">Mã: {{candidate['__order_id_coverted']}}</span>
+              <span class="candidate-status {{getStatusClass(approveStatus[candidate.id])}}">
+                {{getStatusLabel(approveStatus[candidate.id])}}
+              </span>
+            </div>
+            <div class="candidate-item-sub">
+              <span>CCCD: {{candidate['__thisinh_cccd']}}</span>
+              <span>ĐT: {{candidate['__thisinh_phone']}}</span>
+            </div>
+          </div>
+          <div *ngIf="listData.length === 0" class="empty-list">
+            Không có dữ liệu thí sinh
+          </div>
+        </div>
+        <div class="panel-fotter">
+            <div>
+              <p-paginator [showCurrentPageReport]="true" [rows]="rows" [totalRecords]="recordsTotal"
+                           [pageLinkSize]="5" (onPageChange)="paginate($event)"></p-paginator>
+            </div>
+        </div>
+      </div>
 
+      <!-- Right Panel: Candidate Detail -->
+      <div class="candidate-detail-panel">
+        <div *ngIf="currentCandidate; else noSelection" class="detail-content">
+          <!-- Detail Header -->
+          <div class="detail-header">
+            <div class="detail-header-info">
+              <h5 class="detail-title">Thông tin thí sinh</h5>
+              <span class="detail-order-id">Mã đăng ký: VSAT{{currentCandidate.id}}</span>
+            </div>
+            <div class="detail-status">
+              <span class="status-badge {{getStatusClass(approveStatus[currentCandidate.id])}}">
+                <i *ngIf="approveStatus[currentCandidate.id] === 1" class="pi pi-check-circle"></i>
+                <i *ngIf="approveStatus[currentCandidate.id] === -1" class="pi pi-times-circle"></i>
+                <i *ngIf="approveStatus[currentCandidate.id] === 0" class="pi pi-clock"></i>
+                {{getStatusLabel(approveStatus[currentCandidate.id])}}
+              </span>
+            </div>
+          </div>
+
+          <!-- Thong tin co ban -->
+          <div class="detail-section">
+            <div class="info-grid">
+              <div class="info-row">
+                <label>Họ và tên:</label>
+                <span>{{currentCandidate['__thisinh_hoten'] || 'Chưa có tên'}}</span>
               </div>
-              <div  class="">
-                <button pButton pRipple icon="pi pi-check" label="Duyệt TT" style="height:42px;" (click)="viewFormDuyet()"
-                       ></button>
-
+              <div class="info-row">
+                <label>CCCD/CMND:</label>
+                <span>{{currentCandidate['__thisinh_cccd']}}</span>
+              </div>
+              <div class="info-row">
+                <label>Số điện thoại:</label>
+                <span>{{currentCandidate['__thisinh_phone']}}</span>
+              </div>
+              <div class="info-row">
+                <label>Email:</label>
+                <span>{{currentCandidate['__thisinh_email']}}</span>
+              </div>
+              <div class="info-row">
+                <label>Đợt thi:</label>
+                <span>{{currentCandidate['__dotthi_coverted']}}</span>
+              </div>
+              <div class="info-row">
+                <label>Cấp thi:</label>
+                <span>{{currentCandidate['__capthi']}}</span>
+              </div>
+              <div class="info-row">
+                <label>Điểm dự thi:</label>
+                <span>{{currentCandidate['__diemthi_convenrtd']}}</span>
+              </div>
+              <div class="info-row">
+                <label>Lệ phí thi:</label>
+                <span>{{currentCandidate['lephithi'] | numberToVndCurrencuy}}</span>
+              </div>
+              <div class="info-row">
+                <label>Ghi chú:</label>
+                <span>{{currentCandidate['__ghichu'] || 'Không có'}}</span>
               </div>
             </div>
           </div>
+
+          <!-- Thong tin chi tiet user -->
+          <div class="detail-section detail-section-full">
+            <div class="section-title">Thông tin chi tiết thí sinh</div>
+            <div class="user-info-wrapper">
+              <app-thong-tin-thi-sinh [user_id]="currentCandidate.user_id || currentCandidate.thisinh_id"></app-thong-tin-thi-sinh>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="detail-actions">
+            <div class="nav-buttons">
+              <button pButton pRipple type="button" icon="pi pi-chevron-left" label="Trước"
+                      class="p-button-outlined p-button-secondary"
+                      [disabled]="selectedIndex === 0" (click)="prevCandidate()"></button>
+              <button pButton pRipple type="button" icon="pi pi-chevron-right" iconPos="right" label="Sau"
+                      class="p-button-outlined p-button-secondary"
+                      [disabled]="selectedIndex >= totalCandidates - 1" (click)="nextCandidate()"></button>
+            </div>
+            <div class="approve-buttons">
+              <button pButton pRipple type="button" icon="pi pi-check" label="Duyệt"
+                      class="p-button-success"
+                      [disabled]="isProcessing || approveStatus[currentCandidate.id] === 1"
+                      (click)="approve()"></button>
+              <button pButton pRipple type="button" icon="pi pi-times" label="Không duyệt"
+                      class="p-button-danger"
+                      [disabled]="isProcessing || approveStatus[currentCandidate.id] === -1"
+                      (click)="reject()"></button>
+            </div>
+          </div>
         </div>
+
+        <ng-template #noSelection>
+          <div class="no-selection">
+            <i class="pi pi-info-circle"></i>
+            <p>Vui lòng chọn thí sinh từ danh sách</p>
+          </div>
+        </ng-template>
       </div>
     </div>
-    <div class="ovic-wrap-table-rps ovic-scroll-style" style="height:calc(100% - 65px - 60px);background: #dedede;">
-      <div class="ovic-wrap-table-rps__inner">
-        <p-table [(selection)]="dataSelct" styleClass="p-datatable-gridlines" [value]="listData" [rowHover]="true"
-                 [rows]="rows" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="isLoading">
-          <ng-template pTemplate="header" class="d-bock">
-            <tr>
-              <th class="ovic-w-50px text-center">
-                <p-checkbox [binary]="true" (onChange)="selectDataByCheckbox($event)"></p-checkbox>
-              </th>
-              <th class="ovic-w-40px text-center ">STT</th>
-              <th class="ovic-w-40px text-center ">$$</th>
-              <th class="ovic-w-100px text-center ">
-                <div>Xác nhận</div>
-                <div>Thông tin</div>
-              </th>
-              <th class="ovic-w-100px text-center ">Mã đăng ký</th>
-              <th class="ovic-w-180px text-center">Họ và tên</th>
-              <th class="ovic-w-80px text-center">CCCD (hoặc hộ chiếu)</th>
-              <th class="ovic-w-120px text-center">Số điện thoại</th>
-              <th class="text-center">Lệ phí thi</th>
-              <th class="text-center">Điểm dự thi</th>
-              <th class="ovic-w-150px text-center">Đợt thi</th>
-              <th class="ovic-w-130px text-center">Cấp thi</th>
-              <th class="ovic-w-150px text-center">Thời gian TT</th>
-              <th class="ovic-w-150px text-center">Ghi chú</th>
-            </tr>
-          </ng-template>
-
-          <ng-template pTemplate="body" let-item>
-            <tr>
-              <td *ngIf="item.trangthai_thanhtoan !== 1,else haveTT" class="text-center">
-                <p-tableCheckbox [value]="item" [disabled]="item['__status_converted'] ===1"></p-tableCheckbox>
-              </td>
-              <ng-template #haveTT>
-                <td class="text-center">
-                  <p-checkbox [disabled]="true"></p-checkbox>
-                </td>
-              </ng-template>
-              <!--              <td>-->
-              <!--                <p-tableCheckbox [value]="item" ></p-tableCheckbox>-->
-              <!--              </td>-->
-              <td class="text-center">{{ item['_indexTable'] }}</td>
-              <td class="text-center">
-
-                <ng-container [ngSwitch]="item['__status_converted']">
-                  <div *ngSwitchCase="2" class="thanh-toan check text-center" pTooltip="Giao dịch đang xử lý"
-                       tooltipPosition="right">
-                    <i class="pi pi-history"></i></div>
-                  <div *ngSwitchCase="1" class="thanh-toan true text-center" pTooltip="Đăng ký thành công"
-                       tooltipPosition="right">
-                    <i class="pi pi-check-circle"></i></div>
-                  <div *ngSwitchCase="-1" class="thanh-toan wait text-center" pTooltip="Đã chuyển khoản, chờ duyệt"
-                       tooltipPosition="right">
-                    <i class="pi pi-file-edit"></i></div>
-                  <div *ngSwitchCase="0" class="thanh-toan false text-center" pTooltip="Chưa thanh toán"
-                       tooltipPosition="right">
-                    <i class="pi pi-exclamation-triangle"></i>
-                  </div>
-                </ng-container>
-
-              </td>
-
-              <td class="text-center">
-                <div class="w-100 d-flex justify-content-center align-items-center">
 
 
-                  <ng-container [ngSwitch]="item.trangthai_duyet">
-                    <div *ngSwitchCase="-1" class="thanh-toan check "
-                         pTooltip="Thông tin sinh viên của thí sinh chưa đúng">
-                      <i class="pi pi-times-circle"></i>
-                    </div>
-                    <div *ngSwitchCase="0" class="thanh-toan check "
-                         pTooltip="Chờ duyệt thông tin sinh viên của ĐHTN">
-                      <i class="pi pi-circle"></i>
-
-                    </div>
-                    <div *ngSwitchCase="1" class="thanh-toan true ">
-                      <i class="pi pi-check-circle" pTooltip="Xác nhận thông tin"></i>
-
-                    </div>
-                  </ng-container>
-                </div>
-              </td>
-              <td class="text-center">{{ item['__order_id_coverted'] }}</td>
-              <td><span class="tt-hover" > {{ item['__thisinh_hoten'] }}</span></td>
-              <td class="text-center">{{ item['__thisinh_cccd'] }}</td>
-              <td class="ovic-w-80px text-right">{{ item['__thisinh_phone'] }}</td>
-              <td class="text-right">{{ item['lephithi'] | numberToVndCurrencuy }}</td>
-
-              <td>
-                <div>{{ item['__diemthi_convenrtd'] }}</div>
-              </td>
-              <td class="text-left">{{ item['__dotthi_coverted'] }}</td>
-
-              <td class="text-center">{{ item['__capthi'] }}</td>
-              <td class="text-right">{{ item['__time_thanhtoan'] }}</td>
-              <td class="text-left">{{ item['__ghichu'] }}</td>
-
-
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="20">
-                Không có dữ liệu thí sinh!
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </div>
-    </div>
-    <p-paginator class="duthi_panigator" [showCurrentPageReport]="true" [rows]="rows" [totalRecords]="recordsTotal"
-                 [pageLinkSize]="5"
-                 (onPageChange)="paginate($event)"></p-paginator>
   </div>
 </div>
-
-
-
-<!--<ng-template #formregister>-->
-<!--  <div class="ovic-side-navigation-content">-->
-<!--    <div class="ovic-side-navigation-content__head">-->
-<!--      <h4 class="ovic-side-navigation-content__head__title"></h4>-->
-<!--      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"-->
-<!--              class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>-->
-<!--    </div>-->
-<!--    <div class="ovic-side-navigation-content__body &#45;&#45;no-footer ovic-scroll-style">-->
-<!--      <app-thi-sinh-dang-ky-thi [thiSinh_id]="thisinh_id" class="w-100 h-100"></app-thi-sinh-dang-ky-thi>-->
-<!--    </div>-->
-
-<!--  </div>-->
-<!--</ng-template>-->
-
-

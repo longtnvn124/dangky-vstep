@@ -135,7 +135,7 @@ export class HoidongthiBieumauComponent implements OnInit {
           this.notifi.disableLoadingAnimationV2();
 
           if(listPhongthi){
-            this.exExcelVstepService.exDsThisinhByPhongthi(listPhongthi,'Tiếng anh',this.hoidongSelect,'dsthisinh','portrait')
+            this.exExcelVstepService.exDsThisinhByPhongthi(listPhongthi,this.hoidongSelect['__ngonngu'],this.hoidongSelect,'dsthisinh','portrait')
 
           }else{
             this.notifi.toastWarning('Chưa có danh sách phòng thi hoặc chưa xếp phòng thi cho thí sinh');
@@ -186,7 +186,7 @@ export class HoidongthiBieumauComponent implements OnInit {
 
 
         if(listPhongthi.length >0){
-          this.exExcelVstepService.exDsThisinhKynopbai(listPhongthi,'Tiếng anh',this.hoidongSelect,'dsKynopbai', 'portrait')
+          this.exExcelVstepService.exDsThisinhKynopbai(listPhongthi,this.hoidongSelect['__ngonngu'],this.hoidongSelect,'dsKynopbai', 'portrait')
 
         }else{
           this.notifi.toastWarning('Chưa có danh sách phòng thi hoặc chưa xếp phòng thi cho thí sinh');
@@ -238,7 +238,7 @@ export class HoidongthiBieumauComponent implements OnInit {
         this.notifi.disableLoadingAnimationV2();
 
         if(listPhongthi.length>0){
-          this.exExcelVstepService.exDsThisinhKyXacnhan(listPhongthi,'Tiếng anh',this.hoidongSelect,'dsThisinhXacnhan', 'landscape')
+          this.exExcelVstepService.exDsThisinhKyXacnhan(listPhongthi,this.hoidongSelect['__ngonngu'],this.hoidongSelect,'dsThisinhXacnhan', 'landscape')
 
         }else{
           this.notifi.toastWarning('Chưa có danh sách phòng thi hoặc chưa xếp phòng thi cho thí sinh');
@@ -347,7 +347,7 @@ export class HoidongthiBieumauComponent implements OnInit {
         this.notifi.disableLoadingAnimationV2();
 
         if(listPhongthi.length>0){
-          this.exWordVstepService.tuidungHosophongthi(listPhongthi,'tuidungHoso-' + this.hoidongSelect.title)
+          this.exWordVstepService.tuidungHosophongthi(listPhongthi,'tuidungHoso-' + this.hoidongSelect.title,this.hoidongSelect['__ngonngu'] )
 
         }else{
           this.notifi.toastWarning('Chưa có danh sách phòng thi hoặc chưa xếp phòng thi cho thí sinh');
@@ -400,7 +400,7 @@ export class HoidongthiBieumauComponent implements OnInit {
         this.notifi.disableLoadingAnimationV2();
 
         if(listPhongthi.length>0){
-          this.exWordVstepService.tuidungPhieutaikhoan(listPhongthi,'tuidungPhieutaikhoan-' + this.hoidongSelect.title)
+          this.exWordVstepService.tuidungPhieutaikhoan(listPhongthi,'tuidungPhieutaikhoan-' + this.hoidongSelect.title,this.hoidongSelect['__ngonngu'] )
 
         }else{
           this.notifi.toastWarning('Chưa có danh sách phòng thi hoặc chưa xếp phòng thi cho thí sinh');

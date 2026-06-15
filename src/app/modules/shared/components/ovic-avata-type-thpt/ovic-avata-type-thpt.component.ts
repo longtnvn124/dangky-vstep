@@ -98,26 +98,19 @@ export class OvicAvataTypeThptComponent implements OnInit {
 
   typeFileAdd = TYPE_FILE_IMAGE;
   async onInputAvatar(event, fileChooser: HTMLInputElement,index:number) {
-    // console.log(fileChooser.files);
     if (fileChooser.files && fileChooser.files.length) {
       if (this.typeFileAdd.includes(fileChooser.files[0].type)){
 
-        console.log(fileChooser.files[0])
         if(fileChooser.files[0].size >= 21*1024){
           const file = await this.makeCharacterAvatar(fileChooser.files[0],this.replaceFileName(this.file_name ? this.file_name :fileChooser.files[0].name ,fileChooser.files[0].type) );
           let fileUser:File  = file;
-
-          console.log(fileUser)
           if(this.file_size !== null){
             const fileConvert =await this.reSizeFileByCompression(file, this.file_size);
-            console.log(fileChooser.files[0].name)
             fileUser = this.fileService.blobToFile(fileConvert,this.replaceFileName(this.file_name ? this.file_name :fileChooser.files[0].name ,fileChooser.files[0].type));
-            console.log(this.replaceFileName(this.file_name ? this.file_name :fileChooser.files[0].name ,fileChooser.files[0].type))
           }
-          // console.log(fileUser)
 
           // upload file to server
-          // console.log({...fileUser,name:fileChooser.files[0].name});
+
           this.fileService.uploadFile(fileUser, this.public).subscribe({
             next: fileUl => {
               // this.objectThumbnail = this.objectThumbnail.length>0 ? [].concat(fileUl);

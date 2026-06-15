@@ -8,8 +8,8 @@ import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/form
 import {Router} from "@angular/router";
 import {SenderEmailService} from "@shared/services/sender-email.service";
 import {HelperService} from "@core/services/helper.service";
-import {KehoachLevers, KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
-import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/kehoachthi-diemthi-vstep.service";
+import {KehoachLevers, KeHoachThi, KehoachthiVstepService} from "@shared/services/vstep/kehoachthi-vstep.service";
+import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/vstep/kehoachthi-diemthi-vstep.service";
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
 import {DmDiemduthi, DmDiemDuThiService} from "@shared/services/dm-diem-du-thi.service";
 import {ConditionOption} from "@shared/models/condition-option";
@@ -17,13 +17,17 @@ import {OvicQueryCondition} from "@core/models/dto";
 import {map} from "rxjs/operators";
 import {NgPaginateEvent} from "@shared/models/ovic-models";
 import {DonViService} from "@shared/services/don-vi.service";
-import {HuyOrders, HuyOrdersService} from "@shared/services/huy-orders.service";
+import {HuyOrders, HuyOrdersService} from "@shared/services/vstep/huy-orders.service";
 import {BUTTON_NO, BUTTON_YES} from "@core/models/buttons";
 import {DateTimeServer, ServerTimeService} from "@shared/services/server-time.service";
-import {Languages, LanguagesService} from "@shared/services/languages.service";
+import {Languages, LanguagesService} from "@shared/services/vstep/languages.service";
 import {FileService} from "@core/services/file.service";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import {VstepHoidongThiService} from "@shared/services/vstep-hoidong-thi.service";
+import {VstepHoidongThisinhService} from "@shared/services/vstep-hoidong-thisinh.service";
+import {VstepHoidongPhongthiService} from "@shared/services/vstep-hoidong-phongthi.service";
+import {VstepHoidongPhongthiThisinhService} from "@shared/services/vstep-hoidong-phongthi-thisinh.service";
 
 export interface SumMonThi {
   diemduthi_id: string,
@@ -110,7 +114,11 @@ export class ThiSinhDangKyComponent implements OnInit {
     private huyOrdersService:HuyOrdersService,
     private serverTimeService :ServerTimeService,
     private languagesService: LanguagesService,
-    private fileService :FileService
+    private fileService :FileService,
+    private hoidongSerivice: VstepHoidongThiService,
+    private hoidongPhongthiService: VstepHoidongPhongthiService,
+    private hoidongPhongthiThisinhService: VstepHoidongPhongthiThisinhService,
+
   ) {
     this.formSave = this.fb.group({
       user_id: [null, Validators.required],
@@ -125,7 +133,7 @@ export class ThiSinhDangKyComponent implements OnInit {
     this.formHuyOrder = this.fb.group({
       user_id: [null, Validators.required],
       kehoach_id: [null, Validators.required],
-      caphsk_id: [null, Validators.required],
+      diemduthi_id: [null, Validators.required],
       order_id: [null, Validators.required],
       hoten: ['', Validators.required],
       mota: ['', Validators.required],
@@ -343,7 +351,6 @@ export class ThiSinhDangKyComponent implements OnInit {
     this.f['thisinh_id'].setValue(this.userInfo.id);
     this.f['trangthai_duyet'].setValue(this.userInfo.doituong == 'dhtn' ? 0 : 1);
     this.f['lephithi'].setValue(this.kehoach_select.dongia.find(f=>f.key == this.userInfo.doituong) ? this.kehoach_select.dongia.find(f=>f.key == this.userInfo.doituong).value : '');
-    console.log(this.formSave.value);
 
     if (this.formSave.valid) {
       this.isLoading = true;
@@ -451,28 +458,6 @@ export class ThiSinhDangKyComponent implements OnInit {
       this.displayModalThanhtoan= true;
 
     }
-
-
-
-    // if (item.parent_id === 0) {
-    //   if (kehoachSelect.status === 1) {
-    //     this.isLoading = true;
-    //     if (this.helperService.formatSQLDate(new Date()) <= this.helperService.formatSQLDate(new Date(kehoachSelect.ngayketthuc))) {
-    //
-    //
-    //       this.order_select = item;
-    //       this.displayModalThanhtoan= true;
-    //
-    //     } else {
-    //       this.isLoading = false;
-    //       this.notifi.toastError('Đã hết thời hạn đăng ký môn trong đợt thi này');
-    //     }
-    //   } else {
-    //     this.notifi.toastWarning('Đã hết thời hạn đăng ký môn trong đợt thi này');
-    //   }
-    // } else {
-    //   this.notifi.toastError('Vui lòng không thực hiện thao tác này');
-    // }
 
   }
 
@@ -730,6 +715,50 @@ export class ThiSinhDangKyComponent implements OnInit {
   btnViewChange(item:OrdersVstep){
     this.order_select = {...item};
     this.viewModelChange = true;
+
+    const kehoachByOrder = this.keHoachThi.find(f => f.id == item.kehoach_id);
+    if (kehoachByOrder && kehoachByOrder.status === 1) {
+      const datekehoach = new Date(kehoachByOrder.ngayketthuc);
+
+      this.notifi.isProcessing(false);
+      const dateSeverGet = new Date(this.dateTimeService.date)
+      if (new Date(this.helperService.formatSQLDate(datekehoach)) >= new Date(this.helperService.formatSQLDate(dateSeverGet))) {
+
+        this.huyOrdersService.getDataByOrderIdAndType(item.id,'change').subscribe({
+          next:(data)=>{
+            this.listOrderHuyChange = data;
+            this.check_change_dothi = -1;
+            this.change_kehoachthi_id = 0;
+            this.data_Kehoachthi_change = this.keHoachThi_dangky.filter(f => f.id !== item.kehoach_id)
+
+            this.formHuyOrder.reset(
+              {
+                user_id: item.user_id,
+                kehoach_id: item.kehoach_id,
+                diemduthi_id: item.diemduthi_id,
+                order_id: item.id,
+                hoten: item['__hoten'],
+                mota: '',
+                files: null,
+                minhchung: null,
+
+              }
+            )
+
+          },error:()=>{
+            this.notifi.toastError('Load dữ liệu không thành công');
+
+          }
+        })
+
+
+      }else{
+        this.notifi.toastError('Đã hết thời gian hủy đăng ký dự thi');
+      }
+    }else{
+      this.notifi.toastWarning('Đã hết thời gian đổi đợt đăng ký dự thi');
+
+    }
   }
   btnViewCancel(item:OrdersVstep){
     this.order_select = {...item};
@@ -755,7 +784,8 @@ export class ThiSinhDangKyComponent implements OnInit {
             type: 'cancel',
             mota: '',
             files: null,
-            minhchung: null
+            minhchung: null,
+
           }
         )
         this.huyOrdersService.getDataByOrderIdAndType(item.id, 'cancel').subscribe({
@@ -808,24 +838,38 @@ export class ThiSinhDangKyComponent implements OnInit {
     this.check_change_dothi = 0;
     const kehoachIdsHaveSelect = this.order_select.params ? Array.from(new Set(this.order_select.params.map(m => m['kehoanh_thi_cu']))) : [];
     if (!kehoachIdsHaveSelect.includes(event.value)) {
-      // forkJoin([
-      //   this.kehoachthiCapdoService.getDataUnlimitAndKehoachId(event.value),
-      //   this.ordersService.getDataMonSelect(event.value)
-      //
-      // ])
-      //   .subscribe({
-      //     next: ([dmCapdo, data]): void => {
-      //       const numOfLuotthi = dmCapdo.find(f => f.caphsk_id == this.order_select.diemduthi_id) ? dmCapdo.find(f => f.caphsk_id == this.order_select.diemduthi_id).soluong : null;
-      //       const numOfUse = data.find(f => parseInt(f.caphsk_id) == this.order_select.diemduthi_id) ? data.find(f => parseInt(f.caphsk_id) == this.order_select.diemduthi_id).total : null;
-      //       // console.log(numOfLuotthi)
-      //       // console.log(numOfUse)
-      //       this.check_change_dothi =  !numOfUse || ( numOfLuotthi && numOfUse && numOfLuotthi > numOfUse) ? 1 : 2;
-      //     }, error: (err) => {
-      //       this.check_change_dothi = 2;
-      //
-      //       this.notifi.toastError(err['message'])
-      //     }
-      //   })
+
+      const conditionDiemthi:ConditionOption = {
+        condition:[
+          {
+            conditionName: 'kehoach_id',
+            condition: OvicQueryCondition.equal,
+            value: event.value.toString(),
+          }
+        ],page: '1',
+        set:[
+          {label:'limit',value:'-1'},
+          {label:'width',value:'donvi'}
+        ]
+      }
+
+
+      forkJoin([
+        this.kehoachthiDiemthiVstepService.getDataByPageNew(conditionDiemthi).pipe(map(m=>m.data)),
+        this.ordersService.getDataTotalDiemthiByKehoach(event.value)
+
+      ])
+        .subscribe({
+          next: ([diemduthi, data]): void => {
+            const numOfLuotthi = diemduthi.find(f => f.diemduthi_id == this.order_select.diemduthi_id) ? diemduthi.find(f => f.diemduthi_id == this.order_select.diemduthi_id).soluong : null;
+            const numOfUse = data.find(f => f.diemduthi_id == this.order_select.diemduthi_id) ? data.find(f => f.diemduthi_id == this.order_select.diemduthi_id).total : null;
+            this.check_change_dothi =  !numOfUse || ( numOfLuotthi && numOfUse && numOfLuotthi > numOfUse) ? 1 : 2;
+          }, error: (err) => {
+            this.check_change_dothi = 2;
+
+            this.notifi.toastError(err['message'])
+          }
+        })
     } else {
       this.check_change_dothi = 3;
       this.notifi.toastError('Bạn đã từng đổi đợt thi này, vui lòng chọn đợt thi khác.');
@@ -848,8 +892,6 @@ export class ThiSinhDangKyComponent implements OnInit {
 
       };
 
-      // console.log(dataUp);
-
       if (button.name === BUTTON_YES.name) {
         // this.ordersService.changeDotthi(this.orderSelect.id, {kehoach_id: this.change_kehoachthi_id}).subscribe({
         this.notifi.isProcessing(true);
@@ -860,6 +902,7 @@ export class ThiSinhDangKyComponent implements OnInit {
         )).subscribe({
           next: () => {
             this.displayModal = false;
+            this.viewModelChange = false;
             this.getDataOrder();
             this.notifi.isProcessing(false);
             this.notifi.toastSuccess('Thao tác thành công');
@@ -878,6 +921,7 @@ export class ThiSinhDangKyComponent implements OnInit {
   async btnAcceptHuyOrder() {
     // console.log(this.formHuyOrder.value);
     const objectForm = this.formHuyOrder.value
+
     if (this.formHuyOrder.valid && objectForm['files'] !== null && objectForm['minhchung'] !== null) {
       // console.log(this.formHuyOrder.value);
       const object = this.formHuyOrder.value;
@@ -996,18 +1040,10 @@ export class ThiSinhDangKyComponent implements OnInit {
 
   isShower:boolean = false;
 
-  phieuduthi: Phieuduthi = null;
+  phieudangkydientu: Phieuduthi = null;
   viewPhieudangky(item:OrdersVstep){
 
     const dothi = this.keHoachThi.find(f=>f.id == item.kehoach_id);
-    console.log(dothi);
-
-    // const levels = dothi.levels.map(m=>{
-    //   m['check'] = m.value == item.capthi
-    //   return m
-    // }).filter(f=>f.select == 1);
-
-
 
     const phieuduthi:Phieuduthi = {
       anh_chandung:this.fileService.getPreviewLinkLocalFile(this.userInfo.anh_chandung[0]),
@@ -1042,14 +1078,12 @@ export class ThiSinhDangKyComponent implements OnInit {
 
     }
 
-    console.log(phieuduthi);
-
-    this.phieuduthi = phieuduthi
+    this.phieudangkydientu = phieuduthi
     this.isShower =true;
   }
 
   public downloadAsPdf(): void {
-    if(this.phieuduthi){
+    if(this.phieudangkydientu){
 
 
       html2canvas(this.dataToExport.nativeElement, {
@@ -1068,13 +1102,96 @@ export class ThiSinhDangKyComponent implements OnInit {
         });
 
         pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
-        pdf.save('phieuduthi.pdf');
+        pdf.save('phieudangkydientu.pdf');
       });
     }else{
       this.notifi.toastError('Tải xuống không thành công');
     }
 
   }
+
+
+
+ // ------------------------Phiếu dự thi
+
+
+  // phieuduthi:any= {};
+  // viewPhieuDuthi(item: OrdersVstep){
+  //   this.notifi.isProcessing(true);
+  //
+  //   const condition :ConditionOption = {
+  //     condition:[
+  //       {conditionName:'kehoach_id',condition:OvicQueryCondition.equal ,value:item.kehoach_id.toString()},
+  //       {conditionName:'state',condition:OvicQueryCondition.equal ,value:'1'},
+  //     ],
+  //     page:'1',
+  //     set:[
+  //       {
+  //         label:'limit',value:'1'
+  //       }
+  //     ]
+  //   }
+  //   this.hoidongSerivice.getDataByPageNew(condition).pipe(switchMap(m=>{
+  //
+  //     const conditionPhongthi :ConditionOption = {
+  //       condition:[
+  //         {conditionName:'hoidong_id',condition:OvicQueryCondition.equal ,value:m.data.length>0?  m.data[0].id.toString() : ''},
+  //       ],
+  //       page:'1',
+  //       set:[
+  //         {
+  //           label:'limit',value:'-1'
+  //         }
+  //       ]
+  //     };
+  //
+  //     const conditionPhongthiThisinh :ConditionOption = {
+  //       condition:[
+  //         {conditionName:'hoidong_id',condition:OvicQueryCondition.equal ,value:m.data.length>0 ? m.data[0].id.toString(): ''},
+  //         {conditionName:'thisinh_id',condition:OvicQueryCondition.equal ,value:item.thisinh_id.toString()},
+  //         {conditionName:'kehoach_id',condition:OvicQueryCondition.equal ,value:item.kehoach_id.toString()},
+  //       ],
+  //       page:'1',
+  //       set:[
+  //         {
+  //           label:'limit',value:'-1'
+  //         }
+  //       ]
+  //     };
+  //
+  //     return forkJoin([
+  //       of(m.data),
+  //       m.data.length > 0 ? this.hoidongPhongthiService.getDataByPageNew(conditionPhongthi).pipe(map(m=>m.data)) : of([]),
+  //       m.data.length > 0 ? this.hoidongPhongthiThisinhService.getDataByPageNew(conditionPhongthiThisinh).pipe(map(m=>m.data)) : of([]),
+  //
+  //     ])
+  //   })).subscribe({
+  //     next:([hoidong,hoidongphongthi, hoidongphongthithsinh])=>{
+  //       console.log(hoidong)
+  //       console.log(hoidongphongthi)
+  //       console.log(hoidongphongthithsinh)
+  //       this.notifi.isProcessing(false);
+  //
+  //       if(hoidong.length == 0 ){
+  //         return this.notifi.toastWarning('Thí sinh đã đăng ký thành công, vui lòng chờ xếp phòng thi');
+  //       }
+  //
+  //
+  //       this.phieuduthi = {
+  //         doituong = item.parent_id !== 0 ? 'Đối tác đăng ký ' :
+  //       }
+  //
+  //     },error:(e)=>{
+  //       console.log(e)
+  //       this.notifi.toastError('Tải dữ liệu không thành công');
+  //       this.notifi.isProcessing(false);
+  //     }
+  //   })
+  //
+  // }
+
+
+
 
 }
 

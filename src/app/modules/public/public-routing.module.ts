@@ -14,7 +14,6 @@ import {
 import {
   RegisterAccountGlasslineComponent
 } from "@modules/public/features/home-thi-thpt/layouts/register-account-glassline/register-account-glassline.component";
-import {TraCuuKetQuaComponent} from "@modules/public/features/tra-cuu-ket-qua/tra-cuu-ket-qua.component";
 
 
 const routes: Routes = [
@@ -61,10 +60,10 @@ const routes: Routes = [
     path: 'login',
     component: LoginVideoComponent
   },
-  {
-    path:'tra-cuu-ket-qua',
-    component:TraCuuKetQuaComponent
-  },
+  // {
+  //   path:'tra-cuu-ket-qua',
+  //   component:TraCuuKetQuaComponent
+  // },
 
   // {
   // 	path      : 'login-video' ,

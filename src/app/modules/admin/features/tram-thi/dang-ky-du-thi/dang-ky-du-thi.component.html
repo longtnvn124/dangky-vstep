@@ -152,6 +152,7 @@
               <ng-template pTemplate="header" class="d-bock">
                 <tr>
                   <th class="ovic-w-40px text-center ">STT</th>
+                  <th class="ovic-w-100px text-center ">Trình độ đăng ký </th>
                   <th class=" text-center ">họ đệm</th>
                   <th class="ovic-w-180px text-center">Tên</th>
                   <th class="ovic-w-180px text-center">Ngày sinh</th>
@@ -168,6 +169,7 @@
               <ng-template pTemplate="body" let-item let-i="rowIndex">
                 <tr>
                   <td class="text-center">{{ i + 1 }}</td>
+                  <td class="text-center">{{ item['capthi'] ? item['capthi'].toUpperCase() : ''  }}</td>
                   <td class="text-left">{{ item['hodem'] }}</td>
                   <td class="text-center">{{ item['ten'] }}</td>
                   <td class="text-center">{{ item['ngaysinh'] }}</td>

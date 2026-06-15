@@ -29,10 +29,37 @@
   width: 100%;
   min-width: 1400px;
 }
-.table-chitiet,
-.table-chitiet td,
-.table-chitiet tr,
-.table-chitiet th{
-  border: 1px solid #ccc;
-  border-collapse: collapse;
+
+
+.hsk{
+  color:#fff;
+  padding: 5px;
+  display: inline;
+  font-size: 14px;
+  border-radius:10px;
+}
+.hsk.hsk1{
+  background: #e3650b;
+}
+.hsk.hsk2{
+  background: #e68e0e;
+}
+.hsk.hsk3{
+  background: #8dcc2a;
+}
+.hsk.hsk4{
+  background: #3389f8;
+}
+.hsk.hsk5{
+  background: #d50be3;
+}
+.hsk.hsk6{
+  background: #e92222de;
+}
+.info-select-div{
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
 }

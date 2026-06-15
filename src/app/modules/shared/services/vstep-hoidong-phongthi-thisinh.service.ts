@@ -15,6 +15,7 @@ export interface HoidongPhongthiThisinh {
   diemduthi_id        : number;
   thisinh_id          : number;
   user_id             : number;
+  capthi              ?:string;
 }
 @Injectable({
   providedIn: 'root'

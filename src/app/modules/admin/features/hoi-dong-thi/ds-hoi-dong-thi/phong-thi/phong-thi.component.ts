@@ -10,7 +10,7 @@ import {HskExportHoidongService} from "@shared/services/hsk-export-hoidong.servi
 import imageCompression from "browser-image-compression";
 import getDataUrlFromFile = imageCompression.getDataUrlFromFile;
 import {HelperService} from "@core/services/helper.service";
-import {KeHoachThi} from "@shared/services/kehoachthi-vstep.service";
+import {KeHoachThi} from "@shared/services/vstep/kehoachthi-vstep.service";
 
 @Component({
   selector: 'app-phong-thi',

@@ -1,14 +1,11 @@
-import {Component, ElementRef, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Paginator, PaginatorModule} from "primeng/paginator";
-import {KeHoachThi, KehoachthiVstepService} from "@shared/services/kehoachthi-vstep.service";
+import {KeHoachThi, KehoachthiVstepService} from "@shared/services/vstep/kehoachthi-vstep.service";
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
 import {DonVi} from "@shared/models/danh-muc";
-import {filter, forkJoin, of, Subject, Subscription, switchMap} from "rxjs";
+import {filter, forkJoin, Observable, of, Subject, Subscription, switchMap} from "rxjs";
 import {NotificationService} from "@core/services/notification.service";
-import {DmDiemDuThiService} from "@shared/services/dm-diem-du-thi.service";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ExpThisinhDuthiService} from "@shared/services/export/exp-thisinh-duthi.service";
 import {DonViService} from "@shared/services/don-vi.service";
 import {AuthService} from "@core/services/auth.service";
 import {ConditionOption} from "@shared/models/condition-option";
@@ -23,26 +20,22 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {RippleModule} from "primeng/ripple";
 import {SharedModule} from "@shared/shared.module";
 import {TableModule} from "primeng/table";
-import {
-  ThiSinhDangKyThiComponent
-} from "@modules/admin/features/danh-sach-du-thi/thi-sinh-du-thi/thi-sinh-dang-ky-thi/thi-sinh-dang-ky-thi.component";
-import {
-  ThongTinThiSinhComponent
-} from "@modules/admin/features/danh-sach-du-thi/thi-sinh-du-thi/thong-tin-thi-sinh/thong-tin-thi-sinh.component";
+import {ThiSinhDangKyThiComponent} from "@modules/admin/features/danh-sach-du-thi/thi-sinh-du-thi/thi-sinh-dang-ky-thi/thi-sinh-dang-ky-thi.component";
+import {ThongTinThiSinhComponent} from "@modules/admin/features/danh-sach-du-thi/thi-sinh-du-thi/thong-tin-thi-sinh/thong-tin-thi-sinh.component";
 import {TooltipModule} from "primeng/tooltip";
 import {NgPaginateEvent} from "@shared/models/ovic-models";
+import {SenderEmailService} from "@shared/services/sender-email.service";
+
 
 @Component({
   selector: 'app-duyet-thongtin-dangky-duthi',
   standalone: true,
-  imports: [CommonModule, ButtonModule, CheckboxModule, DropdownModule, InputTextModule, MatMenuModule, MatProgressBarModule, PaginatorModule, RippleModule, SharedModule, SharedModule, TableModule, ThiSinhDangKyThiComponent, ThongTinThiSinhComponent, TooltipModule, SharedModule, SharedModule, SharedModule, SharedModule, SharedModule],
+  imports: [CommonModule, ButtonModule, CheckboxModule, DropdownModule, InputTextModule, MatMenuModule, MatProgressBarModule, PaginatorModule, RippleModule, SharedModule, SharedModule, TableModule, ThiSinhDangKyThiComponent, ThongTinThiSinhComponent, TooltipModule, SharedModule, SharedModule, SharedModule, SharedModule],
   templateUrl: './duyet-thongtin-dangky-duthi.component.html',
   styleUrls: ['./duyet-thongtin-dangky-duthi.component.css']
 })
 export class DuyetThongtinDangkyDuthiComponent implements OnInit {
-  @ViewChild('fromUser', {static: true}) fromUser: TemplateRef<any>;
-  @ViewChild('formregister', {static: true}) formregister: TemplateRef<any>;
-  @ViewChild('templateWaiting') templateWaiting: ElementRef;
+  @ViewChild('formCheck', {static: true}) formCheck: TemplateRef<any>;
   @ViewChild(Paginator) paginator: Paginator;
 
   isLoading     : boolean = true;
@@ -52,12 +45,10 @@ export class DuyetThongtinDangkyDuthiComponent implements OnInit {
 
   recordsTotal  : number = 0 ;
   listData      : OrdersVstep[] = [];
-  dataSelct     : OrdersVstep[] = [];
   page          : number = 1;
   kehoach_id    : number = 0;
 
   dataDonvi     : DonVi[] = []
-
 
   rows          : number = 20;
   menuName      : string = 'thisinhduthi';
@@ -70,39 +61,24 @@ export class DuyetThongtinDangkyDuthiComponent implements OnInit {
   statusTT = [
     {value: 0, title: 'Chưa thanh toán'},
     {value: 1, title: 'Đã thanh toán'},
-
   ]
-
-  headerExport: string[] =  [
-    "STT",
-    "MADK",
-    "Trạng thái",
-    "Họ và tên",
-    "Ngày sinh",
-    "Giới tính",
-    "CCCD/CMND",
-    "Email",
-    "Điện thoại",
-    "Điểm dự thi",
-    "Ghi chú",
-    "Thời gian thanh toán"
-  ];
 
   isAdmin:boolean = false;
   isTramThi:boolean =false;
+
+  // Approve view variables
+  selectedIndex: number = 0;
+  isProcessing: boolean = false;
+  approveStatus: { [key: number]: number } = {};
 
   constructor(
 
     private ordersService:VstepOrdersService,
     private notifi: NotificationService,
-
-    private dmDiemDuThiService:DmDiemDuThiService,
     private kehoachthiVstepService : KehoachthiVstepService,
-
-    private modalService: NgbModal,
-    private expThisinhDuthiService: ExpThisinhDuthiService,
     private donViService:DonViService,
-    private auth: AuthService
+    private auth: AuthService,
+    private senderEmailService: SenderEmailService
   ) {
 
     const observeProcessCloseForm = this.notifi.onSideNavigationMenuClosed().pipe(filter(menuName => menuName === this.menuName && this.needUpdate)).subscribe(() => this.loadInit());
@@ -115,9 +91,9 @@ export class DuyetThongtinDangkyDuthiComponent implements OnInit {
 
   }
   ngOnInit(): void {
-
     this.loadInit();
   }
+
   loadInit() {
     const conditionKehoach: ConditionOption = {
       condition: [], page: '1',
@@ -146,6 +122,8 @@ export class DuyetThongtinDangkyDuthiComponent implements OnInit {
   loadData(page: number, kehoach_id?: number, search?: string,) {
     this.isLoading = true;
     this.notifi.isProcessing(true);
+    this.selectedIndex = 0;
+    this.approveStatus = {};
 
     const condition :ConditionOption = {
       condition:[
@@ -214,8 +192,6 @@ export class DuyetThongtinDangkyDuthiComponent implements OnInit {
 
           m['__dotthi_coverted'] = dotthi ? dotthi.title : '';
           m['__capthi'] = dotthi && dotthi.levels && m.capthi ? (dotthi.levels.find(f=>f.value == m.capthi) ? dotthi.levels.find(f=>f.value == m.capthi).label : '' ) : '';
-          // m['__monthi_covered'] = this.dsCapdo.find(f=>f.id === m.caphsk_id) ? m.mon_id.map(b => this.dsMon.find(f => f.id == b) ? this.dsMon.find(f => f.id == b) : []) : [];
-
           m['__status_converted'] = m.trangthai_thanhtoan ;
 
           m['__time_thanhtoan'] =m['thoigian_thanhtoan'] ? this.formatSQLDateTime( new Date(m['thoigian_thanhtoan'])):'';
@@ -223,6 +199,11 @@ export class DuyetThongtinDangkyDuthiComponent implements OnInit {
           m['__ghichu'] = parent && parent['user'] && parent['user']['name'] ? (parent['user']['name'] + ' đăng ký' ):'';
           return m;
         }) : [];
+
+        // Khởi tạo approveStatus
+        this.listData.forEach(c => {
+          this.approveStatus[c.id] = c.trangthai_duyet;
+        });
 
         this.notifi.isProcessing(false);
         this.isLoading = false;
@@ -232,7 +213,6 @@ export class DuyetThongtinDangkyDuthiComponent implements OnInit {
         this.notifi.toastError('Load dữ liệu không thành công');
       }
     })
-
   }
 
   formatSQLDateTime(date: Date): string {
@@ -241,21 +221,12 @@ export class DuyetThongtinDangkyDuthiComponent implements OnInit {
     const d = date.getDate().toString().padStart(2, '0');
     const h = date.getHours().toString().padStart(2, '0');
     const min = date.getMinutes().toString().padStart(2, '0');
-
-    //'YYYY-MM-DD hh:mm:ss' type of sql DATETIME format
     return `${d}-${m}-${y} ${h}:${min}`;
   }
+
   paginate({page}: NgPaginateEvent) {
     this.page = page + 1;
-    this.dataSelct = [];
-    this.loadData(this.page,this.kehoach_id, this.search);
-  }
-  selectDataByCheckbox(event){
-    if (event.checked === true){
-      this.dataSelct = this.listData.filter(f=>f.trangthai_thanhtoan !== 1);
-    }else {
-      this.dataSelct = [];
-    }
+    this.loadData(this.page, this.kehoach_id, this.search);
   }
 
   loadDropdow(event){
@@ -264,8 +235,187 @@ export class DuyetThongtinDangkyDuthiComponent implements OnInit {
     this.loadData(this.page, this.kehoach_id, this.search);
   }
 
-
-  viewFormDuyet(){
-
+  reloadData() {
+    this.page = 1;
+    this.loadData(this.page, this.kehoach_id, this.search);
   }
+
+  // ----- Approve methods -----
+  get currentCandidate(): OrdersVstep {
+    return this.listData[this.selectedIndex];
+  }
+
+  get totalCandidates(): number {
+    return this.listData.length;
+  }
+
+  get approvedCount(): number {
+    return this.listData.filter(c => this.approveStatus[c.id] === 1).length;
+  }
+
+  get rejectedCount(): number {
+    return this.listData.filter(c => this.approveStatus[c.id] === -1).length;
+  }
+
+  get pendingCount(): number {
+    return this.listData.filter(c => this.approveStatus[c.id] === 0).length;
+  }
+
+  selectCandidate(index: number) {
+    if (index >= 0 && index < this.listData.length) {
+      this.selectedIndex = index;
+    }
+  }
+
+  nextCandidate() {
+    if (this.selectedIndex < this.listData.length - 1) {
+      this.selectedIndex++;
+    }
+  }
+
+  prevCandidate() {
+    if (this.selectedIndex > 0) {
+      this.selectedIndex--;
+    }
+  }
+
+  approve() {
+    if (!this.currentCandidate) return;
+    this.approveStatus[this.currentCandidate.id] = 1;
+    this.saveApproveStatus(this.currentCandidate.id, 1);
+  }
+
+  reject() {
+    if (!this.currentCandidate) return;
+    this.approveStatus[this.currentCandidate.id] = -1;
+    this.saveApproveStatus(this.currentCandidate.id, -1);
+  }
+
+  private saveApproveStatus(orderId: number, trangthai_duyet: number) {
+    this.isProcessing = true;
+    this.ordersService.update(orderId, {trangthai_duyet: trangthai_duyet}).subscribe({
+      next: () => {
+        this.isProcessing = false;
+        const candidate = this.listData.find(c => c.id === orderId);
+        if (candidate) {
+          candidate.trangthai_duyet = trangthai_duyet;
+        }
+        this.notifi.toastSuccess(trangthai_duyet === 1 ? 'Đã duyệt thông tin thí sinh' : 'Đã từ chối duyệt thông tin thí sinh');
+
+        this.sendEmailDuyet(candidate,trangthai_duyet).subscribe({
+          next:()=>{
+            this.notifi.toastSuccess('Gửi Email thành công');
+
+          },error:()=>{
+            this.notifi.toastError('Gửi Email không thành công');
+          }
+        })
+
+        // setTimeout(() => {
+        //   if (this.selectedIndex < this.listData.length - 1) {
+        //     this.nextCandidate();
+        //   }
+        // }, 300);
+      },
+      error: () => {
+        this.isProcessing = false;
+        this.notifi.toastError('Cập nhật trạng thái duyệt không thành công');
+        this.approveStatus[orderId] = this.listData.find(c => c.id === orderId)?.trangthai_duyet || 0;
+      }
+    });
+  }
+
+  getStatusLabel(status: number): string {
+    switch (status) {
+      case 1: return 'Đã duyệt';
+      case -1: return 'Không duyệt';
+      default: return 'Chờ duyệt';
+    }
+  }
+
+  getStatusClass(status: number): string {
+    switch (status) {
+      case 1: return 'status-approved';
+      case -1: return 'status-rejected';
+      default: return 'status-pending';
+    }
+  }
+
+
+
+  private sendEmailDuyet(order:OrdersVstep, trangthai_duyet:number):Observable<any> {
+
+    let message = `
+
+        <p>Bạn đã đăng ký thi Vstep Đại học Thái Nguyên (TNU-VSTEP):</p>
+
+        <p style="font-weight:700;">THÔNG TIN THÍ SINH:</p>
+        <table width="100%" style="border:0;">
+            <tr>
+                <td style="width:250px;">Họ và tên:</td>
+                <td style="font-weight:600">${order['thisinh']['hoten']}</td>
+            </tr>
+            <tr>
+                <td style="width:250px;">CCCD (Hoặc hộ chiếu):</td>
+                <td style="font-weight:600">${order['thisinh']['cccd_so']}</td>
+            </tr>
+             <tr>
+                <td style="width:250px;">Số điện thoại:</td>
+                <td style="font-weight:600">${order['thisinh']['phone']}</td>
+            </tr>
+            <tr>
+                <td style="width:250px;">Email:</td>
+                <td style="font-weight:600">${order['thisinh']['email']}</td>
+            </tr>
+        </table>
+
+        <p>THÔNG TIN ĐĂNG KÝ</p>
+        <table style=" border: 1px solid black;border-collapse: collapse;">
+          <tr style="border: 1px solid black;border-collapse: collapse;">
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" width="100px"><strong>Đợt thi</strong></th>
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" >${order['__dotthi_coverted']}</th>
+
+          </tr>
+          <tr style="border: 1px solid black;border-collapse: collapse;">
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" width="100px"><strong>Cấp thi</strong></th>
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" >${order['__capthi']}</th>
+
+          </tr>
+          <tr style="border: 1px solid black;border-collapse: collapse;">
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" width="100"><strong>Điểm dự thi</strong></th>
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" >${order['__diemthi_convenrtd']}</th>
+
+          </tr>
+          <tr style="border: 1px solid black;border-collapse: collapse;">
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:left;" width="100px"><strong>Lệ phí thi</strong></th>
+            <th style="border: 1px solid black;border-collapse: collapse;text-align:right;" >${parseInt(String(order.lephithi)).toLocaleString('vi-VN', {style: 'currency', currency: 'VND'})}</th>
+          </tr>
+
+
+    `;
+    // <td style="border: 1px solid black;border-collapse: collapse;">${this.dmCapdos.find(f => f.id === order.diemduthi_id) ? this.dmCapdos.find(f => f.id === order.diemduthi_id).title : ''}</td>
+
+    message += `
+    </table>
+    `;
+
+    if(trangthai_duyet == 1 ){
+      message += ` <p style="color:#0ba50b;"><strong> Thông tin sinh viên của ĐHTN của Thí sinh đã được xác nhận</strong></p>
+        <p style="color: #ce3b04;">- Trạng thái thanh toán: Chưa thanh toán.</p>
+        <p>- Bạn vui lòng thanh toán lệ phí thi để hoàn tất quá trình đăng ký .</p>
+        `;
+    }else{
+      message += ` <p style="color:red;"><strong> Thông tin sinh viên của ĐHTN của Thí sinh không khớp với dữ liệu sinh viên </strong></p>`;
+    }
+
+    const emailsend: any = {
+      to: order['thisinh']['email'],
+      // to: 'longkakainfo@gmail.com',
+      title: ' Email Xác nhận thông tin đăng ký dự thi',
+      message: message
+    }
+    // this.notifi.isProcessing(true)
+    return this.senderEmailService.sendEmail(emailsend)
+  }
+
 }

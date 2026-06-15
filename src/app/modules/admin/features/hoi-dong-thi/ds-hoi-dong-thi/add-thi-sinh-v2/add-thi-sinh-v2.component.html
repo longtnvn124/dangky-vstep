@@ -239,7 +239,7 @@
   </ng-container>
 </ng-container>
 
-<p-dialog header="Thông báo thêm thí sinh vào hội  " [(visible)]="viewAddThisinh" [modal]="true" [style]="{width: '80vw', height:'80vh'}"
+<p-dialog header="Thông báo thêm thí sinh vào hội  " [(visible)]="viewAddThisinh" [modal]="true" [style]="{width: '90vw', height:'80vh'}"
           [draggable]="false" [resizable]="false">
 
   <div class="list-thisinh">
@@ -253,6 +253,7 @@
             <th style="min-width: 50px;" class="text-center">TT</th>
             <th style="min-width: 150px;" class="text-center">Họ tên</th>
             <th style="min-width: 150px;" class="text-center ">Điểm dự thi</th>
+            <th style="min-width: 150px;" class="text-center ">Cấp thi</th>
             <th style="min-width: 100px;" class="text-center ">Số CCCD( Hộ chiếu)</th>
             <th style="min-width: 100px;" class="text-center ">Email</th>
             <th style="min-width: 100px;" class="text-center ">Số ĐT</th>
@@ -267,6 +268,7 @@
             <td pFrozenColumn class="text-center">{{ i + 1 }}</td>
             <td pFrozenColumn>{{ item['_hoten'] }}</td>
             <td pFrozenColumn>{{ item['_diemduthi'] }}</td>
+            <td pFrozenColumn>{{ item['_capthi'] }}</td>
             <td>{{ item['_cccd'] }}</td>
             <td>{{ item['_email'] }}</td>
             <td>{{ item['_phone'] }}</td>
