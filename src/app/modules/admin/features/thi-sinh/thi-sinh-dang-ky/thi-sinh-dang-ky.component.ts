@@ -1044,10 +1044,14 @@ export class ThiSinhDangKyComponent implements OnInit {
   viewPhieudangky(item:OrdersVstep){
 
     const dothi = this.keHoachThi.find(f=>f.id == item.kehoach_id);
+    console.log(dothi);
+    if(!dothi){
+      return this.notifi.toastWarning('Đợt thi đã bị xóa vui lòng liên hệ với quản trị viên');
+    }
 
     const phieuduthi:Phieuduthi = {
       anh_chandung:this.fileService.getPreviewLinkLocalFile(this.userInfo.anh_chandung[0]),
-      doituong_anhthe:this.fileService.getPreviewLinkLocalFile(this.userInfo.doituong_anhthe[0]),
+      doituong_anhthe:this.userInfo.doituong_anhthe && this.userInfo.doituong_anhthe[0] ? this.fileService.getPreviewLinkLocalFile(this.userInfo.doituong_anhthe[0]) : '',
       cccd_mattruoc:this.fileService.getPreviewLinkLocalFile(this.userInfo.cccd_img_truoc[0]),
       cccd_matsau:this.fileService.getPreviewLinkLocalFile(this.userInfo.cccd_img_sau[0]),
       hoten:this.userInfo.hoten ?this.userInfo.hoten :'' ,
@@ -1061,7 +1065,7 @@ export class ThiSinhDangKyComponent implements OnInit {
       email:this.userInfo.email ?this.userInfo.email :'' ,
       thuongtru:this.userInfo.thuongtru_diachi.fullAddress,
       doituong : item.parent_id !== 0 ? 'doitac' : this.userInfo.doituong,
-      dothi:dothi.title,
+      dothi:dothi ?  dothi.title : '',
       capthi:dothi.levels.map(m=>{
         m['check'] = m.value == item.capthi
         return m
