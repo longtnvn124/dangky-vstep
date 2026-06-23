@@ -263,12 +263,12 @@
             </div>
 
             <div class="row justify-content-center" *ngIf="f['doituong'].value == 'dhtn'">
-              <div class="col-4">
+              <div class="col-12 col-lg-4">
                 <div class="form-row">
                   <ovic-avata-type-thpt [resizeToWidth] = "800" class="w-100" [disabled]=" f['status'].value ===1" [formField]="f['doituong_anhthe']" [public]="1"
                                         [aspectRatio]="3 / 2" [accept]="'.jpg,.png,.jpeg'" [site]="true"
                                         [textView]="'<span>Tải ảnh thẻ sinh viên(*)</span>'"
-                                        [file_size]="100" [file_name]="file_name" [footage]="'vertical'" [rotateShow] = true
+                                        [file_size]="100" [file_name]="file_name" [rotateShow] = true
                   ></ovic-avata-type-thpt>
                 </div>
               </div>

@@ -36,7 +36,8 @@
     }
 
   .imgchecksize.horizontal {
-    max-height: calc(100% - 10px);
+    max-width: calc(100% - 10px);
+    height:unset;
   }
 
 }
