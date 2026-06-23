@@ -151,11 +151,14 @@ export class HoanComponent implements OnInit {
   menuName = 'thisinhduthi';
   sizeFullWidth: number;
   subscription = new Subscription();
-  index = 1;
-  search = '';
-  needUpdate = false;
+  index: number = 1;
+  search : string= '';
+  needUpdate: boolean = false;
   private inputChanged: Subject<string> = new Subject<string>();
   listDonvi:DonVi[];
+
+  huyOrderSelect :HuyOrders;
+  viewInfoHuyOrder:boolean = false;
   constructor(
     private themeSettingsService: ThemeSettingsService,
     private ordersService: VstepOrdersService,
@@ -202,7 +205,6 @@ export class HoanComponent implements OnInit {
       next: ([ kehoachthi,donvi]) => {
         this.dsKehoachthi = kehoachthi;
         this.listDonvi= donvi ;
-        console.log(donvi);
         if (this.dsKehoachthi) {
           this.loadData(1);
         }
@@ -259,12 +261,7 @@ export class HoanComponent implements OnInit {
   }
 
   caphsk_id_select:number= null;
-  loadDropdowCapHSK(event) {
-    // console.log(event)
-    this.caphsk_id_select = event;
-    this.page = 1;
-    this.loadData(this.page, this.kehoach_id, this.search);
-  }
+
 
   onSearch(text: string) {
     // this.dataSelct = [];
@@ -343,17 +340,15 @@ export class HoanComponent implements OnInit {
   }
   selectDataByCheckbox(event){
     if (event.checked === true){
-      // console.log(this.listData);
+
       this.dataSelct = this.listData.filter(f=>f.state !== 1);
     }else {
       this.dataSelct = [];
     }
   }
 
-  huyOrderSelect :HuyOrders;
-  viewInfoHuyOrder:boolean = false;
   btnViewInfoHuyOrder(item:HuyOrders){
-    // console.log(item);
+
     this.huyOrderSelect = item;
     this.viewInfoHuyOrder = true;
   }
@@ -439,7 +434,7 @@ export class HoanComponent implements OnInit {
       const newPercent: number = percent + step;
       this.notifi.loadingAnimationV2({process: {percent: newPercent}});
       let content=`
-        <p><strong>THÔNG BÁO HỦY, ĐỔI ĐỢT THI CỦA THÍ SINH ĐĂNG KÝ BÀI THI HSK TRÊN MÁY TÍNH CỦA ĐẠI HỌC THÁI NGUYÊN (TNU): </strong></p>
+        <p><strong>THÔNG BÁO HỦY, ĐỔI ĐỢT THI CỦA THÍ SINH ĐĂNG KÝ BÀI THI VSTEP TRÊN MÁY TÍNH CỦA ĐẠI HỌC THÁI NGUYÊN (TNU): </strong></p>
         <p><strong>I.Thông tin cá nhận </strong></p>
         <table>
             <tr><td style="width:200px">Họ và tên:</td><td style="width:300px">${item['_hoten']}</td></tr>
@@ -486,7 +481,7 @@ export class HoanComponent implements OnInit {
         to:item['_email'],
         // to:'longkakainfo@gmail.com',
         message:content,
-        title: ' Email thông báo hoãn, hủy dự thi HSK',
+        title: ' Email thông báo hoãn, hủy dự thi VSTEP',
 
       }
 

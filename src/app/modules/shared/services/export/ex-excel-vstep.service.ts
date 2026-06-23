@@ -442,7 +442,7 @@ export class ExExcelVstepService {
 
     if(arrPhong.length>0){
       arrPhong.forEach((m,index)=>{
-        const sheetName = (m['_diemthi'] ? m['_diemthi']['code']:'') + ' - P ' + m['phongthi'];
+        const sheetName = (m['_diemthi'] ? m['_diemthi']['code']:'') + ' - P' + m['phongthi'];
         this.exItemDsThisinhXacnhan(m,hoidong,sheetName,workbook, monName, type);
       })
     }
@@ -677,7 +677,7 @@ export class ExExcelVstepService {
       { width: 13 },
       { width: 18 },
       { width: 10 },
-      { width: 10 },
+      { width: 18 },
       { width: 18 },
       { width: 14 },
       { width: 14 },

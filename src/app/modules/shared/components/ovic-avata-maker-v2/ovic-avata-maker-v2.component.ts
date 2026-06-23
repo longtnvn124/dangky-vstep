@@ -202,6 +202,10 @@ export class OvicAvataMakerV2Component implements OnInit {
     this.croppedPanelMode = 'open';
   }
 
+  changeCamera(){
+
+  }
+
   // imageCropped( event : ImageCroppedEvent ) {
   // 	this.croppedImage = event;
   // 	this.result.data  = event;

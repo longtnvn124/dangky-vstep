@@ -46,3 +46,14 @@
   border-radius: 4px;
   padding: 10px;
 }
+.pdf-page {
+  width: 21cm;
+  min-height: 27cm;
+  background: #fff;
+  box-sizing: border-box;
+  padding:20px 40px;
+}
+
+.page-break {
+  page-break-before: always;
+}

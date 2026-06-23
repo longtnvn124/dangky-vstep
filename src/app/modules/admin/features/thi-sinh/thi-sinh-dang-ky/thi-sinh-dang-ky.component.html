@@ -199,11 +199,13 @@
                                   Bạn đã hủy dự thi
                                 </div>
                                 <ng-template #notHuy>
-                                  <button pRipple pButton class="p-button-success" icon="pi pi-file" pTooltip="Phiếu đăng ký điện tử" (click)="viewPhieudangky(item)"></button>
-<!--                                  <button pRipple pButton class="p-button-secondary" icon="pi pi-tag" pTooltip="Phiếu dự thi" (click)="viewPhieuDuthi(item)"></button>-->
-                                  <button pRipple pButton class="" icon="pi pi-sync" pTooltip="Đổi đợt thi"
-                                          (click)="btnViewChange(item)"></button>
-                                  <button pRipple pButton class="p-button-danger" icon="pi pi-calendar-times" pTooltip="Hủy dự thi"
+                                  <button pRipple pButton class="p-button-success" icon="pi pi-file"
+                                          pTooltip="Phiếu đăng ký điện tử" (click)="viewPhieudangky(item)"></button>
+                                  <!--                                  <button pRipple pButton class="p-button-secondary" icon="pi pi-tag" pTooltip="Phiếu dự thi" (click)="viewPhieuDuthi(item)"></button>-->
+                                  <!--                                  <button pRipple pButton class="" icon="pi pi-sync" pTooltip="Đổi đợt thi"-->
+                                  <!--                                          (click)="btnViewChange(item)"></button>-->
+                                  <button pRipple pButton class="p-button-danger" icon="pi pi-calendar-times"
+                                          pTooltip="Hủy dự thi"
                                           (click)="btnViewCancel(item)"></button>
                                 </ng-template>
 
@@ -212,14 +214,15 @@
                             <ng-template #notParentNotPay>
                               <ng-container *ngIf="item.trangthai_thanhtoan == 1 ">
                                 <div class="d-flex justify-content-center" style=" gap:20px;">
-                                  <button pRipple pButton icon="pi pi-file" pTooltip="Phiếu đăng ký điện tử" (click)="viewPhieudangky(item)"></button>
-<!--                                  <button pRipple pButton icon="pi pi-tag" pTooltip="Phiếu dự thi" (click)="viewPhieuDuthi(item)"></button>-->
+                                  <button pRipple pButton icon="pi pi-file" pTooltip="Phiếu đăng ký điện tử"
+                                          (click)="viewPhieudangky(item)"></button>
+                                  <!--                                  <button pRipple pButton icon="pi pi-tag" pTooltip="Phiếu dự thi" (click)="viewPhieuDuthi(item)"></button>-->
                                 </div>
                               </ng-container>
 
                               <ng-container *ngIf="item.trangthai_thanhtoan !== 1 ">
-<!--                                <button pRipple pButton icon="pi pi-file" (click)="viewPhieudangky(item)"></button>-->
-<!--                                <button pRipple pButton icon="pi pi-tag" pTooltip="Phiếu dự thi" class="p-button-warning" (click)="viewPhieuDuthi(item)"></button>-->
+                                <!--                                <button pRipple pButton icon="pi pi-file" (click)="viewPhieudangky(item)"></button>-->
+                                <!--                                <button pRipple pButton icon="pi pi-tag" pTooltip="Phiếu dự thi" class="p-button-warning" (click)="viewPhieuDuthi(item)"></button>-->
 
 
                                 <ng-container *ngIf="item.trangthai_duyet == 1 else notDuyet">
@@ -466,8 +469,8 @@
         <i class="pi pi-times" style="font-size: 80px;"></i>
         <div class="text-center" style="font-size: 17px;">
           <p>Yêu cầu của bạn đã bị hủy</p>
-          <p>Mọi thắc mắc liên hệ đt: <strong>Điện thoại:</strong> 0345409227, <strong>Email:</strong> hsk@tnu.edu.vn
-          </p>
+          <p>Mọi thắc mắc xin liên hệ : Điện thoại: 0962.529.996, email: phongkhaothi.cteq@tnu.edu.vn</p>
+
         </div>
       </div>
 
@@ -494,7 +497,8 @@
             <div>
               <strong>Điện thoại:</strong> 0977.529.996 (chứng chỉ VSTEP) - 0913.629.996 (Giấy chứng nhận năng lực ngoại
               ngữ của Đại học Thái Nguyên), <strong>Email:</strong> phongkhaothi.cteq@tnu.edu.vn, <strong>Địa
-              chỉ:</strong> Địa chỉ: Trung tâm Khảo thí và Quản lý chất lượng giáo dục - Phường Phan Đình Phùng - Tỉnh Thái Nguyên
+              chỉ:</strong> Địa chỉ: Trung tâm Khảo thí và Quản lý chất lượng giáo dục - Phường Phan Đình Phùng - Tỉnh
+              Thái Nguyên
             </div>
           </div>
         </div>
@@ -570,7 +574,8 @@
 </p-dialog>
 
 <!-- Phiếu đăng ký điện tử (Flexbox) -->
-<p-dialog header="Phiếu đăng ký điện tử (Flex)" [(visible)]="isShower" [modal]="true" [style]="{width: 'calc(100% - 20px)'}"
+<p-dialog header="Phiếu đăng ký điện tử (Flex)" [(visible)]="isShower" [modal]="true"
+          [style]="{width: 'calc(100% - 20px)'}"
           [maximizable]="true"
           [draggable]="false" [resizable]="false">
 
@@ -580,319 +585,209 @@
 
   <div *ngIf="phieudangkydientu" class="w-100 h-100 d-flex flex-column align-phieu "
        style="background: #fafafa;color: #000000">
-    <div class="phieu_content" style="width:21cm;height:27cm;background: #fff; padding: 20px 40px;" #dataToExport>
-      <table class="w-100 my-3 px-2">
-        <tr>
-          <td>
-            <div class="--font-times-new-roman d-flex justify-content-center align-items-center flex-column">
-              <div class="text-center"> ĐẠI HỌC THÁI NGUYÊN</div>
-              <div><strong ><u>HỘI ĐỒNG THI ĐÁNH GIÁ NLNN</u></strong></div>
-            </div>
-          </td>
-          <td>
-            <div class="--font-times-new-roman d-flex justify-content-center align-items-center flex-column">
-              <div class="text-center"><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong></div>
-              <div><strong><u>Độc lập – Tự do – Hạnh phúc</u></strong></div>
-            </div>
-          </td>
-        </tr>
-      </table>
-
-      <div class="--font-times-new-roman text-center my-1" style="font-size:20px;"><strong>PHIẾU ĐĂNG KÝ DỰ THI</strong>
-      </div>
-      <div class="--font-times-new-roman text-center my-1" style="font-size:18px;"><strong>ĐÁNH GIÁ NĂNG LỰC NGOẠI NGỮ
-        CỦA ĐẠI HỌC THÁI NGUYÊN</strong>
-      </div>
-
-      <div class="row mx-0 mt-2">
-        <div class="col d-flex justify-content-center">
-          <div class="anh-the ">
-            <img [src]="phieudangkydientu.anh_chandung" alt="">
-          </div>
-        </div>
-        <div class="col">
-          <div class="anh-the">
-            <ng-container *ngIf="phieudangkydientu.doituong_anhthe else notAnhThe">
-              <img [src]="phieudangkydientu.doituong_anhthe" alt="">
-
-            </ng-container>
-            <ng-template #notAnhThe>
-              <div class="d-flex justify-content-center align-items-center flex-column">
-                <span style="font-weight: 500;">Ảnh thẻ sinh viên</span>
-                <span style="font-weight: 500;">(Nếu có)</span>
+    <div class="phieu_content" #dataToExport>
+      <div class="pdf-page">
+        <table class="w-100 my-3 px-2">
+          <tr>
+            <td>
+              <div class="--font-times-new-roman d-flex justify-content-center align-items-center flex-column">
+                <div class="text-center">ĐẠI HỌC THÁI NGUYÊN</div>
+                <div><strong><u>HỘI ĐỒNG THI ĐÁNH GIÁ NLNN</u></strong></div>
               </div>
-            </ng-template>
+            </td>
+            <td>
+              <div class="--font-times-new-roman d-flex justify-content-center align-items-center flex-column">
+                <div class="text-center"><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong></div>
+                <div><strong><u>Độc lập – Tự do – Hạnh phúc</u></strong></div>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        <div class="--font-times-new-roman text-center my-1" style="font-size:20px;"><strong>PHIẾU ĐĂNG KÝ DỰ
+          THI</strong>
+        </div>
+        <div class="--font-times-new-roman text-center my-1" style="font-size:18px;"><strong>ĐÁNH GIÁ NĂNG LỰC NGOẠI NGỮ
+          CỦA ĐẠI HỌC THÁI NGUYÊN</strong>
+        </div>
+
+        <div class="row row-cols-2 mx-0 mt-2">
+          <div class="col-6 d-flex justify-content-center">
+            <div class="anh-the d-flex justify-content-center " style="height: 200px;">
+              <img [src]="phieudangkydientu.anh_chandung" alt="">
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="anh-the" style="height: 200px;">
+              <ng-container *ngIf="phieudangkydientu.doituong_anhthe else notAnhThe">
+                <img [src]="phieudangkydientu.doituong_anhthe" alt="">
+
+              </ng-container>
+              <ng-template #notAnhThe>
+                <div class="d-flex justify-content-center align-items-center flex-column">
+                  <span style="font-weight: 500;">Ảnh thẻ sinh viên</span>
+                  <span style="font-weight: 500;">(Nếu có)</span>
+                </div>
+              </ng-template>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="table w-100 mt-2">
-        <div class="table-flex w-100">
-          <!-- PHẦN I -->
-          <div class="table-flex-row" style="background: #C1E4F5">
-            <div class="table-flex-cell colspan-3"><strong>PHẦN I - THÔNG TIN CÁ NHÂN</strong></div>
-          </div>
-
-          <div class="table-flex-row">
-            <div class="table-flex-cell ">
-              1. Họ và tên: {{ phieudangkydientu.hoten }}
+        <div class="table w-100 mt-2">
+          <div class="table-flex w-100">
+            <!-- PHẦN I -->
+            <div class="table-flex-row" style="background: #C1E4F5">
+              <div class="table-flex-cell colspan-3"><strong>PHẦN I - THÔNG TIN CÁ NHÂN</strong></div>
             </div>
-            <div class="table-flex-cell" style="max-width: 240px;">
-              <div>
-                2. Giới tính:
-                <span style="margin-left: 10px;">
+
+            <div class="table-flex-row">
+              <div class="table-flex-cell ">
+                1. Họ và tên: {{ phieudangkydientu.hoten }}
+              </div>
+              <div class="table-flex-cell" style="max-width: 240px;">
+                <div>
+                  2. Giới tính:
+                  <span style="margin-left: 10px;">
                   <i [ngClass]="phieudangkydientu.gioitinh !== 'name' ? 'fa fa-square-o' : 'fa fa-check-square-o'"></i>
                 </span> Nam
-                <span style="margin-left: 10px;">
+                  <span style="margin-left: 10px;">
                   <i [ngClass]="phieudangkydientu.gioitinh == 'name' ? 'fa fa-square-o' : 'fa fa-check-square-o'"></i>
                 </span> Nữ
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="table-flex-row">
-            <div class="table-flex-cell" style="width: 280px;flex: unset;">
-              3. Ngày sinh: {{phieudangkydientu.ngaysinh}}
+            <div class="table-flex-row">
+              <div class="table-flex-cell" style="width: 280px;flex: unset;">
+                3. Ngày sinh: {{ phieudangkydientu.ngaysinh }}
+              </div>
+              <div class="table-flex-cell ">
+                4. Nơi sinh: {{ phieudangkydientu.noisinh }}
+              </div>
             </div>
-            <div class="table-flex-cell ">
-              4. Nơi sinh: {{phieudangkydientu.noisinh}}
-            </div>
-          </div>
 
-          <div class="table-flex-row">
-            <div class="table-flex-cell">
-              5. Số CCCD: {{phieudangkydientu.cccd_so}}
+            <div class="table-flex-row">
+              <div class="table-flex-cell">
+                5. Số CCCD: {{ phieudangkydientu.cccd_so }}
+              </div>
+              <div class="table-flex-cell">
+                6. ngày cấp: {{ phieudangkydientu.cccd_ngaycap }}
+              </div>
+              <div class="table-flex-cell">
+                7. Nơi cấp: {{ phieudangkydientu.cccd_noicap }}
+              </div>
             </div>
-            <div class="table-flex-cell">
-              6. ngày cấp: {{phieudangkydientu.cccd_ngaycap}}
-            </div>
-            <div class="table-flex-cell">
-              7. Nơi cấp: {{phieudangkydientu.cccd_noicap}}
-            </div>
-          </div>
 
-          <div class="table-flex-row">
-            <div class="table-flex-cell colspan-2">
-              8. Điện thoại: {{phieudangkydientu.phone}}
+            <div class="table-flex-row">
+              <div class="table-flex-cell colspan-2">
+                8. Điện thoại: {{ phieudangkydientu.phone }}
+              </div>
+              <div class="table-flex-cell colspan-2">
+                9. Email: {{ phieudangkydientu.email }}
+              </div>
             </div>
-            <div class="table-flex-cell colspan-2">
-              9. Email: {{phieudangkydientu.email}}
-            </div>
-          </div>
 
-          <div class="table-flex-row">
-            <div class="table-flex-cell colspan-3">
-              10. Địa chỉ thường trú: {{phieudangkydientu.thuongtru}}
+            <div class="table-flex-row">
+              <div class="table-flex-cell colspan-3">
+                10. Địa chỉ thường trú: {{ phieudangkydientu.thuongtru }}
+              </div>
             </div>
-          </div>
 
-          <div class="table-flex-row">
-            <div class="table-flex-cell colspan-3">
-              11. Đối tượng dự thi:
+            <div class="table-flex-row">
+              <div class="table-flex-cell colspan-3">
+                11. Đối tượng dự thi:
+              </div>
             </div>
-          </div>
 
-          <div class="table-flex-row">
-            <div class="table-flex-cell" style="width: 280px;flex: unset;">
+            <div class="table-flex-row">
+              <div class="table-flex-cell" style="width: 280px;flex: unset;">
               <span>
                 <i [ngClass]="phieudangkydientu.doituong !== 'dhtn' ? 'fa fa-square-o' : 'fa fa-check-square-o'"></i>
               </span> Người học của Đại học Thái Nguyên
-            </div>
-            <div class="table-flex-cell">
+              </div>
+              <div class="table-flex-cell">
               <span>
                 <i [ngClass]="phieudangkydientu.doituong !== 'doitac' ? 'fa fa-square-o' : 'fa fa-check-square-o'"></i>
               </span> Người học của đơn vị đối tác
-            </div>
-            <div class="table-flex-cell">
+              </div>
+              <div class="table-flex-cell">
               <span>
                 <i [ngClass]="phieudangkydientu.doituong !== 'tudo' ? 'fa fa-square-o' : 'fa fa-check-square-o'"></i>
               </span> Thí sinh tự do
-            </div>
-          </div>
-
-          <!-- PHẦN 2 -->
-          <div class="table-flex-row" style="background: #C1E4F5">
-            <div class="table-flex-cell colspan-3">
-              <strong>PHẦN II – THÔNG TIN ĐĂNG KÝ THI</strong>
-            </div>
-          </div>
-
-          <div class="table-flex-row">
-            <div class="table-flex-cell">1. Đợt thi: {{phieudangkydientu.dothi}}</div>
-          </div>
-
-          <div class="table-flex-row">
-            <div class="table-flex-cell">2. Ngôn ngữ thi: {{phieudangkydientu.ngonngu}}</div>
-          </div>
-          <div class="table-flex-row">
-            <div class="table-flex-cell">3. Cấp độ thi:</div>
-          </div>
-
-          <div class="table-flex-row flex-wrap" >
-            <div class="table-flex-cell" style="width: 33.33%;height: 36.8px;" *ngFor="let item of phieudangkydientu.capthi">
-              <div *ngIf="item.label">
-                <i [ngClass]="!item.check ? 'fa fa-square-o' : 'fa fa-check-square-o' " class="mr-2"></i>
-                <span>{{item.label}}</span>
               </div>
             </div>
-          </div>
 
-          <!-- PHẦN III -->
-          <div class="table-flex-row" style="background: #C1E4F5">
-            <div class="table-flex-cell colspan-3"><strong>PHẦN III - CAM KẾT CỦA THÍ SINH</strong></div>
-          </div>
-
-          <div class="table-flex-row">
-            <div class="table-flex-cell colspan-3">
-              <span><i class="fa fa-check-square-o"></i></span> Thí sinh cam kết chịu trách nhiệm về những thông tin cung cấp ở phía trên, nếu sai sót thí sinh có thể bị hủy tư cách dự thi và kết quả thi
+            <!-- PHẦN 2 -->
+            <div class="table-flex-row" style="background: #C1E4F5">
+              <div class="table-flex-cell colspan-3">
+                <strong>PHẦN II – THÔNG TIN ĐĂNG KÝ THI</strong>
+              </div>
             </div>
+
+            <div class="table-flex-row">
+              <div class="table-flex-cell">1. Đợt thi: {{ phieudangkydientu.dothi }}</div>
+            </div>
+
+            <div class="table-flex-row">
+              <div class="table-flex-cell">2. Ngôn ngữ thi: {{ phieudangkydientu.ngonngu }}</div>
+            </div>
+            <div class="table-flex-row">
+              <div class="table-flex-cell">3. Cấp độ thi:</div>
+            </div>
+
+            <div class="table-flex-row flex-wrap">
+              <div class="table-flex-cell" style="width: 33.33%;height: 36.8px;"
+                   *ngFor="let item of phieudangkydientu.capthi">
+                <div *ngIf="item.label">
+                  <i [ngClass]="!item.check ? 'fa fa-square-o' : 'fa fa-check-square-o' " class="mr-2"></i>
+                  <span>{{ item.label }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- PHẦN III -->
+            <div class="table-flex-row" style="background: #C1E4F5">
+              <div class="table-flex-cell colspan-3"><strong>PHẦN III - CAM KẾT CỦA THÍ SINH</strong></div>
+            </div>
+
+            <div class="table-flex-row">
+              <div class="table-flex-cell colspan-3">
+                <span><i class="fa fa-check-square-o"></i></span> Thí sinh cam kết chịu trách nhiệm về những thông tin
+                cung cấp ở phía trên, nếu sai sót thí sinh có thể bị hủy tư cách dự thi và kết quả thi
+              </div>
+            </div>
+
+            <div class="table-flex-row">
+              <div class="table-flex-cell colspan-3">
+                <span><i class="fa fa-check-square-o"></i></span> Thí sinh cam kết chấp hành đúng và đầy đủ Quy chế thi
+                và Quy định của Hội đồng thi đánh giá năng lực ngoại ngữ tại Đại học Thái Nguyên.
+              </div>
+            </div>
+
           </div>
 
-          <div class="table-flex-row">
-            <div class="table-flex-cell colspan-3">
-              <span><i class="fa fa-check-square-o"></i></span> Thí sinh cam kết chấp hành đúng và đầy đủ Quy chế thi và Quy định của Hội đồng thi đánh giá năng lực ngoại ngữ tại Đại học Thái Nguyên.
-            </div>
-          </div>
 
         </div><!-- end table-flex -->
+      </div>
+      <div class="pdf-page page-break">
+        <div class="row row-cols-2 mx-0 mt-3">
+          <div class="col-6 ">
+            <div class="anh-the ">
+              <div class="text-center p-1"> CCCD (Hộ chiếu) mặt trước</div>
+              <img [src]="phieudangkydientu.cccd_mattruoc" alt="">
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="anh-the ">
+              <div class="text-center p-1"> CCCD (Hộ chiếu) mặt trước</div>
+
+              <img [src]="phieudangkydientu.cccd_matsau" alt="">
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 </p-dialog>
 
 
-<!-- phiếu dự thi-->
-<!--<p-dialog header="Phiếu dự thi" [(visible)]="isShower" [modal]="true" [style]="{width: 'calc(100% - 20px)'}"-->
-<!--          [maximizable]="true"-->
-<!--          [draggable]="false" [resizable]="false">-->
-
-<!--  <ng-template pTemplate="header">-->
-<!--    <button pButton pRipple label="Xuất phiếu dự thi" (click)="downloadAsPdf()"></button>-->
-
-<!--  </ng-template>-->
-<!--  <div *ngIf="phieuduthi" class="w-100 h-100 d-flex flex-column align-phieu "-->
-<!--       style="background: #fafafa;color: #000000">-->
-<!--    <div class="m-2 w-100 btn_exportPhieeus" >-->
-<!--      <button pButton pRipple label="Xuất phiếu dự thi" (click)="downloadAsPdf()"></button>-->
-<!--    </div>-->
-<!--    <div class="phieu_content" style="width:21cm;height:27cm;background: #fff; padding: 20px 40px;" #dataToExport>-->
-<!--      <table class="w-100 my-3 px-2">-->
-<!--        <tr>-->
-<!--          <td>-->
-<!--            <div class="&#45;&#45;font-times-new-roman d-flex justify-content-center align-items-center flex-column">-->
-<!--              <div class="text-center"><strong><u>HỘI ĐỒNG THI ĐẠI HỌC THÁI NGUYÊN</u></strong></div>-->
-<!--              <div>HỘI ĐỒNG ĐÁNH GIÁ NLNN</div>-->
-<!--            </div>-->
-<!--          </td>-->
-<!--          <td>-->
-<!--            <div class="&#45;&#45;font-times-new-roman d-flex justify-content-center align-items-center flex-column">-->
-<!--              <div class="text-center"><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong></div>-->
-<!--              <div><strong><u>Độc lập – Tự do – Hạnh phúc</u></strong></div>-->
-<!--            </div>-->
-<!--          </td>-->
-<!--        </tr>-->
-
-<!--      </table>-->
-
-<!--      <div class="&#45;&#45;font-times-new-roman text-center my-5" style="font-size:22px;"><strong>GIẤY BÁO DỰ THI</strong>-->
-<!--      </div>-->
-<!--      <div class="row mx-0 &#45;&#45;font-times-new-roman">-->
-<!--        <div class="col-9">-->
-<!--          <div>Họ và tên thí sinh: <span><b>{{ userInfo.hoten }}</b></span></div>-->
-<!--          <div class="row mx-0">-->
-<!--            <div class="p-0 my-3 col-4">Ngày sinh:{{ userInfo.ngaysinh }}</div>-->
-<!--            <div class="p-0 my-3 col-4">Dân tộc: {{ userInfo.dantoc }}</div>-->
-<!--            <div class="p-0 my-3 col-4">Nam/Nữ: {{ userInfo.gioitinh? (userInfo.gioitinh.toLowerCase() == 'nu' ? 'Nữ' : Nam)  : '' }}</div>-->
-<!--          </div>-->
-
-<!--          <div class="row mx-0">-->
-<!--            <div class="p-0 my-3 col-8">Nơi sinh:{{ userInfo.noisinh }}</div>-->
-<!--            <div class="p-0 my-3 col-4">Số CCCD: {{ userInfo.cccd_so }}</div>-->
-
-<!--          </div>-->
-<!--          <div class="my-3">Hộ khẩu TT: {{ userInfo.thuongtru_diachi.fullAddress }}</div>-->
-
-<!--          <div class="row mx-0">-->
-<!--            <div class="my-3 p-0 col-4">Đối tượng: {{ phieuduthi.doituong }}</div>-->
-<!--          </div>-->
-
-<!--          <div class="my-3">Hội đồng thi: TNU - Hội đồng thi Đại học Thái Nguyên</div>-->
-
-<!--        </div>-->
-<!--        <div class="col-3">-->
-<!--          <img class="w-100"-->
-<!--               [src]="phieuduthi ? (phieuduthi.anh_chandung | ovicSafeUrl) : 'src/assets/images/placeholder.jpg' "-->
-<!--               alt="">-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <ng-container *ngIf="phieuduthi.kehoach_id >= 26 else isNot26">-->
-<!--        <div class="&#45;&#45;font-times-new-roman my-3" style="padding-left:15px">-->
-<!--          Điểm thi:-->
-<!--          {{-->
-<!--            phieuduthi.info_diemthi ? phieuduthi.info_diemthi['diemthi'] + ' - ' + phieuduthi.info_diemthi['diachi'] : 'Địa chỉ Điểm thi: Trung tâm Khảo thí và Quản lý chất lượng giáo dục - Phường Phan Đình Phùng - tỉnh Thái Nguyên'-->
-<!--          }}-->
-
-<!--        </div>-->
-<!--        <div class="&#45;&#45;font-times-new-roman my-3" style="padding-left:15px">Chỉ dẫn đường: <a [href]="phieuduthi.info_diemthi ? phieuduthi.info_diemthi['map'] : 'https://goo.gl/maps/X21Tx1BV6dKDVLHm6'">-->
-<!--          {{phieuduthi.info_diemthi ? phieuduthi.info_diemthi['map'] : 'https://goo.gl/maps/X21Tx1BV6dKDVLHm6'}}-->
-
-<!--        </a></div>-->
-<!--      </ng-container>-->
-<!--      <ng-template #isNot26>-->
-<!--        <div class="&#45;&#45;font-times-new-roman my-3" style="padding-left:15px">-->
-<!--          Điểm thi: Địa chỉ Điểm thi: Trung tâm Khảo thí và Quản lý chất lượng giáo dục - Phường Phan Đình Phùng - tỉnh Thái Nguyên-->
-
-
-<!--        </div>-->
-<!--        <div class="&#45;&#45;font-times-new-roman my-3" style="padding-left:15px">Chỉ dẫn đường: <a href="https://goo.gl/maps/X21Tx1BV6dKDVLHm6">-->
-<!--          https://goo.gl/maps/X21Tx1BV6dKDVLHm6-->
-
-<!--        </a></div>-->
-<!--      </ng-template>-->
-
-<!--      <div class="&#45;&#45;font-times-new-roman" style="padding:15px">-->
-
-<!--        &lt;!&ndash;        <div style="font-size:16px;"><span><strong style="color:#e43d21">Lưu ý:</strong></span> Thí sinh thi môn toán&ndash;&gt;-->
-<!--        &lt;!&ndash;          mặt tại địa điểm thi từ <strong style="color:#e43d21;">06 giờ 30</strong> để hoàn thành thủ tục dự thi tại&ndash;&gt;-->
-<!--        &lt;!&ndash;          Trung tâm Khảo thí và Quản lý chất lượng giáo&ndash;&gt;-->
-<!--        &lt;!&ndash;          dục, Phường Tân Thịnh TP Thái Nguyên.&ndash;&gt;-->
-<!--        &lt;!&ndash;        </div>&ndash;&gt;-->
-<!--        <div>-->
-<!--          <div>Lưu ý:</div>-->
-<!--          <div style="color:red"><strong><i>- Buổi sáng: Thí sinh có mặt tại địa điểm thi trước 06 giờ 00</i></strong></div>-->
-<!--          <div style="color:red"><strong><i>- Buổi chiều: Thí sinh có mặt tại địa điểm thi trước 12 giờ 45</i></strong></div>-->
-<!--          <div >- Thông tin chi tiết về danh sách phòng thi và lịch thi xem trong đường link thông báo:</div>-->
-<!--        </div>-->
-<!--        <div  style="text-align:center;font-size: 22px;padding:10px;"><a style="text-decoration: underline;" [href]="hoidongInfo && hoidongInfo.link_phongthi ? hoidongInfo.link_phongthi : '' ">-->
-<!--          {{hoidongInfo && hoidongInfo.link_phongthi ? hoidongInfo.link_phongthi : configLink['title']}}-->
-<!--        </a></div>-->
-<!--        <div style="text-align:center;font-weight:bold">THÔNG TIN DỰ THI CỦA THÍ SINH</div>-->
-<!--      </div>-->
-<!--      &lt;!&ndash;      <div class="&#45;&#45;font-times-new-roman my-3" style="padding-left:15px"><strong>Số báo danh:</strong>&ndash;&gt;-->
-<!--      &lt;!&ndash;        <span>{{ 'TNU' + phieuduthi.sobaodanh }}</span></div>&ndash;&gt;-->
-
-<!--      <div class="&#45;&#45;font-times-new-roman" style="padding:0 15px 15px">-->
-<!--        <table class="w-100" border="1px solid #ccc">-->
-<!--          <tr>-->
-<!--            <td class="text-center font-weight-bold">TT</td>-->
-<!--            <td class="text-center font-weight-bold">Số báo danh</td>-->
-<!--            <td class="text-center font-weight-bold">Môn thi</td>-->
-<!--            &lt;!&ndash;            <td class="text-center font-weight-bold">Phòng thi</td>&ndash;&gt;-->
-<!--            <td class="text-center font-weight-bold">Ngày thi</td>-->
-<!--            &lt;!&ndash;            <td class="text-center font-weight-bold">Thời gian gọi thí sinh vào phòng thi</td>&ndash;&gt;-->
-<!--          </tr>-->
-<!--          <tr *ngFor="let item of phieuduthi['phongthi'], let i = index">-->
-<!--            <td class="text-center">{{ i + 1 }}</td>-->
-<!--            <td class="text-center">{{ phieuduthi.sobaodanh }}</td>-->
-<!--            <td>{{ item['monthi'] }}</td>-->
-<!--            &lt;!&ndash;            <td class="text-center">{{ item['phongthi'] }}</td>&ndash;&gt;-->
-<!--            <td class="text-center">{{ item['ngaythi'] }}</td>-->
-<!--            &lt;!&ndash;            <td class="text-center">{{ item['time_start'] }}</td>&ndash;&gt;-->
-<!--          </tr>-->
-<!--        </table>-->
-<!--      </div>-->
-<!--      <div style="height:30px;margin:0 0 10px 0"></div>-->
-
-<!--    </div>-->
-
-<!--  </div>-->
-<!--</p-dialog>-->

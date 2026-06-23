@@ -70,7 +70,7 @@
                   <div class="col col-lg-4 col-xl-4">
                     <div class="form-row" [class.fieldset--error]="f['dantoc'].touched && f['dantoc'].invalid"
                       [class.fieldset--invalid]="f['dantoc'].touched && f['dantoc'].valid">
-                      <label>Dân tộc </label>
+                      <label>Dân tộc<span class="ovic-mark">*</span> </label>
                       <p-dropdown class="w-100" [filter]="true" [style]="{'width':'100%'}" [options]="dantoc"
                         formControlName="dantoc" optionLabel="label" optionValue="label" [showClear]=true
                         placeholder="Chọn..."></p-dropdown>
@@ -87,7 +87,7 @@
                   <div class="col col-lg-4 col-xl-4">
                     <div class="form-row" [class.fieldset--error]="f['noisinh'].touched && f['noisinh'].invalid"
                          [class.fieldset--invalid]="f['noisinh'].touched && f['noisinh'].valid">
-                      <label>Nơi sinh</label>
+                      <label>Nơi sinh<span class="ovic-mark">*</span></label>
                       <p-dropdown class="w-100" [filter]="true" [style]="{'width':'100%'}" [options]="provinceOptions"
                                   formControlName="noisinh" optionLabel="name" optionValue="name"
                                   placeholder="Chọn..."></p-dropdown>

@@ -1086,32 +1086,83 @@ export class ThiSinhDangKyComponent implements OnInit {
     this.isShower =true;
   }
 
+  // public downloadAsPdf(): void {
+  //   if(this.phieudangkydientu){
+  //
+  //
+  //     html2canvas(this.dataToExport.nativeElement, {
+  //       scale: 3, // Tăng chất lượng ảnh
+  //       allowTaint: true,
+  //       useCORS: true,
+  //     }).then(canvas => {
+  //       const imgData = canvas.toDataURL('image/jpeg', 1.0);
+  //       const imgWidth = 210; // Chiều rộng trang A4 (mm)
+  //       const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  //
+  //       const pdf = new jsPDF({
+  //         orientation: 'portrait', // Hoặc 'landscape' nếu cần
+  //         unit: 'mm',
+  //         format: 'a4'
+  //       });
+  //
+  //       pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+  //       pdf.save('phieudangkydientu.pdf');
+  //     });
+  //   }else{
+  //     this.notifi.toastError('Tải xuống không thành công');
+  //   }
+  //
+  // }
+
   public downloadAsPdf(): void {
-    if(this.phieudangkydientu){
 
-
-      html2canvas(this.dataToExport.nativeElement, {
-        scale: 3, // Tăng chất lượng ảnh
-        allowTaint: true,
-        useCORS: true,
-      }).then(canvas => {
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        const imgWidth = 210; // Chiều rộng trang A4 (mm)
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        const pdf = new jsPDF({
-          orientation: 'portrait', // Hoặc 'landscape' nếu cần
-          unit: 'mm',
-          format: 'a4'
-        });
-
-        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
-        pdf.save('phieudangkydientu.pdf');
-      });
-    }else{
+    if (!this.phieudangkydientu) {
       this.notifi.toastError('Tải xuống không thành công');
+      return;
     }
+    const pages = this.dataToExport.nativeElement
+      .querySelectorAll('.pdf-page');
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+    const pageWidth = 210;
+    const pageHeight = 297;
+    let index = 0;
 
+    const renderPage = (element: HTMLElement) => {
+
+      html2canvas(element, {
+        scale: 3,
+        useCORS: true,
+        allowTaint: true
+      }).then(canvas => {
+        const imgData = canvas.toDataURL(
+          'image/jpeg',
+          1
+        );
+        const imgHeight =
+          canvas.height * pageWidth / canvas.width;
+        if(index > 0){
+          pdf.addPage();
+        }
+        pdf.addImage(
+          imgData, 'JPEG', 0, 0, pageWidth, imgHeight
+        );
+        index++;
+        if(index < pages.length){
+          renderPage(
+            pages[index] as HTMLElement
+          );
+
+        }else{
+          pdf.save('phieudangkydientu.pdf');
+        }
+      });
+
+    };
+    renderPage(pages[0] as HTMLElement);
   }
 
 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators} from "@angular/forms";
 import { AuthService } from "@core/services/auth.service";
 import {
   EmailCheckValidator,
@@ -11,6 +11,10 @@ import { Router } from "@angular/router";
 import { switchMap } from "rxjs";
 import { RegisterAccountService } from "@shared/services/register-account.service";
 import { NotificationService } from '@core/services/notification.service';
+import {NgClass, NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
+import {TooltipModule} from "primeng/tooltip";
+import {RippleModule} from "primeng/ripple";
+import {ButtonModule} from "primeng/button";
 
 
 export function customInputValidator(): ValidatorFn {
@@ -37,6 +41,17 @@ export function customInputValidator(): ValidatorFn {
 @Component({
   selector: 'app-register-account',
   templateUrl: './register-account.component.html',
+  standalone: true,
+  imports: [
+    NgSwitch,
+    NgSwitchCase,
+    ReactiveFormsModule,
+    NgIf,
+    TooltipModule,
+    NgClass,
+    RippleModule,
+    ButtonModule
+  ],
   styleUrls: ['./register-account.component.css']
 })
 export class RegisterAccountComponent implements OnInit {

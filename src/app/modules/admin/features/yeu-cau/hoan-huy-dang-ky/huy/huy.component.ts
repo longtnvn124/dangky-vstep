@@ -203,7 +203,7 @@ export class HuyComponent implements OnInit {
       next: ([ kehoachthi,donvi]) => {
         this.dsKehoachthi = kehoachthi;
         this.listDonvi= donvi ;
-        console.log(donvi);
+
         if (this.dsKehoachthi) {
           this.loadData(1);
         }
@@ -224,11 +224,9 @@ export class HuyComponent implements OnInit {
       {
         next: ({data, recordsTotal}) => {
           this.recordsTotal = recordsTotal;
-          console.log(data);
-          this.listData = data.length > 0 ? data.map((m, index) => {
 
+          this.listData = data.length > 0 ? data.map((m, index) => {
             const thisinh = m['thisinh'];
-            console.log( thisinh)
             const parent = m['parent'];
             m['_indexTable'] = (page - 1) * 10 + (index + 1);
             m['_hoten'] = m.hoten;
@@ -242,9 +240,7 @@ export class HuyComponent implements OnInit {
             m['_cccd_img_truoc'] = thisinh && thisinh['cccd_img_truoc'] ? this.fileService.getPreviewLinkLocalFile(thisinh['cccd_img_truoc'][0]):'';
             m['_cccd_img_sau'] = thisinh && thisinh['cccd_img_sau'] ? this.fileService.getPreviewLinkLocalFile(thisinh['cccd_img_sau'][0]):'' ;
 
-            // if(!thisinh['cccd_img_truoc']){
-            //   console.log(thisinh)
-            // }
+
 
             m['_files'] = m['files'] !== null ? this.fileService.getPreviewLinkLocalFile(m['files'][0]) : '';
             m['_minhchung'] = m['minhchung'] !== null && m['minhchung'][0] ? this.fileService.getPreviewLinkLocalFile(m['minhchung'][0]) : '';
@@ -259,9 +255,10 @@ export class HuyComponent implements OnInit {
           this.isLoading = false;
           this.notifi.isProcessing(false);
         },
-        error: (err) => {
+        error: () => {
           this.isLoading = false;
           this.notifi.isProcessing(false);
+          this.notifi.toastError('Load dữ liệu không thành công');
         }
       }
     )

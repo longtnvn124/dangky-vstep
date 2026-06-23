@@ -1,8 +1,8 @@
-import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FormType, NgPaginateEvent, OvicForm, OvicTableStructure} from "@shared/models/ovic-models";
 import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Paginator, PaginatorModule} from "primeng/paginator";
-import {debounceTime, filter, forkJoin, Observable, Subject, Subscription} from "rxjs";
+import {debounceTime, filter, forkJoin, Observable, of, Subject, Subscription, switchMap} from "rxjs";
 import {NotificationService} from "@core/services/notification.service";
 import {BUTTON_NO, BUTTON_YES, OvicButton} from "@core/models/buttons";
 
@@ -32,10 +32,13 @@ import {
 import {
   KehoachFormLevelsComponent
 } from "@modules/admin/features/ke-hoach-thi/kehoach-form-levels/kehoach-form-levels.component";
-import {
-  KehoachthiDiemthiV3Component
-} from "@modules/admin/features/ke-hoach-thi/kehoachthi-diemthi-v3/kehoachthi-diemthi-v3.component";
 import {SharedModule} from "@shared/shared.module";
+import {User} from "@core/models/user";
+import {ThiSinhInfo} from "@shared/models/thi-sinh";
+import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
+import {FileService} from "@core/services/file.service";
+import {ExWordVstepService} from "@shared/services/export/ex-word-vstep.service";
+
 
 interface FormKehoachthi extends OvicForm {
   object: KeHoachThi;
@@ -65,6 +68,7 @@ interface FormKehoachthi extends OvicForm {
   standalone: true
 })
 export class KeHoachThiComponent implements OnInit {
+  @ViewChild( 'dataToExport' , { static : false } ) dataToExport : ElementRef;
   @ViewChild('fromUpdate', {static: true}) template: TemplateRef<any>;
   @ViewChild('formMembers', {static: true}) formMembers: TemplateRef<any>;
   @ViewChild('formDiemthi', {static: true}) formDiemthi: TemplateRef<any>;
@@ -124,8 +128,8 @@ export class KeHoachThiComponent implements OnInit {
       innerData: true,
       header: 'Trạng thái',
       sortable: false,
-      headClass: 'ovic-w-110px text-center',
-      rowClass: 'ovic-w-110px text-center'
+      headClass: 'ovic-w-150px text-center',
+      rowClass: 'ovic-w-150px text-center'
     },
 
   ];
@@ -172,6 +176,9 @@ export class KeHoachThiComponent implements OnInit {
     private kehoachthiDiemthiVstepService: KehoachthiDiemthiVstepService,
     private configsService: ConfigsService,
     private languagesService: LanguagesService,
+    private ordersService :VstepOrdersService,
+    private fileService: FileService,
+    private exWordVstepService: ExWordVstepService
   ) {
     const roleAdmin =  this.auth.roles.map(m=>m.name).includes('admin')
 
@@ -180,12 +187,13 @@ export class KeHoachThiComponent implements OnInit {
         tooltip: '',
         fieldType: 'buttons',
         field: [],
-        rowClass: 'ovic-w-110px text-center',
+        rowClass: 'ovic-w-200px text-center',
         checker: 'fieldName',
         header: 'Thao tác',
         sortable: false,
-        headClass: 'ovic-w-180px text-center',
+        headClass: 'ovic-w-200px text-center',
         buttons: [
+
           {
             tooltip: 'Cập nhật số lượng dự thi theo điểm thi',
             label: '',
@@ -199,6 +207,13 @@ export class KeHoachThiComponent implements OnInit {
             icon: 'pi pi-users',
             name: 'MEMBER_DECISION',
             cssClass: 'btn-success rounded'
+          },
+          {
+            tooltip: 'Hồ sơ lưu trữ đăng ký',
+            label: '',
+            icon: 'pi pi-server',
+            name: 'HOSO_DECISION',
+            cssClass: 'btn-secondary rounded'
           },
           {
             tooltip: 'Sửa',
@@ -418,8 +433,6 @@ export class KeHoachThiComponent implements OnInit {
           levels:object1.levels? object1.levels: [],
         })
 
-        console.log(this.formSave.value);
-
         this.preSetupForm(this.menuName);
         break;
       case 'DELETE_DECISION':
@@ -467,6 +480,10 @@ export class KeHoachThiComponent implements OnInit {
 
         this.soLuongDiemduthiTheoTram(this.listData.find(u => u.id === decision.id))
 
+        break;
+      case 'HOSO_DECISION':
+        this.kehoach_select = {...this.listData.find(u => u.id === decision.id)};
+        this.getHosoLuutru(this.kehoach_select);
         break;
       default:
         break;
@@ -593,4 +610,108 @@ export class KeHoachThiComponent implements OnInit {
       this.f['levels'].setValue([]);
     }
   }
+
+  async getHosoLuutru(item:KeHoachThi){
+
+    this.notifi.loadingAnimationV2({process: {percent : 0}});
+    this.loopGetOrderBy(1,200,item.id,[],1,'id,kehoach_id,diemduthi_id,capthi,lephithi,trangthai_thanhtoan,thoigian_thanhtoan,user_id,parent_id','1')
+      .pipe(switchMap(m=>{
+
+        console.log(m);
+        const idsParent = Array.from(new Set(m.filter(a => a.parent_id !== 0).map(a => a.parent_id)));
+        return forkJoin([
+          of(m),
+          idsParent.length> 0? this.ordersService.getDataByparentIds(idsParent,'id,kehoach_id,diemduthi_id,capthi,lephithi,trangthai_thanhtoan,thoigian_thanhtoan,user_id,parent_id'):of([]),
+        ]);
+      }))
+      .subscribe({
+        next:([dataOrder,dataParent])=>{
+
+          const dataMap = dataOrder.filter(f=>!f['huy']).map((m,index)=>{
+            const user:User = m['user'];
+            const thisinh:ThiSinhInfo = m['thisinh'];
+            const parent:OrdersVstep = m.parent_id === 0 ? null : dataParent.find(f=>f.id === m.parent_id);
+            const ngonngu = this.listLanguage.find(f=>f.id == item.ngonngu);
+
+            m['__hoten']= thisinh ? thisinh.hoten : '';
+            m['__cccd_so']= user ? user.username :(thisinh ? thisinh.cccd_so : '');
+            m['__email']= thisinh && thisinh.email ? thisinh.email : '';
+            m['__ngaysinh']= thisinh ? thisinh.ngaysinh : '';
+            m['__gioitinh']= thisinh && thisinh.gioitinh ? (thisinh.gioitinh === 'nam' ?'Nam': 'Nữ' ) : '';
+            m['__phone']= user ? user.phone :(thisinh ? thisinh.phone : '');
+            m['__ngonngu']=ngonngu ? ngonngu.title : '';
+            m['__doituong']=  parent ? 'doitac' : (thisinh && thisinh['doituong'] == 'dhtn' ? 'dhtn' : 'tudo' );
+            m['__anhthe']= thisinh && thisinh.anh_chandung && thisinh.anh_chandung[0] ? this.fileService.getPreviewLinkLocalFile(thisinh.anh_chandung[0]) :'';
+            m['__anhthesinhvien']= thisinh && thisinh.doituong_anhthe && thisinh.doituong_anhthe[0] ? this.fileService.getPreviewLinkLocalFile(thisinh.doituong_anhthe[0]) :'';
+            m['__anh_cccd_truoc']= thisinh && thisinh.cccd_img_truoc && thisinh.cccd_img_truoc[0] ? this.fileService.getPreviewLinkLocalFile(thisinh.cccd_img_truoc[0]) :'';
+            m['__anh_cccd_sau']= thisinh && thisinh.cccd_img_sau && thisinh.cccd_img_sau[0] ? this.fileService.getPreviewLinkLocalFile(thisinh.cccd_img_sau[0]) :'';
+            m['__capthi'] = item.levels.map(lv=>{
+              lv['check'] = lv.value.toLowerCase() == m.capthi.toLowerCase()
+              return lv;
+            }).filter(f=>f.select == 1).concat(
+              Array(6).fill({
+                label: '',
+                value: '',
+                check: false,
+                select : 1
+              })
+            )
+              .slice(0, 6);
+
+            return {
+              hoten: m['__hoten'],
+              ngaysinh: m['__ngaysinh'],
+              gioitinh: m['__gioitinh'],
+              cccd_so: m['__cccd_so'],
+              cccd_ngaycap: thisinh && thisinh['cccd_ngaycap'] ? thisinh['cccd_ngaycap'] :'',
+              cccd_noicap: thisinh && thisinh['cccd_noicap'] ? thisinh['cccd_noicap'] :'',
+              email: m['__email'],
+              phone: m['__phone'],
+              capthi: m['__capthi'],
+              anh_chandung :m['__anhthe'],
+              doituong_anhthe :m['__anhthesinhvien'],
+              cccd_mattruoc :m['__anh_cccd_truoc'],
+              cccd_matsau :m['__anh_cccd_sau'],
+              thuongtru:thisinh && thisinh['thuongtru_diachi'] ? thisinh['thuongtru_diachi']['fullAddress'] : '',
+              dotthi:item.title,
+              ngonngu: ngonngu ? ngonngu.title : '',
+              doituong: m['__doituong'],
+              dothi: item.title
+            };
+          });
+
+          if (dataMap.length > 0 ) {
+            this.exWordVstepService.hosoLuutruThisinh(dataMap,'hosoluutru' + item.title);
+          }else{
+            this.notifi.toastWarning('Đợt thi chưa có lượt đăng ký ');
+            this.notifi.disableLoadingAnimationV2();
+          }
+
+        },
+        error:()=>{
+          this.notifi.isProcessing(false);
+          this.notifi.disableLoadingAnimationV2();
+          this.notifi.toastError('Load dữ liệu không thành công');
+
+        }
+      });
+  }
+
+  loopGetOrderBy(page:number,limit:number, kehoach_id:number, data:OrdersVstep[] ,recordsFiltered:number, select:string, trangthai_thanhtoan:string):Observable<OrdersVstep[]>{
+    if (data.length < recordsFiltered) {
+
+      return this.ordersService.getDataBykehoachIdAndSelectforThongkeV2(page,limit,kehoach_id,select,trangthai_thanhtoan).pipe(
+        switchMap(m=>{
+
+          return this.loopGetOrderBy(page+1,limit,kehoach_id,data.concat(m['data']),m['recordsFiltered'],select,trangthai_thanhtoan)
+        })
+      )
+    } else{
+      return of(data);
+    }
+  }
+
+
+
+
 }

@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 
 import { HomeThiThptRoutingModule } from './home-thi-thpt-routing.module';
 import { MainLayoutComponent } from './main-layout/main-layout.component';
-import { RegisterAccountComponent } from './layouts/register-account/register-account.component';
-import { RegisterAccountGlasslineComponent } from './layouts/register-account-glassline/register-account-glassline.component';
 import { VerificationComponent } from './layouts/verification/verification.component';
 import {TooltipModule} from "primeng/tooltip";
 import {ReactiveFormsModule} from "@angular/forms";
@@ -15,8 +13,6 @@ import {RippleModule} from "primeng/ripple";
 @NgModule({
   declarations: [
     MainLayoutComponent,
-    RegisterAccountComponent,
-    RegisterAccountGlasslineComponent,
     VerificationComponent
   ],
   imports: [

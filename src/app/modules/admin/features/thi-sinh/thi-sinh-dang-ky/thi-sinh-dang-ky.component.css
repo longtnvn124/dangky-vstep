@@ -346,16 +346,16 @@
   padding:10px;
   border: 1px solid #0f1419;
   background: #fff;
-  height:200px;
+  /*height:200px;*/
   min-width:160px;
   display: flex;
   justify-content: center;
+  flex-direction: column;
 }
 .anh-the img{
   height:100%;
 }
 
-/* Table Flexbox - Phiếu đăng ký điện tử (Flex) */
 .table-flex {
   display: flex;
   flex-direction: column;
@@ -382,4 +382,18 @@
 
 .table-flex-cell.colspan-3 {
   flex: 3 1 100%;
+}
+
+
+/*------------*/
+.pdf-page {
+  width: 21cm;
+  min-height: 27cm;
+  background: #fff;
+  box-sizing: border-box;
+  padding:20px 40px;
+}
+
+.page-break {
+  page-break-before: always;
 }
