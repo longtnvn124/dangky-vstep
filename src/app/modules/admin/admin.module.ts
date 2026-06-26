@@ -16,7 +16,6 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 
 import { SharedModule } from '@shared/shared.module';
 import { ContentNoneComponent } from '@modules/admin/features/content-none/content-none.component';
-import { HomeComponent } from '@modules/admin/features/home/home.component';
 import { DashboardComponent } from '@modules/admin/dashboard/dashboard.component';
 import { UserInfoComponent } from '@modules/admin/dashboard/user-info/user-info.component';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
@@ -49,7 +48,7 @@ import {FocusInputPipe} from "@shared/pipes/focus-input.pipe";
   declarations: [
     DashboardComponent,
     ContentNoneComponent,
-    HomeComponent,
+
     SidenavComponent,
     UserInfoComponent,
     MenuLanguageComponent,

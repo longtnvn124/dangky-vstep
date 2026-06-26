@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1781663147189,
+  "lastScanned": 1782445535412,
   "projectRoot": "d:\\data\\project\\angular\\v14\\dangky-vstep",
   "techStack": {
     "languages": [
@@ -68,14 +68,14 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 0,
-      "lastAccessed": 1781663147154,
+      "lastAccessed": 1782445535355,
       "keyFiles": []
     },
     "src": {
       "path": "src",
       "purpose": "Source code",
       "fileCount": 7,
-      "lastAccessed": 1781663147156,
+      "lastAccessed": 1782445535357,
       "keyFiles": [
         "custom-theme.scss",
         "favicon.ico",
@@ -88,7 +88,7 @@
       "path": "src\\app",
       "purpose": "Application code",
       "fileCount": 5,
-      "lastAccessed": 1781663147165,
+      "lastAccessed": 1782445535378,
       "keyFiles": [
         "app-routing.module.ts",
         "app.component.css",
@@ -99,7 +99,7 @@
       "path": "src\\assets",
       "purpose": "Static assets",
       "fileCount": 1,
-      "lastAccessed": 1781663147165,
+      "lastAccessed": 1782445535378,
       "keyFiles": []
     }
   },

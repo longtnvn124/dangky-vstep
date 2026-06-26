@@ -1,0 +1,181 @@
+<div class="tra-cuu-container">
+  <!-- HEADER -->
+  <div class="tc-header">
+    <div class="tc-header-icon">
+      <i class="pi pi-search"></i>
+    </div>
+    <div class="tc-header-text">
+      <h1>Tra cứu điểm thi</h1>
+      <p>Tra cứu kết quả thi theo số báo danh, CCCD hoặc hộ chiếu</p>
+    </div>
+  </div>
+
+  <!-- SEARCH FORM -->
+  <div class="tc-search-card">
+    <form [formGroup]="formSearch" (ngSubmit)="onSearch()" class="tc-search-form">
+      <div class="tc-search-row">
+        <div class="tc-field kehoach-field max-w-300px" >
+          <label for="kehoach_id">Kỳ thi <span class="optional">(Tùy chọn)</span></label>
+          <p-dropdown
+            id="kehoach_id"
+            formControlName="kehoach_id"
+            [options]="kehoachList"
+            optionLabel="title"
+            optionValue="id"
+            placeholder="Tất cả kỳ thi"
+            [showClear]="true"
+            [autoDisplayFirst]="false"
+            [style]="{'width':'100%'}"
+          ></p-dropdown>
+        </div>
+        <div class="tc-field keyword-field">
+          <label for="keyword">Số báo danh / CCCD / Hộ chiếu</label>
+          <input
+            id="keyword"
+            type="text"
+            pInputText
+            formControlName="keyword"
+            placeholder="Nhập số báo danh, CCCD hoặc hộ chiếu..."
+            class="tc-input"
+          />
+        </div>
+        <div class="tc-actions">
+          <button
+            pButton
+            pRipple
+            type="submit"
+            label="Tra cứu"
+            icon="pi pi-search"
+            [disabled]="isLoading"
+            class="p-button-primary tc-btn-search"
+          ></button>
+          <button
+            pButton
+            pRipple
+            type="button"
+            label="Làm lại"
+            icon="pi pi-refresh"
+            class="p-button-outlined p-button-secondary tc-btn-reset"
+            (click)="resetSearch()"
+          ></button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="isLoading" class="tc-loading">
+    <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #284CE0;"></i>
+    <span>Đang tra cứu...</span>
+  </div>
+
+  <!-- NO RESULT -->
+  <div *ngIf="!isLoading && hasSearched && noResult" class="tc-no-result">
+    <div class="tc-no-result-icon">
+      <i class="pi pi-exclamation-circle"></i>
+    </div>
+    <h3>Không tìm thấy kết quả</h3>
+    <p>Không tìm thấy thí sinh nào với thông tin đã nhập. Vui lòng thử lại với từ khóa khác.</p>
+  </div>
+
+  <!-- RESULT LIST -->
+  <div *ngIf="!isLoading && hasSearched && !noResult && result.length > 0" class="tc-result-section">
+    <div class="tc-result-count">
+      <span>Tìm thấy <strong>{{ result.length }}</strong> kết quả</span>
+    </div>
+
+    <div *ngFor="let item of result; let i = index" class="tc-result-card">
+      <!-- Student Info Header -->
+      <div class="rc-header">
+        <div class="rc-avatar">
+          <i class="pi pi-user"></i>
+        </div>
+        <div class="rc-student-info">
+          <h3 class="rc-name">{{ item.hoten }}</h3>
+          <div class="rc-meta">
+            <span class="rc-meta-item">
+              <i class="pi pi-hashtag"></i> SBD: <strong>{{ item.sobaodanh }}</strong>
+            </span>
+            <span class="rc-meta-item" *ngIf="item.cccd_so">
+              <i class="pi pi-id-card"></i> CCCD: {{ item.cccd_so }}
+            </span>
+            <span class="rc-meta-item" *ngIf="item.ngaysinh">
+              <i class="pi pi-calendar"></i> Ngày sinh: {{ item.ngaysinh }}
+            </span>
+            <span class="rc-meta-item" *ngIf="item.gioitinh">
+              <i class="pi pi-user"></i> {{ item.gioitinh === 'nam' ? 'Nam' : 'Nữ' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exam Info -->
+      <div class="rc-exam-info">
+<!--        <div class="rc-exam-badge">-->
+<!--          <i class="pi pi-calendar-clock"></i>-->
+<!--          {{ getKehoachTitle(item.kehoach_id) }}-->
+<!--        </div>-->
+<!--        <div class="rc-exam-date" *ngIf="item.ngaythi">-->
+<!--          <i class="pi pi-calendar"></i> Ngày thi: {{ item.ngaythi }}-->
+<!--        </div>-->
+<!--        <div class="rc-exam-room" *ngIf="item.phongthi">-->
+<!--          <i class="pi pi-map-marker"></i> Phòng: {{ item.phongthi }}-->
+<!--        </div>-->
+        <div class="rc-exam-badge" *ngIf="item.ngaythi">
+          <i class="pi pi-calendar"></i> Ngày thi: {{ item.ngaythi }}
+        </div>
+        <div class="rc-exam-badge" *ngIf="item.phongthi">
+          <i class="pi pi-map-marker"></i> Phòng: {{ item.phongthi }}
+        </div>
+      </div>
+
+      <!-- Score Grid -->
+      <div class="rc-score-grid">
+        <div class="rc-score-item">
+          <div class="rc-score-ring listening">{{ item.listening || '—' }}</div>
+          <div class="rc-score-label">Listening</div>
+        </div>
+        <div class="rc-score-item">
+          <div class="rc-score-ring speaking">{{ item.speaking || '—' }}</div>
+          <div class="rc-score-label">Speaking</div>
+        </div>
+        <div class="rc-score-item">
+          <div class="rc-score-ring reading">{{ item.reading || '—' }}</div>
+          <div class="rc-score-label">Reading</div>
+        </div>
+        <div class="rc-score-item">
+          <div class="rc-score-ring writing">{{ item.writing || '—' }}</div>
+          <div class="rc-score-label">Writing</div>
+        </div>
+      </div>
+
+      <!-- Total Section -->
+      <div class="rc-total">
+        <div class="rc-total-score">
+          <span class="rc-total-value">{{ item.total || '—' }}</span>
+          <span class="rc-total-label">Tổng điểm</span>
+        </div>
+        <div class="rc-total-divider"></div>
+        <div class="rc-total-detail">
+          <div class="rc-total-title">{{ item.khung_nlnn }}</div>
+          <div class="rc-total-meta" *ngIf="item.vbcc">VBCC: {{ item.vbcc }}</div>
+        </div>
+        <div class="rc-total-level" *ngIf="item.khung_nlnn">
+          <span class="rc-level-badge">{{ item.khung_nlnn }}</span>
+        </div>
+      </div>
+
+      <!-- Additional Info -->
+      <div class="rc-extra" *ngIf="item.dantoc || item.quoctich">
+        <div class="rc-extra-item" *ngIf="item.dantoc">
+          <label>Dân tộc</label>
+          <span>{{ item.dantoc }}</span>
+        </div>
+        <div class="rc-extra-item" *ngIf="item.quoctich">
+          <label>Quốc tịch</label>
+          <span>{{ item.quoctich }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

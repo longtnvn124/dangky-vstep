@@ -75,7 +75,7 @@ const appVersion = '1.0.00';
 
 export const APP_CONFIGS = {
   defaultRedirect: '/admin/thi-sinh/thong-tin',
-  pageTitle: 'TNU | Hệ thống đăng ký thi trên máy HSK',
+  pageTitle: 'TNU - Hệ thống thi đánh giá năng lực ngoại ngữ',
   multiLanguage: true,
   defaultLanguage: appDefaultLanguage, // không được bỏ trống trường này ngay cả khi multiLanguage = false
   languages: appLanguages,

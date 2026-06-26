@@ -1,29 +1,52 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {ChartComponent} from 'ng-apexcharts';
+import {Component, OnInit} from '@angular/core';
 import {NotificationService} from "@core/services/notification.service";
 import {HskSummaryService} from "@shared/services/hsk-summary.service";
 import {KeHoachThi, KehoachthiVstepService} from "@shared/services/vstep/kehoachthi-vstep.service";
+import {SharedModule} from "@shared/shared.module";
+import {ChartModule} from "primeng/chart";
+import {DonViService} from "@shared/services/don-vi.service";
+import {forkJoin} from "rxjs";
+import {AuthService} from "@core/services/auth.service";
+import {DonVi} from "@shared/models/danh-muc";
+import {NgIf} from "@angular/common";
+
+interface DataRaw {
+  dotthi: any[]
+  thanhtoan_thanhcong: number;
+  thi_sinh_du_dk: number;
+  tong_thi_sinh: number;
+  tongtien: number;
+}
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
+  standalone: true,
 
+  imports: [
+    SharedModule,
+    ChartModule,
+    NgIf
+  ]
 })
 export class HomeComponent implements OnInit {
-  @ViewChild('c1', {static: true}) private c1Component: ChartComponent;
 
   chartKehoachthi: any;
   optionsCharts: any;
   chartMonthi: any;
   objectFilter = {};
 
+  dataRaw: DataRaw;
+
   listYear: KeHoachThi[] = [];
 
   constructor(
     private notificationService: NotificationService,
     private kehoachthiVstepService: KehoachthiVstepService,
-    private hskSummaryService: HskSummaryService
+    private hskSummaryService: HskSummaryService,
+    private donViService: DonViService,
+    private auth: AuthService
   ) {
     this.optionsCharts = {
       indexAxis: 'x',
@@ -67,13 +90,17 @@ export class HomeComponent implements OnInit {
   totalOrderTT: number = 0;
   totalThisinhDuyet: number = 0;
   kehoachthi: KeHoachThi[];
-
+  listDonvi: DonVi[];
 
   loadInit() {
     this.notificationService.isProcessing(true);
 
-    this.kehoachthiVstepService.getYearAndSelect('id,nam', -1).subscribe({
-      next: (data) => {
+    forkJoin([
+      this.donViService.getChildren(this.auth.user.donvi_id),
+      this.kehoachthiVstepService.getYearAndSelect('id,nam', -1)
+    ]).subscribe({
+      next: ([listDonvi, data]) => {
+        this.listDonvi = listDonvi;
         this.listYear = data;
         if (this.listYear.length > 0) {
           this.objectFilter['nam'] = this.listYear && this.listYear[0] && this.listYear[0].nam ? this.listYear[0].nam : null;
@@ -92,58 +119,51 @@ export class HomeComponent implements OnInit {
   }
 
 
-
   getDataDashBoad() {
-    console.log(this.objectFilter['nam']);
-
     this.hskSummaryService.getDataDashboad(this.objectFilter['nam']).subscribe({
       next: (data) => {
+        this.dataRaw = data;
 
-        this.totalThisinh =  data['tong_thi_sinh']
-
-        this.totalThisinhDuyet  =  data['thi_sinh_du_dk']
-
-        this.totalOrderTT  =  data['thanhtoan_thanhcong']
-
-        this.totalLephithi  =  data['tongtien']
-
+        this.totalThisinh = data['tong_thi_sinh']
+        this.totalThisinhDuyet = data['thi_sinh_du_dk']
+        this.totalOrderTT = data['thanhtoan_thanhcong']
+        this.totalLephithi = data['tongtien']
         this.chartKehoachthi = {
-          labels:data['dotthi'].map(m=>m.dotthi),
+          labels: data['dotthi'].map(m => m.title),
           datasets: [
-            {
-              label: 'Chưa thanh toán',
-              data: data['dotthi'].map(m=>m['_totalNotAccept']),
-              backgroundColor:'#ffb1c1'
-            },
             {
               label: 'Đã thanh toán',
-              data: data['dotthi'].map(m=>m['_totalAccept' ]),
-              backgroundColor:'#9ad0f5'
-            }
-          ]
-        }
-
-
-
-        this.chartMonthi ={
-          labels:data['dotthi'].map(m=>m.dotthi),
-          datasets: [
-            {
-              label: 'HSK 3 (Cấp độ 3 + sơ cấp)',
-              data: data['dotthi'].map(m=>m['totalDk_3'])
-            },{
-              label: 'HSK 4 (Cấp độ 4 + trung cấp)',
-              data: data['dotthi'].map(m=>m['totalDk_4'])
-            },{
-              label: 'HSK 5 (Cấp độ 5 + cao cấp)',
-              data: data['dotthi'].map(m=>m['totalDk_5'])
-            },{
-              label: 'HSK 6 (Cấp độ 6 + cao cấp)',
-              data: data['dotthi'].map(m=>m['totalDk_6'])
+              data: data['dotthi'].map(m => m['_totalAccept']),
+              backgroundColor: '#9ad0f5'
             },
-
+            {
+              label: 'Chưa thanh toán',
+              data: data['dotthi'].map(m => m['_totalNotAccept']),
+              backgroundColor: '#ffb1c1'
+            },
           ]
         }
+
+
+        // this.chartMonthi ={
+        //   labels:data['dotthi'].map(m=>m.dotthi),
+        //   datasets: [
+        //     {
+        //       label: 'HSK 3 (Cấp độ 3 + sơ cấp)',
+        //       data: data['dotthi'].map(m=>m['totalDk_3'])
+        //     },{
+        //       label: 'HSK 4 (Cấp độ 4 + trung cấp)',
+        //       data: data['dotthi'].map(m=>m['totalDk_4'])
+        //     },{
+        //       label: 'HSK 5 (Cấp độ 5 + cao cấp)',
+        //       data: data['dotthi'].map(m=>m['totalDk_5'])
+        //     },{
+        //       label: 'HSK 6 (Cấp độ 6 + cao cấp)',
+        //       data: data['dotthi'].map(m=>m['totalDk_6'])
+        //     },
+        //
+        //   ]
+        // }
 
         this.notificationService.isProcessing(false);
 
@@ -157,5 +177,32 @@ export class HomeComponent implements OnInit {
   onChangeFilter(event) {
     this.objectFilter['nam'] = event.nam;
     this.getDataDashBoad();
+  }
+
+  ViewChitiet: boolean = false;
+  dataRawSelect: any;
+
+  clickDataChart(event) {
+    this.ViewChitiet = false;
+    if (event['element']['datasetIndex'] == 1) {
+      this.ViewChitiet = false;
+    } else {
+
+      const dataRawSelect = this.dataRaw['dotthi'][event['element']['index']];
+      this.dataRawSelect = dataRawSelect;
+      this.chartMonthi = {
+        labels: [dataRawSelect['title']],
+        datasets: dataRawSelect['_capdo'].map(m => {
+          return {
+            label: this.listDonvi.find(f => f.id == m.diemduthi_id) ? this.listDonvi.find(f => f.id == m.diemduthi_id).title : '',
+            data: [m['totalDk']]
+          }
+        })
+
+      };
+      this.ViewChitiet = true;
+
+    }
+
   }
 }

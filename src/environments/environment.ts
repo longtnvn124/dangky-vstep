@@ -75,7 +75,7 @@ const appVersion = '1.0.00';
 
 export const APP_CONFIGS = {
   defaultRedirect: '/admin/thi-sinh/thong-tin',
-  pageTitle: 'TNU | Hệ thống đăng ký thi trên máy HSK',
+  pageTitle: 'TNU - Hệ thống thi đánh giá năng lực ngoại ngữ',
   multiLanguage: true,
   defaultLanguage: appDefaultLanguage, // không được bỏ trống trường này ngay cả khi multiLanguage = false
   languages: appLanguages,
@@ -121,8 +121,8 @@ export const ENCRYPT_KEY = 'dkVstepW4jM2P5r';
 export const APP_STORES = 'dkVstep4QfWtr6Z'; // no clear after logout
 export const SWITCH_DONVI_ID = 'dkVstepC@gGA506'; // no clear after logout
 
-export const X_APP_ID = '91D7931D-ABBA-4CE0-BAA4-464C4E8B1A34';//dev
-// export const X_APP_ID = 'CDC7365D-F321-433C-8C57-3562F71BA764';// online for dev
+// export const X_APP_ID = '64c9a192-cc0e-4198-acb8-2188dbb472fa';//dev
+export const X_APP_ID = '91D7931D-ABBA-4CE0-BAA4-464C4E8B1A34';// online for dev
 
 
 export const imgFalback = 'assets/images/placeholder.jpg';
