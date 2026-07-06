@@ -617,7 +617,7 @@ export class KeHoachThiComponent implements OnInit {
     this.loopGetOrderBy(1,200,item.id,[],1,'id,kehoach_id,diemduthi_id,capthi,lephithi,trangthai_thanhtoan,thoigian_thanhtoan,user_id,parent_id','1')
       .pipe(switchMap(m=>{
 
-        console.log(m);
+        // console.log(m);
         const idsParent = Array.from(new Set(m.filter(a => a.parent_id !== 0).map(a => a.parent_id)));
         return forkJoin([
           of(m),
@@ -637,7 +637,7 @@ export class KeHoachThiComponent implements OnInit {
             m['__cccd_so']= user ? user.username :(thisinh ? thisinh.cccd_so : '');
             m['__email']= thisinh && thisinh.email ? thisinh.email : '';
             m['__ngaysinh']= thisinh ? thisinh.ngaysinh : '';
-            m['__gioitinh']= thisinh && thisinh.gioitinh ? (thisinh.gioitinh === 'nam' ?'Nam': 'Nữ' ) : '';
+            m['__gioitinh']= thisinh && thisinh.gioitinh ? thisinh.gioitinh : '';
             m['__phone']= user ? user.phone :(thisinh ? thisinh.phone : '');
             m['__ngonngu']=ngonngu ? ngonngu.title : '';
             m['__doituong']=  parent ? 'doitac' : (thisinh && thisinh['doituong'] == 'dhtn' ? 'dhtn' : 'tudo' );
@@ -680,6 +680,7 @@ export class KeHoachThiComponent implements OnInit {
             };
           });
 
+          // console.log(dataMap.filter(f=>f.doituong_anhthe ))
           if (dataMap.length > 0 ) {
             this.exWordVstepService.hosoLuutruThisinh(dataMap,'hosoluutru' + item.title);
           }else{

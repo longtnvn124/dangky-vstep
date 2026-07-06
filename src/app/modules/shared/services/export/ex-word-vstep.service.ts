@@ -371,283 +371,156 @@ export class ExWordVstepService {
   }
 
 
-  async hosoLuutruThisinh(data:any[], fileName:string) {
-
-    let htmlContent = `
-        <!DOCTYPE html>
-        <html lang="en">
-            <head>
-             <meta charset="UTF-8">
-             <title>Document</title>
-            <style>
-                *{font-family:"roboto" !important;font-size:15px;font-weight: 400;}
-                .table-border{border-collapse: collapse;border:1px solid #000;}
-                .table-border tr,.table-border td,.table-border th{font-size:14px;border:1px solid #000;padding:4px;}
-                .anh-the{padding:10px;border:1px solid #0f1419;background:#fff;min-width:160px;display:flex;justify-content:center;flex-direction:column;}
-                .anh-the img{height:100%;width:unset;}
-                .table-flex{display:flex;flex-direction:column;width:100%;border-top:1px solid #dee2e6;border-left:1px solid #dee2e6;}
-                .table-flex-row{display:flex;width:100%;}
-                .table-flex-cell{flex:1 1 auto;padding:6px 8px;border-bottom:1px solid #dee2e6;border-right:1px solid #dee2e6;}
-                .table-flex-cell.colspan-2{flex:2 1 66.666%;}
-                .table-flex-cell.colspan-3{flex:3 1 100%;}
-                .pdf-page{width:210mm;min-height:297mm;background:#fff;box-sizing:border-box;padding:20px 40px;}
-                .page-break{page-break-before:always;}
-                .row{display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-15px;margin-left:-15px};
-                .row-cols-2>*{-ms-flex:0 0 50%;flex:0 0 50%;max-width:50%}
-                .col-6{position:relative;width:100%;padding-right:15px;padding-left:15px}
-                .--font-times-new-roman {font-family: TimesNewRoman, "Times New Roman", Times, Baskerville, Georgia, serif;}
-            </style>
-        </head>
-        <body>
-            <div id="pdf-content">
-`;
-
-
-
-    for(const item of data){
-      htmlContent += `
-        <div class="pdf-page" style="page-break-after:always;">
-            <table style="width:100%;">
-                <tr>
-                    <td style="width:40%">
-
-                        <div class="--font-times-new-roman" style="font-size:18px; display: flex;justify-content:center;align-items: center;flex-direction: column">
-                            <div>ĐẠI HỌC THÁI NGUYÊN</div>
-                            <div style="font-weight: 500"><u>HỘI ĐỒNG THI ĐÁNH GIÁ NLNN</u></div>
-                        </div>
-                    </td>
-                    <td style="width:60%">
-                        <div class="--font-times-new-roman" style="font-size:18px; display: flex;justify-content:center;align-items: center;flex-direction: column">
-                            <div><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong></div>
-                            <div style="font-weight: 500;text-decoration: underline">Độc lập – Tự do – Hạnh phúc</div>
-                        </div>
-
-                    </td>
-                </tr>
-            </table>
-
-
-            <div style="text-align:center;font-size:28px;margin-top;10px;">
-                <strong>PHIẾU ĐĂNG KÝ DỰ THI</strong>
-            </div>
-            <div style="text-align:center;font-size:28px;">
-                <strong>ĐÁNH GIÁ NĂNG LỰC NGOẠI NGỮ CỦA ĐẠI HỌC THÁI NGUYÊN</strong>
-            </div>
-
-            <div class="row row-cols-2">
-                <div class="col-6" style="display: flex;justify-content: center;">
-                    <div class="anh-the " style="display: flex;justify-content: center;height: 200px;" >
-                        <img src="${item.anh_chandung || ''}">
-                    </div>
-                </div>
-                <div class="col-6" >
-                    <div class="anh-the " style="display: flex;justify-content: center; height:200px;" >
-                         ${item.doituong_anhthe ? `<img src="${item.doituong_anhthe}">`: `<div style="text-align:center">Ảnh thẻ sinh viên<br>(Nếu có)</div>`}
-                    </div>
-                </div>
-            </div>
-
-
-
-            <div class="table-flex mt-2">
-                <div class="table-flex-row"style="background:#C1E4F5">
-                    <div class="table-flex-cell colspan-3">
-                        <strong>PHẦN I - THÔNG TIN CÁ NHÂN</strong></div>
-                    </div>
-                <div class="table-flex-row">
-                    <div class="table-flex-cell colspan-2">1. Họ và tên: ${item.hoten || ''}</div>
-                    <div class="table-flex-cell colspan-2">2. Giới tính: ${item.gioitinh=='name'?'☑ Nam':'☐ Nam'}&nbsp; ${item.gioitinh!='name'?'☑ Nữ':'☐ Nữ'}</div>
-                </div>
-
-                <div class="table-flex-row">
-                    <div class="table-flex-cell colspan-2" >3. Ngày sinh: ${item.ngaysinh || ''}</div>
-                    <div class="table-flex-cell colspan-2">4. Nơi sinh: ${item.noisinh || ''}</div>
-                </div>
-                <div class="table-flex-row">
-                    <div class="table-flex-cell">5. CCCD: ${item.cccd_so || ''}</div>
-                    <div class="table-flex-cell">6. Ngày cấp: ${item.cccd_ngaycap || ''}</div>
-                    <div class="table-flex-cell">7. Nơi cấp: ${item.cccd_noicap || ''}</div>
-                </div>
-
-                <div class="table-flex-row">
-                    <div class="table-flex-cell colspan-2">8. Điện thoại: ${item.phone || ''}</div>
-                    <div class="table-flex-cell colspan-2">9. Email: ${item.email || ''}</div>
-                </div>
-                <div class="table-flex-row">
-                    <div class="table-flex-cell colspan-3">10. Địa chỉ: ${item.thuongtru || ''}</div>
-                </div>
-                <div class="table-flex-row">
-                    <div class="table-flex-cell colspan-3">11. đối tượng dự thi:</div>
-                </div>
-                <div class="table-flex-row">
-                    <div class="table-flex-cell ">${item.doituong == 'dhtn' ? '☑' : '☐' } Người học của Đại học Thái Nguyên</div>
-                    <div class="table-flex-cell ">${item.doituong == 'doitac' ? '☑' : '☐' } Người học của đơn vị đối tác</div>
-                    <div class="table-flex-cell ">${item.doituong == 'tudo' ? '☑' : '☐' } Thí sinh tư dọ</div>
-                </div>
-
-                <div class="table-flex-row" style="background:#C1E4F5">
-                    <div class="table-flex-cell colspan-3">
-                        <strong>PHẦN II - THÔNG TIN ĐĂNG KÝ THI</strong></div>
-                    </div>
-
-                <div class="table-flex-row">
-                    <div class="table-flex-cell">1. Đợt thi: ${item.dothi || ''}</div>
-                </div>
-
-                <div class="table-flex-row">
-                    <div class="table-flex-cell">2. Ngôn ngữ thi: ${item.ngonngu || ''}</div>
-                </div>
-
-                <div class="table-flex-row">
-                    <div class="table-flex-cell">3. Cấp độ thi:</div>
-                </div>
-                <div class="table-flex-row" style="flex-wrap: wrap;">
-
-
-
-
-
-`;
-
-      item.capthi.forEach(e=>{
-
-        htmlContent += `
-                <div class="table-flex-cell" style="width: 33.33%;height: 36.8px;" >
-
-                  ${!e.label ? ' ' :  (e.check ?  `☑ ` : `☐`) + ' ' + e.label}
-                </div>
-        `;
-      })
-
-      htmlContent += `
-
-        </div>
-        <div class="table-flex-row" style="background:#C1E4F5">
-            <div class="table-flex-cell colspan-3"><strong>PHẦN III - CAM KẾT CỦA THÍ SINH</strong></div>
-        </div>
-        <div class="table-flex-row">
-            <div class="table-flex-cell colspan-3">☑ Thí sinh cam kết chịu trách nhiệm về những thông tin
-                cung cấp ở phía trên, nếu sai sót thí sinh có thể bị hủy tư cách dự thi và kết quả thi
-              </div>
-        </div>
-        <div class="table-flex-row">
-            <div class="table-flex-cell colspan-3">☑ Thí sinh cam kết chấp hành đúng và đầy đủ Quy chế thi
-                và Quy định của Hội đồng thi đánh giá năng lực ngoại ngữ tại Đại học Thái Nguyên.</div>
-        </div>
-    </div>
-    </div>
-
-    <div class="pdf-page page-break">
-    <div style="display:flex;gap:20px;min-height:200px;">
-        <div class="anh-the" style="width:50%">
-            <div style="text-align:center">CCCD mặt trước</div>
-            <img src="${item.cccd_mattruoc || ''}">
-            </div>
-
-        <div class="anh-the" style="width:50%">
-            <div style="text-align:center">CCCD mặt sau</div>
-            <img src="${item.cccd_matsau || ''}">
-        </div>
-    </div>
-    </div>
-        `;
-    }
-
-
-
-    htmlContent += `
-        </div>
-        </body>
-    </html>
+  async hosoLuutruThisinh(data: any[], fileName: string) {
+    const styles = `
+      *{font-family:"roboto" !important;font-size:15px;font-weight:400;}
+      .table-border{border-collapse:collapse;border:1px solid #000;}
+      .table-border tr,.table-border td,.table-border th{font-size:14px;border:1px solid #000;padding:4px;}
+      .anh-the{padding:10px;border:1px solid #0f1419;background:#fff;min-width:160px;display:flex;justify-content:center;flex-direction:column;}
+      .anh-the img{height:100%;width:unset;}
+      .table-flex{display:flex;flex-direction:column;width:100%;border-top:1px solid #dee2e6;border-left:1px solid #dee2e6;}
+      .table-flex-row{display:flex;width:100%;}
+      .table-flex-cell{flex:1 1 auto;padding:6px 8px;border-bottom:1px solid #dee2e6;border-right:1px solid #dee2e6;}
+      .table-flex-cell.colspan-2{flex:2 1 66.666%;}
+      .table-flex-cell.colspan-3{flex:3 1 100%;}
+      .pdf-page{width:210mm;min-height:297mm;background:#fff;box-sizing:border-box;padding:20px 40px;}
+      .page-break{page-break-before:always;}
+      .row{display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-15px;margin-left:-15px}
+      .row-cols-2>*{-ms-flex:0 0 50%;flex:0 0 50%;max-width:50%}
+      .col-6{position:relative;width:100%;padding-right:15px;padding-left:15px}
+      .--font-times-new-roman{font-family:TimesNewRoman,"Times New Roman",Times,Baskerville,Georgia,serif;}
     `;
 
+    const buildItem = (item: any) => {
+      const ck = (v: string) => item.doituong === v ? '☑' : '☐';
+      const capthiHtml = (item.capthi || []).map((e: any) =>
+        `<div class="table-flex-cell" style="width:33.33%;height:36.8px;">${e.label ? (e.check ? '☑' : '☐') + ' ' + e.label : ''}</div>`
+      ).join('');
 
+      return `
+    <div class="pdf-page" style="page-break-after:always;">
+      <table style="width:100%;"><tr>
+        <td style="width:40%">
+          <div class="--font-times-new-roman" style="font-size:18px;display:flex;justify-content:center;align-items:center;flex-direction:column">
+            <div>ĐẠI HỌC THÁI NGUYÊN</div>
+            <div style="font-weight:500"><u>HỘI ĐỒNG THI ĐÁNH GIÁ NLNN</u></div>
+          </div>
+        </td>
+        <td style="width:60%">
+          <div class="--font-times-new-roman" style="font-size:18px;display:flex;justify-content:center;align-items:center;flex-direction:column">
+            <div><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong></div>
+            <div style="font-weight:500;text-decoration:underline">Độc lập – Tự do – Hạnh phúc</div>
+          </div>
+        </td>
+      </tr></table>
+      <div style="text-align:center;font-size:28px;margin-top:10px;"><strong>PHIẾU ĐĂNG KÝ DỰ THI</strong></div>
+      <div style="text-align:center;font-size:28px;"><strong>ĐÁNH GIÁ NĂNG LỰC NGOẠI NGỮ CỦA ĐẠI HỌC THÁI NGUYÊN</strong></div>
+      <div class="row row-cols-2">
+        <div class="col-6" style="display:flex;justify-content:center;">
+          <div class="anh-the" style="display:flex;justify-content:center;height:200px;"><img src="${item.anh_chandung || ''}"></div>
+        </div>
+        <div class="col-6">
+          <div class="anh-the" style="display:flex;justify-content:center;height:200px;">
+            ${item.doituong_anhthe ? `<img src="${item.doituong_anhthe}">` : '<div style="text-align:center">Ảnh thẻ sinh viên<br>(Nếu có)</div>'}
+          </div>
+        </div>
+      </div>
+      <div class="table-flex mt-2">
+        <div class="table-flex-row" style="background:#C1E4F5"><div class="table-flex-cell colspan-3"><strong>PHẦN I - THÔNG TIN CÁ NHÂN</strong></div></div>
+        <div class="table-flex-row">
+          <div class="table-flex-cell colspan-2">1. Họ và tên: ${item.hoten || ''}</div>
+          <div class="table-flex-cell colspan-2">2. Giới tính: ${item.gioitinh == 'nam' ? '☑' : '☐'} Nam&nbsp; ${item.gioitinh !== 'nam' ? '☑' : '☐'} Nữ</div>
+        </div>
+        <div class="table-flex-row">
+          <div class="table-flex-cell colspan-2">3. Ngày sinh: ${item.ngaysinh || ''}</div>
+          <div class="table-flex-cell colspan-2">4. Nơi sinh: ${item.noisinh || ''}</div>
+        </div>
+        <div class="table-flex-row">
+          <div class="table-flex-cell">5. CCCD: ${item.cccd_so || ''}</div>
+          <div class="table-flex-cell">6. Ngày cấp: ${item.cccd_ngaycap || ''}</div>
+          <div class="table-flex-cell">7. Nơi cấp: ${item.cccd_noicap || ''}</div>
+        </div>
+        <div class="table-flex-row">
+          <div class="table-flex-cell colspan-2">8. Điện thoại: ${item.phone || ''}</div>
+          <div class="table-flex-cell colspan-2">9. Email: ${item.email || ''}</div>
+        </div>
+        <div class="table-flex-row"><div class="table-flex-cell colspan-3">10. Địa chỉ: ${item.thuongtru || ''}</div></div>
+        <div class="table-flex-row"><div class="table-flex-cell colspan-3">11. Đối tượng dự thi:</div></div>
+        <div class="table-flex-row">
+          <div class="table-flex-cell">${ck('dhtn')} Người học của Đại học Thái Nguyên</div>
+          <div class="table-flex-cell">${ck('doitac')} Người học của đơn vị đối tác</div>
+          <div class="table-flex-cell">${ck('tudo')} Thí sinh tự do</div>
+        </div>
+        <div class="table-flex-row" style="background:#C1E4F5"><div class="table-flex-cell colspan-3"><strong>PHẦN II - THÔNG TIN ĐĂNG KÝ THI</strong></div></div>
+        <div class="table-flex-row"><div class="table-flex-cell">1. Đợt thi: ${item.dothi || ''}</div></div>
+        <div class="table-flex-row"><div class="table-flex-cell">2. Ngôn ngữ thi: ${item.ngonngu || ''}</div></div>
+        <div class="table-flex-row"><div class="table-flex-cell">3. Cấp độ thi:</div></div>
+        <div class="table-flex-row" style="flex-wrap:wrap;">${capthiHtml}</div>
+        <div class="table-flex-row" style="background:#C1E4F5"><div class="table-flex-cell colspan-3"><strong>PHẦN III - CAM KẾT CỦA THÍ SINH</strong></div></div>
+        <div class="table-flex-row"><div class="table-flex-cell colspan-3">☑ Thí sinh cam kết chịu trách nhiệm về những thông tin cung cấp ở phía trên, nếu sai sót thí sinh có thể bị hủy tư cách dự thi và kết quả thi</div></div>
+        <div class="table-flex-row"><div class="table-flex-cell colspan-3">☑ Thí sinh cam kết chấp hành đúng và đầy đủ Quy chế thi và Quy định của Hội đồng thi đánh giá năng lực ngoại ngữ tại Đại học Thái Nguyên.</div></div>
+      </div>
+    </div>
+    <div class="pdf-page page-break">
+      <div style="display:flex;gap:20px;min-height:200px;">
+        <div class="anh-the" style="width:50%"><div style="text-align:center">CCCD mặt trước</div><img src="${item.cccd_mattruoc || ''}"></div>
+        <div class="anh-the" style="width:50%"><div style="text-align:center">CCCD mặt sau</div><img src="${item.cccd_matsau || ''}"></div>
+      </div>
+    </div>`;
+    };
 
+    const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Phiếu đăng ký dự thi</title><style>${styles}</style></head>
+<body><div id="pdf-content">${data.map(buildItem).join('')}</div></body>
+</html>`;
 
-
-
-// ===============================
-// TẠO PDF
-// ===============================
-
-    let percent = 0;
-    const step: number = 100 / data.length;
-    this.notifi.loadingAnimationV2({process:{percent:percent}});
+    this.notifi.isProcessing(true);
+    this.notifi.loadingAnimationV2({ process: { percent: 0 } });
 
     const container = document.createElement('div');
-
-
     container.innerHTML = htmlContent;
-    container.style.position='fixed';
-    container.style.left='-99999px';
-    container.style.top='0';
-    container.style.width='210mm';
+    container.style.cssText = 'position:fixed;left:-99999px;top:0;width:210mm;';
     document.body.appendChild(container);
 
+    const pages = container.querySelectorAll('.pdf-page');
+    const total = pages.length;
+    const stepPct = 100 / total;
+    let percent = 0;
+
     const pdf = new jsPDF({
-      orientation:'portrait',
-      unit:'mm',
-      format:'a4'
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true,
     });
 
-    const pages =
-      container.querySelectorAll('.pdf-page');
+    const opts = { scale: 0.95, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', logging: false };
 
-    for(let i=0;i<pages.length;i++){
-
-      const element = pages[i] as HTMLElement;
-      if(!element){
-        continue;
-      }
-
-      const canvas =
-        await html2canvas(element,{
-
-          scale:3,
-          useCORS:true,
-          allowTaint:false,
-          backgroundColor:'#ffffff',
-          logging:false
-        });
-
-      const imgData =
-        canvas.toDataURL(
-          'image/jpeg',
-          1
-        );
-
-      const pdfWidth = 210;
-
-      const pdfHeight =
-        canvas.height *
-        pdfWidth /
-        canvas.width;
-
-
-      if(i>0){
-        pdf.addPage();
-      }
-
-      pdf.addImage(
-        imgData,
-        'JPEG',
-        0,
-        0,
-        pdfWidth,
-        pdfHeight
-      );
-
-      percent = percent + step;
-      this.notifi.loadingAnimationV2({process :{ percent :percent}})
+    const BATCH = 2;
+    for (let i = 0; i < total; i += BATCH) {
+      const batch = Array.from(pages).slice(i, i + BATCH) as HTMLElement[];
+      const canvases = await Promise.all(batch.map((el) => html2canvas(el, opts)));
+      canvases.forEach((canvas, idx) => {
+        const pageIdx = i + idx;
+        if (pageIdx > 0) pdf.addPage();
+        const imgData = canvas.toDataURL('image/jpeg', 1);
+        const pw = 210;
+        pdf.addImage(imgData, 'JPEG', 0, 0, pw, (canvas.height * pw) / canvas.width);
+      });
+      percent += stepPct * batch.length;
+      this.notifi.loadingAnimationV2({ process: { percent } });
     }
 
-
-    pdf.save(fileName+'.pdf');
-
+    pdf.save(`${fileName}.pdf`);
+    this.notifi.isProcessing(false);
     this.notifi.disableLoadingAnimationV2();
-
     document.body.removeChild(container);
-
-
   }
+
+
+
+
 }
+
+
