@@ -97,7 +97,7 @@ export class DanhSachThiSinhComponent implements OnInit {
 
           m['_index']= (this.page - 1) * this.rows + index +1;
           m['_diemduthi_name'] = dm.find(f=>f.id == m.diemduthi_id) ? dm.find(f=>f.id == m.diemduthi_id).title:'';
-          m['__trangthai_thanhtoan'] = m.trangthai_thanhtoan === 0 ? 'Chưa thanh toán' : 'Đã thanh toán';
+          m['__trangthai_thanhtoan'] = m.trangthai_thanhtoan == 1 ?'Đã thanh toán' : 'Chưa thanh toán' ;
 
           return m;
         })
@@ -140,7 +140,7 @@ export class DanhSachThiSinhComponent implements OnInit {
 
           m['_index']= (this.page - 1) * this.rows + index +1;
           m['_diemduthi_name'] = !!this.dmDiemduthi.find(f=>f.id == m.diemduthi_id) ?  this.dmDiemduthi.find(f=>f.id == m.diemduthi_id).title:'';
-          m['__trangthai_thanhtoan'] = m.trangthai_thanhtoan === 0 ? 'Chưa thanh toán' : 'Đã thanh toán';
+          m['__trangthai_thanhtoan'] = m.trangthai_thanhtoan == 1 ? 'Đã thanh toán' :'Chưa thanh toán' ;
 
           // ['__ghichu'] == parent && parent['user'] && parent['user']['name'] ? (parent['user']['name'] + ' đăng ký' ):'';
           return m;

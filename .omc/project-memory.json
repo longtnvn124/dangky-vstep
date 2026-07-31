@@ -111,6 +111,12 @@
       "type": "file"
     },
     {
+      "path": "src\\app\\modules\\shared\\services\\export\\ex-word-vstep.service.ts",
+      "accessCount": 5,
+      "lastAccessed": 1783346715597,
+      "type": "file"
+    },
+    {
       "path": "src\\app\\modules\\public\\features\\tra-cuu-ket-qua\\tra-cuu-ket-qua.component.ts",
       "accessCount": 4,
       "lastAccessed": 1781166371640,
@@ -150,12 +156,6 @@
       "path": "src\\app\\modules\\shared\\services\\vstep\\hoidong-ketqua.service.ts",
       "accessCount": 2,
       "lastAccessed": 1781165497939,
-      "type": "file"
-    },
-    {
-      "path": "src\\app\\modules\\shared\\services\\export\\ex-word-vstep.service.ts",
-      "accessCount": 2,
-      "lastAccessed": 1783342887751,
       "type": "file"
     },
     {

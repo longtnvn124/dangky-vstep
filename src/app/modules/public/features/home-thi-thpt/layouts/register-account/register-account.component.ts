@@ -72,7 +72,7 @@ export class RegisterAccountComponent implements OnInit {
   ) {
     this.formSave = this.fb.group({
       username: ['' ,[Validators.required, PhoneNumberValidator]],
-      email: ['', [Validators.required, EmailFomatCheckValidator]],
+      email: ['', [Validators.required]],
       password: ['', [Validators.required,PassCheckValidator,customInputValidator()]],
       display_name: ['', Validators.required],
       phone: [null, [Validators.required, PhoneNumberValidator, Validators.maxLength(12), Validators.minLength(6)]],

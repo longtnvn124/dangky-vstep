@@ -7,10 +7,10 @@ export const environment = {
 // run locall
 // https://dangkythi.trungtamkhaothi.edu.vn:8095/
 const realm = 'dangky-vstep';
-// const host = 'https://api-dev.ictu.vn';//offlline
-// const port = '10091';//off
-const host = 'https://dangkythi.trungtamkhaothi.edu.vn';//online
-const port = '8095';//port online
+const host = 'https://api-dev.ictu.vn';//offlline
+const port = '10091';//off
+// const host = 'https://dangkythi.trungtamkhaothi.edu.vn';//online
+// const port = '8095';//port online
 
 const port_socket = '10092';//off
 const ws_url = 'wss://api-dev.ictu.vn';//off
@@ -71,7 +71,7 @@ const appLanguages = [
 
 const appDefaultLanguage = { name: 'vn', label: 'Tiếng việt' };
 
-const appVersion = '1.0.00';
+const appVersion = '1.0.01';
 
 export const APP_CONFIGS = {
   defaultRedirect: '/admin/thi-sinh/thong-tin',
@@ -121,8 +121,8 @@ export const ENCRYPT_KEY = 'dkVstepW4jM2P5r';
 export const APP_STORES = 'dkVstep4QfWtr6Z'; // no clear after logout
 export const SWITCH_DONVI_ID = 'dkVstepC@gGA506'; // no clear after logout
 
-// export const X_APP_ID = '64c9a192-cc0e-4198-acb8-2188dbb472fa';//dev
-export const X_APP_ID = '91D7931D-ABBA-4CE0-BAA4-464C4E8B1A34';// online for dev
+export const X_APP_ID = '64c9a192-cc0e-4198-acb8-2188dbb472fa';//dev
+// export const X_APP_ID = '91D7931D-ABBA-4CE0-BAA4-464C4E8B1A34';// online for dev
 
 
 export const imgFalback = 'assets/images/placeholder.jpg';

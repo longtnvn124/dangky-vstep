@@ -497,18 +497,14 @@ export class ExWordVstepService {
 
     const opts = { scale: 0.95, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', logging: false };
 
-    const BATCH = 2;
-    for (let i = 0; i < total; i += BATCH) {
-      const batch = Array.from(pages).slice(i, i + BATCH) as HTMLElement[];
-      const canvases = await Promise.all(batch.map((el) => html2canvas(el, opts)));
-      canvases.forEach((canvas, idx) => {
-        const pageIdx = i + idx;
-        if (pageIdx > 0) pdf.addPage();
-        const imgData = canvas.toDataURL('image/jpeg', 1);
-        const pw = 210;
-        pdf.addImage(imgData, 'JPEG', 0, 0, pw, (canvas.height * pw) / canvas.width);
-      });
-      percent += stepPct * batch.length;
+    for (let i = 0; i < total; i++) {
+      const el = pages[i] as HTMLElement;
+      const canvas = await html2canvas(el, opts);
+      if (i > 0) pdf.addPage();
+      const imgData = canvas.toDataURL('image/jpeg', 1);
+      pdf.addImage(imgData, 'JPEG', 0, 0, 210, (canvas.height * 210) / canvas.width);
+
+      percent += stepPct;
       this.notifi.loadingAnimationV2({ process: { percent } });
     }
 
