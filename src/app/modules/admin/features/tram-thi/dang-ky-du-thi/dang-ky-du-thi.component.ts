@@ -620,7 +620,7 @@ export class DangKyDuThiComponent implements OnInit {
         hoten: item['hodem'] + ' ' + item['ten'],
         ten: item['ten'].trim(),
         ngaysinh: this.replaceBirth(item['ngaysinh']),
-        gioitinh: item.gioitinh ? (item.gioitinh.toLowerCase() == 'nam' ? 'nam' : 'nu' ) : '',
+        gioitinh: item.gioitinh ? (item.gioitinh.trim().toLowerCase().to == 'nam' ? 'nam' : 'nu' ) : '',
         noisinh:item['noisinh'],
         dantoc:item['dantoc'],
         cccd_so: item['cccd_so'].replace(/'/g,""),
