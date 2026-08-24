@@ -71,6 +71,11 @@ export class ExpThisinhDuthiService {
     this.setCellProperties(worksheet.getCell('K3'), 14, { bold: true });
     worksheet.mergeCells('L3:L4');
     this.setCellProperties(worksheet.getCell('L3'), 14, { bold: true });
+    worksheet.mergeCells('M3:M4');
+    this.setCellProperties(worksheet.getCell('M3'), 14, { bold: true });
+
+    worksheet.mergeCells('N3:N4');
+    this.setCellProperties(worksheet.getCell('N3'), 14, { bold: true });
 
 
 
@@ -82,11 +87,14 @@ export class ExpThisinhDuthiService {
       5: 13,
       6: 13,
       7: 19,
-      8: 37,
-      9: 18,
-      10: 30,
+      8: 20,
+      9: 20,
+      10: 20,
       11: 20,
-      12: 26,
+      12: 20,
+      13: 32,
+      14: 32,
+      15: 20,
     };
     this.setColWidth(worksheet, objectColWidth);
     // Get all columns from JSON
