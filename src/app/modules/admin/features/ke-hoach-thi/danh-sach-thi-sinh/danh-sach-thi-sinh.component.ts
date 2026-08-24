@@ -183,7 +183,7 @@ export class DanhSachThiSinhComponent implements OnInit {
               const thisinh:ThiSinhInfo = m['thisinh'];
               const parent:OrdersVstep = m.parent_id === 0 ? null : dataParent.find(f=>f.id === m.parent_id);
               m['__index'] = index + 1;
-              m['__madk'] = 'hsk' + m.id;
+              m['__madk'] = m.id;
               m['__status_converted'] = m.trangthai_thanhtoan === 1 ? 'Thanh toán thành công': (  m.trangthai_thanhtoan === 0 ? 'Chưa thanh toán' : (m.trangthai_thanhtoan === 2 ? 'Giao dịch đang sử lý' : ''));
               m['__capthi_converted'] = this.dmDiemduthi.length>0 && this.dmDiemduthi.find(f=>f.id == m.diemduthi_id) ? this.dmDiemduthi.find(f=>f.id === m.diemduthi_id).title : '';
               m['__hoten']= user ? user['name'] :(thisinh ? thisinh.hoten : '');
@@ -198,6 +198,7 @@ export class DanhSachThiSinhComponent implements OnInit {
               m['__isCccdImg']= thisinh && thisinh.cccd_img_truoc && thisinh.cccd_img_truoc ? 1:0;
               m['__lephithi']= m.lephithi;
 
+
               if(parent){
                 m['__ghichu']= parent && parent['user']? parent['user']['name'] + ' đăng ký':'Đối tác đăng ký'  ;
               }else if ((m.user_id === m['created_by'] && m['updated_by'] === 0) || (m.user_id === m['created_by'] && m['updated_by'] === m.user_id) ){
@@ -210,6 +211,9 @@ export class DanhSachThiSinhComponent implements OnInit {
                 madk: m['__madk'],
                 status: m['__status_converted'],
                 hoten: m['__hoten'],
+                dantoc:thisinh && thisinh['dantoc'] ? thisinh['dantoc'] : '',
+                noisinh:thisinh && thisinh['noisinh'] ? thisinh['noisinh'] : '',
+                diachi:thisinh && thisinh['thuongtru_diachi'] ? thisinh['thuongtru_diachi'].fullAddress : '',
                 ngaysinh: m['__ngaysinh'],
                 gioitinh: m['__gioitinh'],
                 cccd: m['__cccd_so'],
@@ -223,7 +227,7 @@ export class DanhSachThiSinhComponent implements OnInit {
 
             if (dataMap) {
 
-              const header = ['STT','Mã ĐK','Trạng thái','Họ và tên','Ngày sinh','Giới tính','CCCD','Email','Số ĐT', 'Điểm dự thi','Ghi chú','Thời gian thanh toán']
+              const header = ['STT','Mã ĐK','Trạng thái','Họ và tên','Dân tộc', 'Nơi sinh','Địa chỉ','Ngày sinh','Giới tính','CCCD','Email','Số ĐT', 'Điểm dự thi','Ghi chú','Thời gian thanh toán']
 
               this.expThisinhDuthiService.export(dataMap,this._kehoachthi.title, this._kehoachthi.title,[header],'Danh sách đăng ký thành công');
               this.notifi.isProcessing(false);
