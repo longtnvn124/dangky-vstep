@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1783342578005,
+  "lastScanned": 1787538477104,
   "projectRoot": "d:\\data\\project\\angular\\v14\\dangky-vstep",
   "techStack": {
     "languages": [
@@ -32,7 +32,7 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "npx tsc --noEmit --pretty src/app/modules/shared/services/export/ex-word-vstep.service.ts 2>&1 | head -30",
+    "buildCommand": "npm run build",
     "testCommand": "npm test",
     "lintCommand": null,
     "devCommand": "npm run start",
@@ -68,14 +68,14 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 0,
-      "lastAccessed": 1783342577946,
+      "lastAccessed": 1787538477020,
       "keyFiles": []
     },
     "src": {
       "path": "src",
       "purpose": "Source code",
       "fileCount": 7,
-      "lastAccessed": 1783342577947,
+      "lastAccessed": 1787538477021,
       "keyFiles": [
         "custom-theme.scss",
         "favicon.ico",
@@ -88,7 +88,7 @@
       "path": "src\\app",
       "purpose": "Application code",
       "fileCount": 5,
-      "lastAccessed": 1783342577959,
+      "lastAccessed": 1787538477050,
       "keyFiles": [
         "app-routing.module.ts",
         "app.component.css",
@@ -99,7 +99,7 @@
       "path": "src\\assets",
       "purpose": "Static assets",
       "fileCount": 1,
-      "lastAccessed": 1783342577959,
+      "lastAccessed": 1787538477050,
       "keyFiles": []
     }
   },
@@ -229,6 +229,24 @@
       "accessCount": 1,
       "lastAccessed": 1783342844576,
       "type": "directory"
+    },
+    {
+      "path": "",
+      "accessCount": 1,
+      "lastAccessed": 1787539123491,
+      "type": "directory"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\thi-sinh\\thi-sinh-dang-ky\\thi-sinh-dang-ky.component.html",
+      "accessCount": 1,
+      "lastAccessed": 1787539155952,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\thi-sinh\\thi-sinh-dang-ky\\thi-sinh-dang-ky.component.ts",
+      "accessCount": 1,
+      "lastAccessed": 1787539156385,
+      "type": "file"
     }
   ],
   "userDirectives": []

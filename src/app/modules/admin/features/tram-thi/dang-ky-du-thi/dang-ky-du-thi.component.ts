@@ -310,7 +310,7 @@ export class DangKyDuThiComponent implements OnInit {
         ngaysinh: this.convertDateByXlsx(row[4]),
         dantoc: row[5],
         gioitinh: row[6],
-        noisinh: row[7].trim(),
+        noisinh: row[7] ? row[7].trim():'',
         cccd_so: row[8],
         phone:row[11],
         email:row[12],

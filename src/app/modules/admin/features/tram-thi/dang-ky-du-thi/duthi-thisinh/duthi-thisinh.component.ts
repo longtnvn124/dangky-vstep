@@ -29,6 +29,7 @@ export class DuthiThisinhComponent implements OnInit {
 
   @Input() set orderParent(data: OrdersVstep) {
     this.orderParentSelect = data;
+    console.log(this.orderParentSelect);
 
     this.listChild = [];
     this.page = 1;
@@ -138,7 +139,7 @@ export class DuthiThisinhComponent implements OnInit {
       ],page:this.page.toString(),
       set:[
         {label:'limit',value:'20'},
-        {label:'select',value:'id,trangthai_thanhtoan,lephithi,user_id,kehoach_id,thisinh_id,diemduthi_id'},
+        {label:'select',value:'id,trangthai_thanhtoan,lephithi,user_id,kehoach_id,thisinh_id,diemduthi_id,capthi'},
         {label:'with',value:'user,thisinh'}
       ]
     }
@@ -157,7 +158,8 @@ export class DuthiThisinhComponent implements OnInit {
           m['__lephithi'] = m.lephithi;
           m['__diemduthi'] = this.listDmDiemduthi.find(f=>f.diemduthi_id == m.diemduthi_id ) ? this.listDmDiemduthi.find(f=>f.diemduthi_id == m.diemduthi_id )['_diemduthi_name'] : '';
 
-          m['__capthi'] = this.orderParentSelect['_kehoach']['levels'].find(f=>f.key == m.capthi) ? this.orderParentSelect['_kehoach']['levels'].find(f=>f.key == m.capthi).label : m.capthi;
+
+          m['__capthi'] = this.orderParentSelect['_kehoach']['levels'].find(f=>f.value == m.capthi) ? this.orderParentSelect['_kehoach']['levels'].find(f=>f.value == m.capthi).label : m.capthi;
           return m
         }): [];
 

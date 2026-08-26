@@ -178,7 +178,8 @@ export class DanhSachThiSinhComponent implements OnInit {
         }))
         .subscribe({
           next:([dataOrder,dataParent])=>{
-            const dataMap = dataOrder.map((m,index)=>{
+            console.log(dataOrder);
+            const dataMap = dataOrder.filter(f=>!f['huy']).map((m,index)=>{
               const user:User = m['user'];
               const thisinh:ThiSinhInfo = m['thisinh'];
               const parent:OrdersVstep = m.parent_id === 0 ? null : dataParent.find(f=>f.id === m.parent_id);
