@@ -9,7 +9,10 @@ import {Router} from "@angular/router";
 import {SenderEmailService} from "@shared/services/sender-email.service";
 import {HelperService} from "@core/services/helper.service";
 import {KehoachLevers, KeHoachThi, KehoachthiVstepService} from "@shared/services/vstep/kehoachthi-vstep.service";
-import {KehoachthiDiemduthi, KehoachthiDiemthiVstepService} from "@shared/services/vstep/kehoachthi-diemthi-vstep.service";
+import {
+  KehoachthiDiemduthi,
+  KehoachthiDiemthiVstepService
+} from "@shared/services/vstep/kehoachthi-diemthi-vstep.service";
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
 import {DmDiemduthi, DmDiemDuThiService} from "@shared/services/dm-diem-du-thi.service";
 import {ConditionOption} from "@shared/models/condition-option";
@@ -25,9 +28,9 @@ import {FileService} from "@core/services/file.service";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import {VstepHoidongThiService} from "@shared/services/vstep-hoidong-thi.service";
-import {VstepHoidongThisinhService} from "@shared/services/vstep-hoidong-thisinh.service";
 import {VstepHoidongPhongthiService} from "@shared/services/vstep-hoidong-phongthi.service";
 import {VstepHoidongPhongthiThisinhService} from "@shared/services/vstep-hoidong-phongthi-thisinh.service";
+import {DmLoaihinhthi, DmLoaihinhthiService} from '@modules/shared/services/vstep/dm-loaihinhthi.service';
 
 export interface SumMonThi {
   diemduthi_id: string,
@@ -97,6 +100,9 @@ export class ThiSinhDangKyComponent implements OnInit {
   listLanguages             : Languages[];
 
   listLever                 : KehoachLevers[];
+  listLoaihinhthi           : DmLoaihinhthi[] = [];
+
+  loaihinh_select           : DmLoaihinhthi = null;
   constructor(
     private kehoachthiVstepService: KehoachthiVstepService,
     private kehoachthiDiemthiVstepService: KehoachthiDiemthiVstepService,
@@ -115,9 +121,7 @@ export class ThiSinhDangKyComponent implements OnInit {
     private serverTimeService :ServerTimeService,
     private languagesService: LanguagesService,
     private fileService :FileService,
-    private hoidongSerivice: VstepHoidongThiService,
-    private hoidongPhongthiService: VstepHoidongPhongthiService,
-    private hoidongPhongthiThisinhService: VstepHoidongPhongthiThisinhService,
+    private loaihinhthiService: DmLoaihinhthiService,
 
   ) {
     this.formSave = this.fb.group({
@@ -184,16 +188,29 @@ export class ThiSinhDangKyComponent implements OnInit {
         { label:'limit',value:'-1'}
       ]
     }
-    forkJoin<[ThiSinhInfo, KeHoachThi[],DateTimeServer, Languages[]]>(
+
+    const conditionLoaihinh: ConditionOption = {
+      condition:[
+      ],
+      page:'1',
+      set:[
+        { label:'limit',value:'3'}
+      ]
+    }
+
+    forkJoin<[ThiSinhInfo, KeHoachThi[],DateTimeServer, Languages[],DmLoaihinhthi[]]>(
       [
         this.thisinhInfoService.getUserInfo(this.auth.user.id),
         this.kehoachthiVstepService.getDataByPageNew(conditonKehoach).pipe(map(m=>m.data)),
         this.serverTimeService.getTime(),
-        this.languagesService.getDataByPageNew(condition).pipe(switchMap(m=>of(m.data)))
+        this.languagesService.getDataByPageNew(condition).pipe(switchMap(m=>of(m.data))),
+        this.loaihinhthiService.getDataByPageNew(conditionLoaihinh).pipe(switchMap(m=>of(m.data)))
       ]
     ).subscribe({
-      next: ([ thisinhInfo, keHoachThi,dateTimeService, listLang]) => {
+      next: ([ thisinhInfo, keHoachThi,dateTimeService, listLang,listLoaihinhthi]) => {
         this.listLanguages = listLang;
+        this.listLoaihinhthi = listLoaihinhthi;
+
         this.dateTimeService = dateTimeService;
         this.userInfo = thisinhInfo;
         this.isCheckCCCD = thisinhInfo.cccd_so.toLowerCase() == this.auth.user.username.toLowerCase();
@@ -208,11 +225,12 @@ export class ThiSinhDangKyComponent implements OnInit {
           m['_date_convertd'] = this.strToTime(m.ngaybatdau) + ' - ' + this.strToTime(m.ngayketthuc);
 
           m['_ngonngu'] = listLang.find(f=>f.id == m.ngonngu) ? listLang.find(f=>f.id == m.ngonngu).title : '';
+          m['_loaihinhthi'] = m.loaihinhthi && listLoaihinhthi.find(f=>f.id == m.loaihinhthi) ? listLoaihinhthi.find(f=>f.id == m.loaihinhthi).title : '';
           return m;
         })
 
         this.keHoachThi = kehoachthiParam;
-        this.keHoachThi_dangky = kehoachthiParam.filter(f => f.status === 1 && (this.helperService.formatSQLDate(new Date(f.ngayketthuc))) >= this.helperService.formatSQLDate(curentDate));
+        // this.keHoachThi_dangky = kehoachthiParam.filter(f => f.status === 1 && (this.helperService.formatSQLDate(new Date(f.ngayketthuc))) >= this.helperService.formatSQLDate(curentDate));
         if (this.userInfo) {
           if (this.userInfo.anh_chandung && this.userInfo.cccd_img_truoc && this.userInfo.cccd_img_sau) {
             this.getDataOrder();
@@ -250,6 +268,9 @@ export class ThiSinhDangKyComponent implements OnInit {
           label:'order',value : 'DESC'
         },
         {
+          label:'orderby',value : 'id'
+        },
+        {
           label:'with',value : 'parent'
         }
       ]
@@ -285,9 +306,12 @@ export class ThiSinhDangKyComponent implements OnInit {
         this.dataOrders = data.map(m => {
 
           m['_indexTable'] = i++;
-          m['_kehoach'] = this.keHoachThi && this.keHoachThi.find(f => f.id === m.kehoach_id) ? this.keHoachThi.find(f => f.id === m.kehoach_id) : null;
-          m['__kehoach_thi'] = this.keHoachThi && this.keHoachThi.find(f => f.id === m.kehoach_id) ? this.keHoachThi.find(f => f.id === m.kehoach_id).title : '';
-          m['__kehoach_status'] = this.keHoachThi && this.keHoachThi.find(f => f.id === m.kehoach_id) ? this.keHoachThi.find(f => f.id === m.kehoach_id).status : 0;
+
+          const kehoachThi = this.keHoachThi.find(f => f.id === m.kehoach_id);
+          m['_kehoach'] = kehoachThi;
+
+          m['__kehoach_thi'] = kehoachThi ? kehoachThi.title : '';
+          m['__kehoach_status'] = kehoachThi ? kehoachThi.status : 0;
           m['__lephithi_covered'] = m.lephithi;
           const parent = m['parent'];
 
@@ -301,6 +325,7 @@ export class ThiSinhDangKyComponent implements OnInit {
           m['__hoten'] = m['user'] && m['user']['name'] ? m['user']['name'] : '';
 
           m['__diemduthi_covered'] = datadm && datadm.length > 0 ? (datadm.find(f => f.id === m.diemduthi_id) ? datadm.find(f => f.id === m.diemduthi_id).title : '') : ' ';
+          m['__loaihinhthi'] = kehoachThi ? kehoachThi['_loaihinhthi']:'';
 
 
           return m;
@@ -349,7 +374,7 @@ export class ThiSinhDangKyComponent implements OnInit {
   SaveForm() {
     this.f['user_id'].setValue(this.auth.user.id);
     this.f['thisinh_id'].setValue(this.userInfo.id);
-    this.f['trangthai_duyet'].setValue(this.userInfo.doituong == 'dhtn' ? 0 : 1);
+    this.f['trangthai_duyet'].setValue( this.loaihinh_select?.have_check == 1 ? 0 : 1);
     this.f['lephithi'].setValue(this.kehoach_select.dongia.find(f=>f.key == this.userInfo.doituong) ? this.kehoach_select.dongia.find(f=>f.key == this.userInfo.doituong).value : '');
 
     if (this.formSave.valid) {
@@ -714,7 +739,6 @@ export class ThiSinhDangKyComponent implements OnInit {
 
   btnViewChange(item:OrdersVstep){
     this.order_select = {...item};
-    this.viewModelChange = true;
 
     const kehoachByOrder = this.keHoachThi.find(f => f.id == item.kehoach_id);
     if (kehoachByOrder && kehoachByOrder.status === 1) {
@@ -724,32 +748,115 @@ export class ThiSinhDangKyComponent implements OnInit {
       const dateSeverGet = new Date(this.dateTimeService.date)
       if (new Date(this.helperService.formatSQLDate(datekehoach)) >= new Date(this.helperService.formatSQLDate(dateSeverGet))) {
 
-        this.huyOrdersService.getDataByOrderIdAndType(item.id,'change').subscribe({
-          next:(data)=>{
-            this.listOrderHuyChange = data;
-            this.check_change_dothi = -1;
-            this.change_kehoachthi_id = 0;
-            this.data_Kehoachthi_change = this.keHoachThi_dangky.filter(f => f.id !== item.kehoach_id)
+        const conditon: ConditionOption= {
+           condition:[
+             {conditionName:'order_id',condition:OvicQueryCondition.equal , value:item.id.toString()}
+           ],
+          page:'1',
+          set:[
+            {
+              label:'limit',value:'-1'
+            }
+          ]
+        }
 
-            this.formHuyOrder.reset(
-              {
-                user_id: item.user_id,
-                kehoach_id: item.kehoach_id,
-                diemduthi_id: item.diemduthi_id,
-                order_id: item.id,
-                hoten: item['__hoten'],
-                mota: '',
-                files: null,
-                minhchung: null,
+        const condtionKehoach: ConditionOption = {
+           condition: [
+             {
+               conditionName:'status',
+               condition:OvicQueryCondition.equal,
+               value:'1'
+             },
+             {
+               conditionName:'ngonngu',
+               condition:OvicQueryCondition.equal,
+               value:kehoachByOrder.ngonngu.toString()
+             },
+             {
+               conditionName:'loaihinhthi',
+               condition:OvicQueryCondition.equal,
+               value:kehoachByOrder.loaihinhthi.toString()
+             }
+           ],page: '1',
+          set:[
+            {
+              label:'limit',value:'-1'
+            }
+          ]
+        }
+          forkJoin({
+            dshuy:this.huyOrdersService.getDataByPageNew(conditon).pipe(map(m=>m.data)),
+            dskht:this.kehoachthiVstepService.getDataByPageNew(condtionKehoach).pipe(map(m=>m.data))
+          })
+          .subscribe({
+          next:({dshuy,dskht})=>{
+            const dataCancel = dshuy.find(f=>f.type == 'cancel');
+            if(!dataCancel || dataCancel && dataCancel.state == -1 ){
+              this.listOrderHuyChange = dshuy;
+              this.check_change_dothi = -1;
+              this.change_kehoachthi_id = 0;
+              const curentDate = new Date();
+              this.data_Kehoachthi_change = dskht.filter(f => f.id !== item.kehoach_id && (this.helperService.formatSQLDate(new Date(f.ngayketthuc))) >= this.helperService.formatSQLDate(curentDate))
 
-              }
-            )
+              this.formHuyOrder.reset(
+                {
+                  user_id: item.user_id,
+                  kehoach_id: item.kehoach_id,
+                  diemduthi_id: item.diemduthi_id,
+                  order_id: item.id,
+                  hoten: item['__hoten'],
+                  mota: '',
+                  files: null,
+                  minhchung: null,
+
+                }
+              )
+              // this.listKehoachChange= dskht.find(f=>f.)
+              // const curentDate = new Date();
+              //
+              // this.keHoachThi_dangky = this.keHoachThi.filter(f =>f.loaihinhthi == item.id && f.status === 1 && (this.helperService.formatSQLDate(new Date(f.ngayketthuc))) >= this.helperService.formatSQLDate(curentDate));
+
+              this.viewModelChange = true;
+            }else{
+
+
+              this.notifi.toastWarning( dataCancel.state == 0 ? 'Vui lòng chờ xét duyệt hủy dự thi' : 'Bạn đã hủy dự thi với đợt thi này');
+            }
 
           },error:()=>{
             this.notifi.toastError('Load dữ liệu không thành công');
-
           }
         })
+
+        // this.huyOrdersService.getDataByOrderIdAndType(item.id,'change').subscribe({
+        //   next:(data)=>{
+        //     this.listOrderHuyChange = data;
+        //     this.check_change_dothi = -1;
+        //     this.change_kehoachthi_id = 0;
+        //     this.data_Kehoachthi_change = this.keHoachThi_dangky.filter(f => f.id !== item.kehoach_id)
+        //
+        //     this.formHuyOrder.reset(
+        //       {
+        //         user_id: item.user_id,
+        //         kehoach_id: item.kehoach_id,
+        //         diemduthi_id: item.diemduthi_id,
+        //         order_id: item.id,
+        //         hoten: item['__hoten'],
+        //         mota: '',
+        //         files: null,
+        //         minhchung: null,
+        //
+        //       }
+        //     )
+        //
+        //     this.viewModelChange = true;
+        //
+        //
+        //   },error:()=>{
+        //     this.notifi.toastError('Load dữ liệu không thành công');
+        //
+        //   }
+        // })
 
 
       }else{
@@ -861,9 +968,14 @@ export class ThiSinhDangKyComponent implements OnInit {
       ])
         .subscribe({
           next: ([diemduthi, data]): void => {
+            // if(data.length == 0){
+            //   this.check_change_dothi = 2;
+            //   return;
+            // }
+
             const numOfLuotthi = diemduthi.find(f => f.diemduthi_id == this.order_select.diemduthi_id) ? diemduthi.find(f => f.diemduthi_id == this.order_select.diemduthi_id).soluong : null;
-            const numOfUse = data.find(f => f.diemduthi_id == this.order_select.diemduthi_id) ? data.find(f => f.diemduthi_id == this.order_select.diemduthi_id).total : null;
-            this.check_change_dothi =  !numOfUse || ( numOfLuotthi && numOfUse && numOfLuotthi > numOfUse) ? 1 : 2;
+            const numOfUse = data.length> 0 && data.find(f => f.diemduthi_id == this.order_select.diemduthi_id) ? data.find(f => f.diemduthi_id == this.order_select.diemduthi_id).total : null;
+            this.check_change_dothi = !numOfUse && numOfLuotthi  || numOfLuotthi && numOfUse && numOfLuotthi > numOfUse ? 1 : 2;
           }, error: (err) => {
             this.check_change_dothi = 2;
 
@@ -895,22 +1007,42 @@ export class ThiSinhDangKyComponent implements OnInit {
       if (button.name === BUTTON_YES.name) {
         // this.ordersService.changeDotthi(this.orderSelect.id, {kehoach_id: this.change_kehoachthi_id}).subscribe({
         this.notifi.isProcessing(true);
-        this.huyOrdersService.create(dataUp).pipe(switchMap(m => {
 
-            return this.huyOrdersService.ActiveChangeDotthi(m)
-          }
-        )).subscribe({
-          next: () => {
+        // console.log(dataUp);
+
+        this.huyOrdersService.createChange(dataUp).subscribe({
+          next:()=>{
             this.displayModal = false;
             this.viewModelChange = false;
             this.getDataOrder();
             this.notifi.isProcessing(false);
             this.notifi.toastSuccess('Thao tác thành công');
-          }, error: (err) => {
+          },error:(err)=>{
             this.notifi.isProcessing(false);
             this.notifi.toastError(err['error']['message']);
           }
         })
+        // return ;
+
+
+        // this.huyOrdersService.create(dataUp).pipe(switchMap(m => {
+        //
+        //     return this.huyOrdersService.ActiveChangeDotthi(m)
+        //   }
+        // )).subscribe({
+        //   next: () => {
+        //     this.displayModal = false;
+        //     this.viewModelChange = false;
+        //     this.getDataOrder();
+        //     this.notifi.isProcessing(false);
+        //     this.notifi.toastSuccess('Thao tác thành công');
+        //   }, error: (err) => {
+        //     this.notifi.isProcessing(false);
+        //     this.notifi.toastError(err['error']['message']);
+        //   }
+        // })
+
+
       }
     } else {
       this.notifi.toastError('Vui lòng nhập lý do đổi đợt thi');
@@ -1044,7 +1176,7 @@ export class ThiSinhDangKyComponent implements OnInit {
   viewPhieudangky(item:OrdersVstep){
 
     const dothi = this.keHoachThi.find(f=>f.id == item.kehoach_id);
-    console.log(dothi);
+
     if(!dothi){
       return this.notifi.toastWarning('Đợt thi đã bị xóa vui lòng liên hệ với quản trị viên');
     }
@@ -1246,6 +1378,45 @@ export class ThiSinhDangKyComponent implements OnInit {
   // }
 
 
+
+  selectLoaihinhthi(item:DmLoaihinhthi){
+    this.resetForm();
+    this.loaihinh_select = item;
+
+    const curentDate = new Date();
+
+    this.keHoachThi_dangky = this.keHoachThi.filter(f =>f.loaihinhthi == item.id && f.status === 1 && (this.helperService.formatSQLDate(new Date(f.ngayketthuc))) >= this.helperService.formatSQLDate(curentDate));
+
+    const conditon:ConditionOption = {
+
+      condition:[
+        {
+          conditionName:'loaihinhthi',condition:OvicQueryCondition.equal,value:item.id.toString()
+        },
+        {
+          conditionName:'status',condition:OvicQueryCondition.equal,value:'1'
+        }
+      ],
+      page:'1',
+      set:[
+        {label:'limit',value:'-1'}
+      ]
+    }
+    this.kehoachthiVstepService.getDataByPageNew(conditon).subscribe({
+      next:(data)=>{
+        this.keHoachThi_dangky = data.data.filter(f=>(this.helperService.formatSQLDate(new Date(f.ngayketthuc))) >= this.helperService.formatSQLDate(curentDate)).map(m=>{
+          m['_time_convertd'] = this.strToTime(m.ngaybatdau) + ' - ' + this.strToTime(m.ngayketthuc);
+          m['_date_convertd'] = this.strToTime(m.ngaybatdau) + ' - ' + this.strToTime(m.ngayketthuc);
+
+          m['_ngonngu'] = this.listLanguages.find(f=>f.id == m.ngonngu) ? this.listLanguages.find(f=>f.id == m.ngonngu).title : '';
+          m['_loaihinhthi'] = m.loaihinhthi && this.listLoaihinhthi.find(f=>f.id == m.loaihinhthi) ? this.listLoaihinhthi.find(f=>f.id == m.loaihinhthi).title : '';
+          return m;
+        });
+      },error:(err)=>{
+        this.notifi.toastError('Load dữ liệu không thành công');
+      }
+    })
+  }
 
 
 }

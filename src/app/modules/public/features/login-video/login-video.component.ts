@@ -239,11 +239,11 @@ export class LoginVideoComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.auth.isLoggedIn()) {
           let redirect: string = APP_CONFIGS.defaultRedirect;
           switch (true) {
-            case this.auth.roles.some(r => r.name === 'admin') :
+            case this.auth.roles.some(r => r.name == 'admin') :
               redirect = '/admin/dashboard';
               break;
-            case this.auth.roles.some(r => r.name === 'diem-du-thi') :
-              redirect = '/admin/ke-hoach-thi';
+            case this.auth.roles.some(r => r.name == 'diem-du-thi') :
+              redirect = 'admin/tram-thi/dang-ky-du-thi';
               break;
             default :
 

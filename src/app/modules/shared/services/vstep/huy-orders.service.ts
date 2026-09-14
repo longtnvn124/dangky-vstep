@@ -19,7 +19,8 @@ export interface HuyOrders{
   content:string;
   file: OvicFile[];
   state?:number;
-  minhchung:OvicFile[]
+  minhchung:OvicFile[];
+  type?:string;
 }
 @Injectable({
   providedIn: 'root'
@@ -192,5 +193,10 @@ export class HuyOrdersService {
         return {data: res.data, recordsFiltered: res.recordsFiltered}
       })
     );
+  }
+
+
+  createChange(data: any): Observable<any> {
+    return this.http.post<Dto>(this.api + 'create-change/', data);
   }
 }

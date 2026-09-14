@@ -8,7 +8,7 @@ export const environment = {
 // https://dangkythi.trungtamkhaothi.edu.vn:8095/
 const realm = 'dangky-vstep';
 // const host = 'https://api-dev.ictu.vn';//offlline
-// const port = '10091';//off
+// const port = '10091';//off/
 const host = 'https://dangkythi.trungtamkhaothi.edu.vn';//online
 const port = '8095';//port online
 
@@ -71,7 +71,7 @@ const appLanguages = [
 
 const appDefaultLanguage = { name: 'vn', label: 'Tiếng việt' };
 
-const appVersion = '1.0.01';
+const appVersion = '1.0.02';
 
 export const APP_CONFIGS = {
   defaultRedirect: '/admin/thi-sinh/thong-tin',

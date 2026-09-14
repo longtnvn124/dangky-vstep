@@ -14,7 +14,7 @@ import {PaginatorModule} from "primeng/paginator";
 import {SharedModule} from "@shared/shared.module";
 import {TableModule} from "primeng/table";
 import {TooltipModule} from "primeng/tooltip";
-import {forkJoin, Observable, of, Subscription, switchMap} from "rxjs";
+import {forkJoin, Observable, of, Subscription, switchMap, throwError} from "rxjs";
 import * as XLSX from "xlsx";
 import {CheckboxModule} from "primeng/checkbox";
 import {DialogModule} from "primeng/dialog";
@@ -30,6 +30,8 @@ import {
 } from "@modules/admin/features/tram-thi/dang-ky-du-thi/duthi-thisinh/duthi-thisinh.component";
 import {FormsModule} from '@angular/forms';
 import {RadioButtonModule} from 'primeng/radiobutton';
+import {error} from "@angular/compiler-cli/src/transformers/util";
+import {HttpErrorResponse} from "@angular/common/http";
 
 type AOA = any[][];
 
@@ -96,7 +98,7 @@ export class DangKyDuThiComponent implements OnInit {
       page:'1',
       set:[
         {label:'limit',value:'-1'},
-        {label:'order_by',value:'id'},
+        {label:'orderby',value:'id'},
         {label:'order',value:'DESC'},
       ]
     }
@@ -380,6 +382,9 @@ export class DangKyDuThiComponent implements OnInit {
       this.notifi.toastWarning('Không tìm thấy dữ liệu import');
     }else if(this.countDuplicateValues(this.dataUpload,'cccd_so') !== 0 || this.countDuplicateValues(this.dataUpload,'phone') !== 0 ||
       this.countDuplicateValues(this.dataUpload,'email') !== 0
+      || this.countThongtinErrors(this.dataUpload, 'cccd_so') !== 0
+      || this.countThongtinErrors(this.dataUpload, 'phone') !== 0
+      || this.countThongtinErrors(this.dataUpload, 'email') !== 0
     ){
       this.notifi.toastWarning('Vui lòng kiểm tra lại số điện thoại, email hoặc số CCCD')
     }else{
@@ -553,6 +558,9 @@ export class DangKyDuThiComponent implements OnInit {
         error: (e) => {
           this.loading = false;
 
+
+          this.notifi.toastError(e);
+
           this.notifi.disableLoadingAnimationV2()
           this.notifi.toastError('Đã có lỗi trong quá trình thực hiện đăng ký');
         }
@@ -580,35 +588,85 @@ export class DangKyDuThiComponent implements OnInit {
   }
 
 
+  // private createUserLogin(data: any[]): Observable<any[]> {
+  //   const index: number = data.findIndex(i => i['__user_id'] == 0 );
+  //   if (index !== -1) {
+  //     const item = data[index];
+  //     const itemRegiter = {
+  //       username: item.cccd_so.trim(),
+  //       email: item.email,
+  //       // email: 'longkakainfo@gmail.com',
+  //       password: this.generate_password(),
+  //       display_name: item.hodem.trim() + ' ' + item.ten.trim(),
+  //       phone: item.cccd_so.trim() + '_'+ item.phone.trim(),
+  //       verify_url: `${location.origin}${this.router.serializeUrl(this.router.createUrlTree(['verification/']))}`
+  //       // verify_url: `https://hsk.tnu.edu.vn/verification`
+  //     }
+  //
+  //     // data[index]['__canUser'] = true;
+  //     return this.registerUserService.creatUser(itemRegiter).pipe(
+  //       switchMap((prj) => {
+  //           data[index]['__user_id'] = parseInt(prj['data']);
+  //           data[index]['__have_old_user'] = parseInt['user_exist'];
+  //           data[index]['__have_send_email'] = prj['verified'] === 1;
+  //           return this.createUserLogin(data)
+  //         }
+  //       ))
+  //   } else {
+  //
+  //     return of(data);
+  //   }
+  // }
+
   private createUserLogin(data: any[]): Observable<any[]> {
-    const index: number = data.findIndex(i => i['__user_id'] == 0 );
-    if (index !== -1) {
-      const item = data[index];
-      const itemRegiter = {
-        username: item.cccd_so.trim(),
-        email: item.email,
-        // email: 'longkakainfo@gmail.com',
-        password: this.generate_password(),
-        display_name: item.hodem.trim() + ' ' + item.ten.trim(),
-        phone: item.cccd_so.trim() + '_'+ item.phone.trim(),
-        verify_url: `${location.origin}${this.router.serializeUrl(this.router.createUrlTree(['verification/']))}`
-        // verify_url: `https://hsk.tnu.edu.vn/verification`
-      }
+    const index = data.findIndex(i => i['__user_id'] == 0);
 
-      // data[index]['__canUser'] = true;
-      return this.registerUserService.creatUser(itemRegiter).pipe(
-        switchMap((prj) => {
-            data[index]['__user_id'] = parseInt(prj['data']);
-            data[index]['__have_old_user'] = parseInt['user_exist'];
-            data[index]['__have_send_email'] = prj['verified'] === 1;
-            return this.createUserLogin(data)
-          }
-        ))
-    } else {
-
+    if (index === -1) {
       return of(data);
     }
+
+    const item = data[index];
+
+    const itemRegiter = {
+      username: item.cccd_so?.trim(),
+      email: item.email,
+      password: this.generate_password(),
+      display_name: `${item.hodem?.trim()} ${item.ten?.trim()}`,
+      phone: `${item.cccd_so?.trim()}_${item.phone?.trim()}`,
+      verify_url: `${location.origin}${this.router.serializeUrl(
+        this.router.createUrlTree(['verification/'])
+      )}`
+    };
+
+    return this.registerUserService.creatUser(itemRegiter).pipe(
+
+      switchMap((prj) => {
+        data[index]['__user_id'] = parseInt(prj['data'], 10);
+        data[index]['__have_old_user'] = parseInt(prj['user_exist'], 10);
+        data[index]['__have_send_email'] = prj['verified'] === 1;
+
+        return this.createUserLogin(data);
+      }),
+      catchError((error:HttpErrorResponse) => {
+
+        // console.log(error['error']['message'])
+
+        const errorMessage = Object.values(error['error']['message']).join(', ').replace('Username' , 'Số cccd');
+
+        const displayName =
+          `${item.hodem || ''} ${item.ten || ''}`.trim();
+
+        return throwError(() => new Error(
+          `Lỗi tạo tài khoản cho "${displayName}" ` +
+            `(CCCD: ${item.cccd_so}, Email: ${item.email}): ${errorMessage}`
+        ));
+      }),
+
+
+    );
   }
+
+
   private loopCreatUserInfo(data: any[]): Observable<any[]> {
 
     const index: number = data.findIndex(i => !i['__canInfo']);
@@ -863,5 +921,50 @@ export class DangKyDuThiComponent implements OnInit {
     const itemForselect = this.tableDiemduthi.find(f=>f.diemduthi_id == event.value.toString());
 
     this.objectFilter.isCheckDuthi = itemForselect && itemForselect['_soluong_conlai'] >= this.dataUpload.length ;
+  }
+
+  checkThongtin(item: any, key: string): boolean {
+    if (key === 'cccd_so') {
+      // CCCD chỉ được chứa số
+      return /^\d+$/.test(item.cccd_so);
+    }
+
+    if (key === 'phone') {
+      // Số điện thoại chỉ được chứa số
+      return /^\d+$/.test(item.phone);
+    }
+
+    if (key === 'email') {
+      // Email không được chứa dấu phẩy
+      return !item.email?.includes(',');
+    }
+
+    return true;
+  }
+
+  countThongtinErrors(arr: any[], key: string): number {
+    let count = 0;
+
+    for (const item of arr) {
+      const value = item?.[key];
+
+      if (value === undefined || value === null || value === '') {
+        continue;
+      }
+
+      if (key === 'cccd_so' || key === 'phone') {
+        if (!/^\d+$/.test(String(value).trim())) {
+          count++;
+        }
+      }
+
+      if (key === 'email') {
+        if (String(value).includes(',')) {
+          count++;
+        }
+      }
+    }
+
+    return count;
   }
 }

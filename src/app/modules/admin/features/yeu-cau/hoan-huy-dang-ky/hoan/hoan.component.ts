@@ -230,8 +230,8 @@ export class HoanComponent implements OnInit {
             const parent = m['parent'];
             m['_indexTable'] = (page - 1) * 10 + (index + 1);
             m['_hoten'] = m.hoten;
-            m['_dotthi'] = this.dsKehoachthi.find(f => f.id === m.kehoach_id) ? this.dsKehoachthi.find(f => f.id === m.kehoach_id).title : '';
-            m['_capdohsk'] = this.listDonvi.find(f => f.id === m.diemduthi_id) ? this.listDonvi.find(f => f.id === m.diemduthi_id).title : '';
+            m['_dotthi'] = this.dsKehoachthi.find(f => f.id == m.kehoach_id) ? this.dsKehoachthi.find(f => f.id == m.kehoach_id).title : '';
+            m['_capdohsk'] = this.listDonvi.find(f => f.id == m.diemduthi_id) ? this.listDonvi.find(f => f.id == m.diemduthi_id).title : '';
             m['_email'] = thisinh && thisinh['email'] ? thisinh['email'] : '';
             m['_phone'] = thisinh && thisinh['phone'] ? thisinh['phone'] : '';
             m['_cccd_so'] = thisinh && thisinh['cccd_so'] ? thisinh['cccd_so'] : '';
@@ -242,6 +242,8 @@ export class HoanComponent implements OnInit {
             return m;
           }) : [];
 
+
+          // console.log(this.listData);
           this.isLoading = false;
           this.notifi.isProcessing(false);
         },
@@ -322,7 +324,7 @@ export class HoanComponent implements OnInit {
             const header = ['STT', 'ĐỊA CHỈ EMAIL', 'HỌ VÀ TÊN', 'NGÀY SINH', 'SỐ GIẤY TỜ TÙY THÂN', 'SỐ ĐIỆN THOẠI LIÊN HỆ', 'Điểm dự thi', 'TRẠNG THÁI', 'ĐƠN VỊ',
             ]
             if(dataEx.length>0){
-              this.exportExcelHskService.exportExHuyOrder(dataEx, 'Danh sách đổi đợt thi' + dotthi.title, dotthi.title,header);
+              this.exportExcelHskService.exportExHuyOrder(dataEx, 'Danh sách đổi đợt thi', 'Sheet 1',header, dotthi.title);
             }else{
               this.notifi.toastWarning('Danh sách chọn không có kết quả!');
             }

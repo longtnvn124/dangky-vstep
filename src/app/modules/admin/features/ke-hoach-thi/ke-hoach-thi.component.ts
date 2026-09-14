@@ -38,6 +38,8 @@ import {ThiSinhInfo} from "@shared/models/thi-sinh";
 import {OrdersVstep, VstepOrdersService} from "@shared/services/vstep-orders.service";
 import {FileService} from "@core/services/file.service";
 import {ExWordVstepService} from "@shared/services/export/ex-word-vstep.service";
+import {DmLoaihinhthi, DmLoaihinhthiService} from "@shared/services/vstep/dm-loaihinhthi.service";
+import {map} from "rxjs/operators";
 
 
 interface FormKehoachthi extends OvicForm {
@@ -121,6 +123,14 @@ export class KeHoachThiComponent implements OnInit {
       sortable: false,
       rowClass: 'ovic-w-200px text-center',
       headClass: 'ovic-w-200px text-center',
+    }, {
+      fieldType: 'normal',
+      field: ['__loaihinh'],
+      innerData: true,
+      header: 'Loại hình thi',
+      sortable: false,
+      rowClass: 'ovic-w-200px text-center',
+      headClass: 'ovic-w-200px text-center',
     },
     {
       fieldType: 'normal',
@@ -167,8 +177,10 @@ export class KeHoachThiComponent implements OnInit {
 
 
   configPayers : {label:string,value:string,key:string}[];
-  constructor(
 
+
+  listLoaihinh : DmLoaihinhthi[] = [];
+  constructor(
     private notifi: NotificationService,
     private fb: FormBuilder,
     private kehoachthiVstepService: KehoachthiVstepService,
@@ -178,7 +190,8 @@ export class KeHoachThiComponent implements OnInit {
     private languagesService: LanguagesService,
     private ordersService :VstepOrdersService,
     private fileService: FileService,
-    private exWordVstepService: ExWordVstepService
+    private exWordVstepService: ExWordVstepService,
+    private dmLoaihinhthiService: DmLoaihinhthiService
   ) {
     const roleAdmin =  this.auth.roles.map(m=>m.name).includes('admin')
 
@@ -277,7 +290,8 @@ export class KeHoachThiComponent implements OnInit {
       status: 1,
       dongia:['',Validators.required],
       ngonngu:[null,Validators.required],
-      levels:[null,Validators.required]
+      levels:[null,Validators.required],
+      loaihinhthi:[null,Validators.required],
 
     });
   }
@@ -303,15 +317,23 @@ export class KeHoachThiComponent implements OnInit {
       ]
     };
 
+    const conditionloaihinh :ConditionOption = {
+      condition:[],
+      page: '1',
+      set:[{label : 'limit',value:'-1'}]
+    };
+
     forkJoin([
+      this.dmLoaihinhthiService.getDataByPageNew(conditionloaihinh).pipe(map(m=>m.data)),
       this.languagesService.getDataByPageNew(conditionUniver),
       this.configsService.getdatabyconfig_key('PAYERS')
     ])
       .subscribe({
-        next:([lag, config])=>{
+        next:([listLoaihinh, lag, config])=>{
           this.listLanguage= lag.data;
           this.configPayers = JSON.parse(config.value);
           this.isLoading = false;
+          this.listLoaihinh = listLoaihinh;
           this.loadData(1);
 
         },error:()=>{
@@ -337,6 +359,8 @@ export class KeHoachThiComponent implements OnInit {
           const sIndex = this.statusList.findIndex(i => i.value === m.status);
           m['__status'] = sIndex !== -1 ? this.statusList[sIndex].color : '';
           m['__time_coverted'] =  this.strToTime(m.ngaybatdau) + ' - ' + this.strToTime(m.ngayketthuc);
+
+          m['__loaihinh'] = this.listLoaihinh.find(f=>f.id == m.loaihinhthi ) && m.loaihinhthi ?  this.listLoaihinh.find(f=>f.id == m.loaihinhthi ).title:'';
           return m;
         })
         this.isLoading = false;
@@ -406,8 +430,8 @@ export class KeHoachThiComponent implements OnInit {
           ngaythi:'',
           dongia:this.configPayers,
           ngonngu:'',
-          levels:''
-
+          levels:'',
+          loaihinhthi:''
         });
         this.formActive = this.listForm[FormType.ADDITION];
         this.preSetupForm(this.menuName);
@@ -431,8 +455,8 @@ export class KeHoachThiComponent implements OnInit {
           dongia: object1.dongia ? object1.dongia : this.configPayers,
           ngonngu:object1.ngonngu ? object1.ngonngu : null ,
           levels:object1.levels? object1.levels: [],
+          loaihinhthi:object1.loaihinhthi ,
         })
-
         this.preSetupForm(this.menuName);
         break;
       case 'DELETE_DECISION':
@@ -512,10 +536,10 @@ export class KeHoachThiComponent implements OnInit {
         },
 
       ],page:'1',
-       set:[
-         {label:'limit',value:'1'},
+      set:[
+        {label:'limit',value:'1'},
 
-       ]
+      ]
     };
 
     this.kehoachthiDiemthiVstepService.getDataByPageNew(condition).subscribe({
@@ -542,10 +566,10 @@ export class KeHoachThiComponent implements OnInit {
     this.f['title'].setValue(titleInput);
     if (this.formSave.valid) {
       if (titleInput !== '') {
-          this.formSave.value['ngaybatdau'] = this.formatSQLDateTime(new Date(this.formSave.value['ngaybatdau']));
-          this.formSave.value['ngayketthuc'] = this.formatSQLDateTime(new Date(this.formSave.value['ngayketthuc']));
-          this.formActive.data = this.formSave.value;
-          this.OBSERVE_PROCESS_FORM_DATA.next(this.formActive);
+        this.formSave.value['ngaybatdau'] = this.formatSQLDateTime(new Date(this.formSave.value['ngaybatdau']));
+        this.formSave.value['ngayketthuc'] = this.formatSQLDateTime(new Date(this.formSave.value['ngayketthuc']));
+        this.formActive.data = this.formSave.value;
+        this.OBSERVE_PROCESS_FORM_DATA.next(this.formActive);
       } else {
         this.notifi.toastError('Vui lòng không nhập khoảng trống');
       }
@@ -605,7 +629,7 @@ export class KeHoachThiComponent implements OnInit {
   onChagelang(event){
     if(event){
 
-    this.f['levels'].setValue([].concat(event['levels']));
+      this.f['levels'].setValue([].concat(event['levels']));
     }else{
       this.f['levels'].setValue([]);
     }

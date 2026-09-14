@@ -1,18 +1,18 @@
 <div class="row">
   <div class="col-12 d-flex flex-column " style="height:calc(100vh - 90px)">
     <div class="hsk-header justify-content-between">
-<!--      <h3 class="tbl-title ">Thông kê dữ liệu</h3>-->
+      <!--      <h3 class="tbl-title ">Thông kê dữ liệu</h3>-->
       <div class="search-block ui-table-globalfilter-container ">
         <div class="d-flex align-items-center">
           <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
             <div class="d-flex" style="gap:10px;">
-              <div class=" " >
+              <div class=" ">
                 <p-dropdown [options]="kehoachthi" placeholder="Chọn đợt thi" optionValue="id" optionLabel="title"
                             [showClear]="true" [filter]="true" [filterBy]="'title'" tooltipPosition="right"
                             (onChange)="onSelectKehoachThi($event.value)">
 
                 </p-dropdown>
-<!--                  <ovic-dropdown [options]="kehoachthi" placeholder="Chọn đợt thi" optionLabel="title" optionId="id" ></ovic-dropdown>-->
+                <!--                  <ovic-dropdown [options]="kehoachthi" placeholder="Chọn đợt thi" optionLabel="title" optionId="id" ></ovic-dropdown>-->
               </div>
             </div>
           </div>
@@ -31,7 +31,8 @@
               <input pInputText type="text" placeholder="Nhập họ tên" formControlName="search_name">
             </div>
             <div class="">
-              <p-dropdown [options]="dataDonvi" placeholder="Chọn điểm thi" optionValue="diemduthi_id" optionLabel="_title"
+              <p-dropdown [options]="dataDonvi" placeholder="Chọn điểm thi" optionValue="diemduthi_id"
+                          optionLabel="_title"
                           [showClear]="true"
                           formControlName="diemduthi_id">
               </p-dropdown>
@@ -71,7 +72,7 @@
           <div class="search-form_right" style="width: 250px">
 
             <button pRipple pButton icon="pi pi-search" label="Tìm kiếm" (click)="btnSearch()"></button>
-<!--            <button pRipple pButton icon="pi pi-file-excel" class="p-button-success ml-1" label="Xuất dữ liệu" (click)="exportDataFilter()"></button>-->
+            <!--            <button pRipple pButton icon="pi pi-file-excel" class="p-button-success ml-1" label="Xuất dữ liệu" (click)="exportDataFilter()"></button>-->
 
           </div>
         </div>
@@ -96,6 +97,7 @@
             <th class="ovic-w-150px text-center">Cập nhật ảnh chân dung</th>
             <th class="ovic-w-150px text-center">Cập nhật ảnh CCCD (hộ chiếu)</th>
             <th class="ovic-w-150px text-center">Ghi chú</th>
+            <th class="ovic-w-150px text-center">Thao tác</th>
           </tr>
 
         </ng-template>
@@ -127,7 +129,7 @@
             <td class="ovic-w-80px text-right">{{ item['__phone'] }}</td>
             <td class="text-right">{{ item['__lephithi'] | numberToVndCurrencuy }}</td>
             <td>
-              <div >{{ item['__capthi_converted'] }}</div>
+              <div>{{ item['__capthi_converted'] }}</div>
             </td>
             <td class="text-left">
               <ng-container [ngSwitch]="item['__isInfo']">
@@ -150,11 +152,20 @@
             </td>
 
             <td class="text-left">{{ item['__ghichu'] }}</td>
+            <td class="text-center">
+              <button pButton pRipple icon="pi pi-id-card"  tooltipPosition="left"
+              pTooltip="Thông tin thí sinh" class="p-button-success"
+                      (click)="btnViewInfo(item)"></button>
+              <button pButton pRipple icon="pi pi-user-edit" pTooltip="Cập nhật tài khoản"
+                tooltipPosition="left" class="p-button-warning ml-2"  
+                      (click)="btnViewaccout(item)"></button>
+
+            </td>
 
 
           </tr>
         </ng-template>
-        <ng-template pTemplate="emptymessage" >
+        <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="20"> Không có dữ liệu thí sinh</td>
           </tr>
@@ -163,13 +174,11 @@
     </div>
     <div class="hsk-bottom">
       <div *ngIf="dataViewClone && dataViewClone.length>=0" class="bt-view-total">
-        Có <span><strong>{{dataViewClone.length}}</strong></span> kết quả phù hợp.
+        Có <span><strong>{{ dataViewClone.length }}</strong></span> kết quả phù hợp.
       </div>
     </div>
   </div>
 </div>
-
-
 
 
 <ng-template #templateWaiting let-c="close" let-d="dismiss">
@@ -180,3 +189,36 @@
     </div>
   </div>
 </ng-template>
+
+
+<ng-template #formInfo let-c="close" let-d="dismiss">
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head">
+      <h4 class="ovic-side-navigation-content__head__title">Thông tin thí sinh > {{userSelect?  userSelect['name'] : ''}} </h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
+    </div>
+    <div class="ovic-side-navigation-content__body ovic-scroll-style --no-footer" style="height:calc(100vh - 60px - 60px)">
+
+      <app-thisinh-info class="d-block" [user]="userSelect" (updateSuccess)="closeForm()"></app-thisinh-info>
+
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template #formUser let-c="close" let-d="dismiss">
+  <div class="ovic-side-navigation-content">
+    <div class="ovic-side-navigation-content__head">
+      <h4 class="ovic-side-navigation-content__head__title">Thông tin thí sinh > {{userSelect?  userSelect['name'] : ''}} </h4>
+      <button (click)="closeForm()" pButton pRipple type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger p-button-text close ovic-side-navigation-content__head__btn-close"></button>
+    </div>
+    <div class="ovic-side-navigation-content__body ovic-scroll-style --no-footer" style="height:calc(100vh - 60px - 60px)">
+
+      <app-form-update-user class="d-block h-100" [User]="userSelect" (updateSuccess)="closeForm()"></app-form-update-user>
+
+    </div>
+  </div>
+</ng-template>
+

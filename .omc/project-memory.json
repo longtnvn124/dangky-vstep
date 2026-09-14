@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1787538477104,
+  "lastScanned": 1788917113853,
   "projectRoot": "d:\\data\\project\\angular\\v14\\dangky-vstep",
   "techStack": {
     "languages": [
@@ -68,14 +68,14 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 0,
-      "lastAccessed": 1787538477020,
+      "lastAccessed": 1788917113821,
       "keyFiles": []
     },
     "src": {
       "path": "src",
       "purpose": "Source code",
       "fileCount": 7,
-      "lastAccessed": 1787538477021,
+      "lastAccessed": 1788917113822,
       "keyFiles": [
         "custom-theme.scss",
         "favicon.ico",
@@ -88,7 +88,7 @@
       "path": "src\\app",
       "purpose": "Application code",
       "fileCount": 5,
-      "lastAccessed": 1787538477050,
+      "lastAccessed": 1788917113833,
       "keyFiles": [
         "app-routing.module.ts",
         "app.component.css",
@@ -99,11 +99,59 @@
       "path": "src\\assets",
       "purpose": "Static assets",
       "fileCount": 1,
-      "lastAccessed": 1787538477050,
+      "lastAccessed": 1788917113833,
       "keyFiles": []
     }
   },
   "hotPaths": [
+    {
+      "path": "src\\app\\modules\\admin\\features\\tram-thi\\thong-ke-tram\\form-update-user\\form-update-user.component.ts",
+      "accessCount": 17,
+      "lastAccessed": 1788944734750,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\tram-thi\\thong-ke-tram\\form-update-user\\form-update-user.plan.md",
+      "accessCount": 17,
+      "lastAccessed": 1788944837713,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\tram-thi\\thong-ke-tram\\form-update-user\\form-update-user.component.html",
+      "accessCount": 12,
+      "lastAccessed": 1788943691692,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\tram-thi\\thong-ke-tram\\form-update-user\\form-update-user.component.css",
+      "accessCount": 12,
+      "lastAccessed": 1788943725943,
+      "type": "file"
+    },
+    {
+      "path": "src",
+      "accessCount": 12,
+      "lastAccessed": 1788944815859,
+      "type": "directory"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\thi-sinh\\thi-sinh-dang-ky\\thi-sinh-dang-ky.component.html",
+      "accessCount": 11,
+      "lastAccessed": 1787796421463,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 8,
+      "lastAccessed": 1788943740823,
+      "type": "directory"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\thi-sinh\\thi-sinh-dang-ky\\RESPONSIVE-TABLE-PLAN.md",
+      "accessCount": 6,
+      "lastAccessed": 1787802652782,
+      "type": "file"
+    },
     {
       "path": "src\\app\\modules\\public\\features\\tra-cuu-ket-qua\\tra-cuu-ket-qua.component.html",
       "accessCount": 5,
@@ -117,10 +165,22 @@
       "type": "file"
     },
     {
+      "path": "src\\app\\modules\\admin\\features\\tram-thi\\thong-ke-tram\\thong-ke-tram.component.html",
+      "accessCount": 5,
+      "lastAccessed": 1788944770907,
+      "type": "file"
+    },
+    {
       "path": "src\\app\\modules\\public\\features\\tra-cuu-ket-qua\\tra-cuu-ket-qua.component.ts",
       "accessCount": 4,
       "lastAccessed": 1781166371640,
       "type": "file"
+    },
+    {
+      "path": "src/app",
+      "accessCount": 4,
+      "lastAccessed": 1788944501535,
+      "type": "directory"
     },
     {
       "path": "src\\app\\modules\\admin\\features\\hoi-dong-thi\\ds-hoi-dong-thi\\ket-qua-thi\\ket-qua-thi.component.html",
@@ -141,6 +201,30 @@
       "type": "file"
     },
     {
+      "path": "src\\app\\modules\\admin\\features\\thi-sinh\\thi-sinh-dang-ky\\thi-sinh-dang-ky.component.css",
+      "accessCount": 3,
+      "lastAccessed": 1787802187471,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\thi-sinh\\thi-sinh-dang-ky",
+      "accessCount": 3,
+      "lastAccessed": 1787802669837,
+      "type": "directory"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\quan-ly-tai-khoan\\tai-khoa-thi-sinh\\tai-khoa-thi-sinh.component.css",
+      "accessCount": 3,
+      "lastAccessed": 1788918865500,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\quan-ly-tai-khoan\\tai-khoa-thi-sinh\\tai-khoa-thi-sinh.component.html",
+      "accessCount": 3,
+      "lastAccessed": 1788918893651,
+      "type": "file"
+    },
+    {
       "path": "src\\app\\modules\\admin\\features\\thi-sinh\\tra-cuu-ket-qua\\tra-cuu-ket-qua.component.html",
       "accessCount": 2,
       "lastAccessed": 1781164152957,
@@ -156,6 +240,30 @@
       "path": "src\\app\\modules\\shared\\services\\vstep\\hoidong-ketqua.service.ts",
       "accessCount": 2,
       "lastAccessed": 1781165497939,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\thi-sinh\\thi-sinh-dang-ky\\thi-sinh-dang-ky.component.ts",
+      "accessCount": 2,
+      "lastAccessed": 1787795425721,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\2311\\AppData\\Local\\Temp\\claude\\d--data-project-angular-v14-dangky-vstep\\834282b9-83bd-45db-8dcc-2d1690460284\\tasks\\bfs71sw2z.output",
+      "accessCount": 2,
+      "lastAccessed": 1787798102780,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\quan-ly-tai-khoan\\tai-khoa-thi-sinh\\tai-khoa-thi-sinh.component.ts",
+      "accessCount": 2,
+      "lastAccessed": 1788918808581,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\core\\models\\user.ts",
+      "accessCount": 2,
+      "lastAccessed": 1788918893678,
       "type": "file"
     },
     {
@@ -231,22 +339,70 @@
       "type": "directory"
     },
     {
-      "path": "",
+      "path": "src\\app\\admin\\features\\tram-thi\\thong-ke-tram\\form-update-user\\form-update-user.plan.md",
       "accessCount": 1,
-      "lastAccessed": 1787539123491,
+      "lastAccessed": 1788917559985,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\tram-thi\\thong-ke-tram\\form-update-user",
+      "accessCount": 1,
+      "lastAccessed": 1788917577165,
       "type": "directory"
     },
     {
-      "path": "src\\app\\modules\\admin\\features\\thi-sinh\\thi-sinh-dang-ky\\thi-sinh-dang-ky.component.html",
+      "path": "src/app/admin",
       "accessCount": 1,
-      "lastAccessed": 1787539155952,
+      "lastAccessed": 1788917848768,
+      "type": "directory"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\quan-ly-tai-khoan\\quan-ly-tai-khoan-routing.module.ts",
+      "accessCount": 1,
+      "lastAccessed": 1788918797642,
       "type": "file"
     },
     {
-      "path": "src\\app\\modules\\admin\\features\\thi-sinh\\thi-sinh-dang-ky\\thi-sinh-dang-ky.component.ts",
+      "path": "src\\app\\modules\\admin\\features\\quan-ly-tai-khoan\\tai-khoa-thi-sinh",
       "accessCount": 1,
-      "lastAccessed": 1787539156385,
+      "lastAccessed": 1788918802686,
+      "type": "directory"
+    },
+    {
+      "path": "src\\app",
+      "accessCount": 1,
+      "lastAccessed": 1788918835980,
+      "type": "directory"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\quan-ly-tai-khoan\\tai-khoa-thi-sinh\\thisinh-info\\thisinh-info.component.ts",
+      "accessCount": 1,
+      "lastAccessed": 1788918854123,
       "type": "file"
+    },
+    {
+      "path": "src\\app\\modules\\admin\\features\\quan-ly-tai-khoan\\tai-khoa-thi-sinh\\thisinh-info\\thisinh-info.component.html",
+      "accessCount": 1,
+      "lastAccessed": 1788918854328,
+      "type": "file"
+    },
+    {
+      "path": "src\\assets\\css\\base.css",
+      "accessCount": 1,
+      "lastAccessed": 1788918919502,
+      "type": "file"
+    },
+    {
+      "path": "src/app/core",
+      "accessCount": 1,
+      "lastAccessed": 1788920209861,
+      "type": "directory"
+    },
+    {
+      "path": "src/app/modules/admin/features/tram-thi/thong-ke-tram",
+      "accessCount": 1,
+      "lastAccessed": 1788943700765,
+      "type": "directory"
     }
   ],
   "userDirectives": []

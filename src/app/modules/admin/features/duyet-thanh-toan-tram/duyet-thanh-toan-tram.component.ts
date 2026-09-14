@@ -174,7 +174,7 @@ export class DuyetThanhToanTramComponent implements OnInit {
       set:[
         {label:'search', value: search? search : ''},
         {label:'order',value:'DESC'},
-        {label:'order_by',value:'id'},
+        {label:'orderby',value:'id'},
 
       ]
     }

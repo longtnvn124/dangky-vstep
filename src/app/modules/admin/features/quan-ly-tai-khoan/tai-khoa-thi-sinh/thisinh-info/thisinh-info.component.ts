@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {User} from "@core/models/user";
 import {NotificationService} from "@core/services/notification.service";
@@ -37,6 +37,8 @@ export class ThisinhInfoComponent implements OnInit {
     this._user = item;
     this.loadInit()
   }
+
+   @Output() updateSuccess = new EventEmitter<void>();
   provinceOptions:DiaDanh[]
   formSave: FormGroup;
   _user: User ;
@@ -224,6 +226,7 @@ export class ThisinhInfoComponent implements OnInit {
             this.loadInit()
             this.notifi.isProcessing(false);
             this.notifi.toastSuccess('Thao tác thành công', 'Thông báo');
+            this.updateSuccess.emit();
           },
           error: () => {
             this.notifi.isProcessing(true)

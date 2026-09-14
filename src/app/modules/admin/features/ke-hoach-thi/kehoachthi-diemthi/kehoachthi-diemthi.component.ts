@@ -152,8 +152,6 @@ export class KehoachthiDiemthiComponent implements OnInit {
   paginate(event){}
 
   onSekectDiemthi(event, item:DonVi){
-    console.log(event.checked);
-
     this.dmDiemduthi.find(f=>f.id == item.id)['checked'] = event.checked
 
   }

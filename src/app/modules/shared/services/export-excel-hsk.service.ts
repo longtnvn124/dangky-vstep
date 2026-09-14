@@ -319,7 +319,7 @@ export class ExportExcelHskService {
   }
 
   //=========================================================
-  exportExHuyOrder(object:any, title:string,sheetName:string, headers:string[]) {
+  exportExHuyOrder(object:any, title:string,sheetName:string, headers:string[], text_head?:string) {
 
     const wb = new Workbook();
     const worksheet = wb.addWorksheet(sheetName, { pageSetup: { paperSize: 9, orientation: 'portrait' } });
@@ -327,6 +327,24 @@ export class ExportExcelHskService {
     // const text_header = 'TRẠNG THÁI ĐĂNG KÝ THI HSK ('+ title +')';
     // worksheet.addRow([text_header]);
     // worksheet.addRow([""]);
+
+    if(text_head){
+      worksheet.addRow([""]);
+
+      worksheet.mergeCells('A2:I2')
+      worksheet.getCell('A2').value={
+        richText:[
+          {text:text_head, font: { color: { argb: '000000', }}}
+        ]
+      }
+      worksheet.getCell('A2').font = { name: 'Times New Roman', family: 1, size: 16, bold: true };
+      worksheet.getCell('A2').alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+      // worksheet.getCell('A14').border = {
+      //   bottom: { style: 'thin',color: { argb: '333333' } },
+      //   right: { style: 'thin',color: { argb: '333333' } }
+      // };
+      worksheet.addRow([""]);
+    }
     const header = [headers]
 
     worksheet.pageSetup.margins = {
@@ -427,7 +445,7 @@ export class ExportExcelHskService {
             right: { style: 'thin', color: { argb: '333333' } }
           };
           if(indexCenter.includes(index) ){
-            cell.alignment = { vertical: 'middle', horizontal: 'center', shrinkToFit: true,};
+            cell.alignment = { vertical: 'middle', horizontal: 'center', shrinkToFit: true,wrapText: true};
           }
         })
       } else {
@@ -440,8 +458,9 @@ export class ExportExcelHskService {
             bottom: { style: 'thin', color: { argb: '333333' } },
             right: { style: 'thin', color: { argb: '333333' } }
           };
+          cell.alignment = { vertical: 'middle', shrinkToFit: true, wrapText: true };
           if(indexCenter.includes(index) ){
-            cell.alignment = { vertical: 'middle', horizontal: 'center', shrinkToFit: true,};
+            cell.alignment = { vertical: 'middle', horizontal: 'center', shrinkToFit: true,wrapText: true};
           }
         })
       }
@@ -459,7 +478,7 @@ export class ExportExcelHskService {
 
     wb.xlsx.writeBuffer().then(buffer => {
       const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      fs.saveAs(data, 'HSK-TNU('+ title +').xlsx' );
+      fs.saveAs(data,  title +'.xlsx' );
     });
   }
 

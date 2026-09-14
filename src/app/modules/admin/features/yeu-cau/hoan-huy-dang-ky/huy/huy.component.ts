@@ -367,7 +367,7 @@ export class HuyComponent implements OnInit {
             const header = ['STT', 'ĐỊA CHỈ EMAIL', 'HỌ VÀ TÊN', 'NGÀY SINH', 'SỐ GIẤY TỜ TÙY THÂN', 'SỐ ĐIỆN THOẠI LIÊN HỆ', 'Điểm dự thi', 'TRẠNG THÁI', 'ĐƠN VỊ',
             ]
             if(dataEx.length>0){
-              this.exportExcelHskService.exportExHuyOrder(dataEx, 'Danh sách hủy dự thi ' + dotthi.title, dotthi.title,header);
+              this.exportExcelHskService.exportExHuyOrder(dataEx, 'Danh sách hủy dự thi ', 'Sheet 1',header, dotthi.title);
             }else{
               this.notifi.toastWarning('Danh sách chọn không có kết quả!');
             }

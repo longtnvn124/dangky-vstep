@@ -1,0 +1,200 @@
+<ng-container [ngSwitch]="typeView">
+  <ng-container *ngSwitchCase="0">
+    <div class="form-ctn form-ctn--loading" role="status" aria-live="polite">
+      <div class="form-loading">
+        <p class="form-loading__text">Đang tải dữ liệu, vui lòng chờ</p>
+        <mat-progress-bar class="form-loading__bar" mode="indeterminate"></mat-progress-bar>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="-1">
+    <div class="form-ctn form-ctn--error" role="alert" aria-live="assertive">
+      <p class="form-error__text">Mất kết nối với máy chủ</p>
+      <button pButton pRipple label="Tải lại" icon="pi pi-sync" class="p-button-warning" type="button" (click)="reLoad()"></button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="1">
+    <div class="form-ctn">
+      <div class="form-head">
+         <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
+        <form [formGroup]="fonm" autocomplete="off">
+          <div class="row">
+            <div class="col-12 col-md-6">
+              <div class="form-row">
+                <label>Số CCCD <span class="ovic-mark">*</span></label>
+                <input pRipple pInputText type="text" placeholder="Số CCCD..." formControlName="username"
+                       autocomplete="off">
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="form-row">
+                <label>Họ và tên <span class="ovic-mark">*</span></label>
+                <input pRipple pInputText type="text" placeholder="Họ và tên..." formControlName="display_name"
+                       autocomplete="off">
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="form-row">
+                <label>Email <span class="ovic-mark">*</span></label>
+                <input pRipple pInputText type="text" placeholder="Vd: tn200@example.com" formControlName="email"
+                       autocomplete="off">
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="form-row">
+                <label>Số điện thoại<span class="ovic-mark">*</span></label>
+                <input pRipple pInputText type="text" placeholder="Vd: 0901234567" formControlName="phone"
+                       autocomplete="off">
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-row">
+                <label>Mật khẩu<span class="ovic-mark">*</span></label>
+                <input pRipple pInputText type="text" placeholder="Nhập mật khẩu" formControlName="password"
+                       autocomplete="off">
+
+                <div style="position: absolute;right: 12px;top: 0;height: 100%;text-align: center;display: flex;align-items: center;">
+                <i [pTooltip]="'Hiển thị mật khẩu'" [tooltipPosition]="'left'" class="mr-2 btn-check"  [ngClass]="[type_password==='password' ? 'pi pi-eye': 'pi pi-eye-slash']" (click)="btnShowPassWord()"></i>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+
+          <div class="row">
+            <div class="col-12 col-md-6">
+              <div class="form-row">
+                <label>Trạng thái <span class="ovic-mark">*</span></label>
+                <div class="form-row__switch-buttons">
+                  <button class="btn form-row__btn-switch" [class.--btn-switch-active]="f['status'].value === 1"
+                          (click)="changeStatus(1)">Kích hoạt</button>
+                  <button class="btn form-row__btn-switch" [class.--btn-switch-active]="f['status'].value !== 1"
+                          (click)="changeStatus(0)">Không kích hoạt</button>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="form-row">
+                <label>Xác nhận Tài khoản <span class="ovic-mark">*</span></label>
+                <span class="form-row__switch-buttons">
+                  <button class="btn form-row__btn-switch" [class.--btn-switch-active]="f['verified'].value === 1"
+                          (click)="changeVerified(1)">Xác nhận</button>
+                  <button class="btn form-row__btn-switch" [class.--btn-switch-active]="f['verified'].value !== 1"
+                          (click)="changeVerified(0)">Chưa xác nhận</button>
+                </span>
+              </div>
+            </div>
+          </div>
+        
+
+        </form>
+      </div>
+      </div>
+      <div class="form-bottom">
+        <span class="ovic-side-navigation-content__foot__notice mr-auto"><mark>(*)</mark> bắt buộc phải nhập</span>
+
+        <button pButton pRipple type="button" label="Đóng" class="p-button-secondary" label="Cập nhật" (click)="btnUpdate()"></button>
+      </div>
+       
+       
+        <!-- <form [formGroup]="fonm" class="form-card__form" (ngSubmit)="btnUpdate()" novalidate>
+          <div class="form-grid">
+            <p class="form-row form-row--half">
+              <label class="form-row__label" for="display_name">Họ và tên <span class="ovic-mark" aria-hidden="true">*</span></label>
+              <input id="display_name" class="form-row__input" type="text" formControlName="display_name" autocomplete="name"
+                     [class.form-row__input--error]="f['display_name'].touched && f['display_name'].invalid"
+                     [attr.aria-invalid]="f['display_name'].touched && f['display_name'].invalid"
+                     aria-required="true"
+                     aria-describedby="display_name-error" />
+              <span class="form-row__error" id="display_name-error" aria-live="polite">
+                <ng-container *ngIf="f['display_name'].touched && f['display_name'].invalid">Vui lòng nhập họ và tên</ng-container>
+              </span>
+            </p>
+
+            <p class="form-row form-row--half">
+              <label class="form-row__label" for="username">Tên đăng nhập <span class="ovic-mark" aria-hidden="true">*</span></label>
+              <input id="username" class="form-row__input" type="text" formControlName="username" autocomplete="username"
+                     [class.form-row__input--error]="f['username'].touched && f['username'].invalid"
+                     [attr.aria-invalid]="f['username'].touched && f['username'].invalid"
+                     aria-required="true"
+                     aria-describedby="username-error" />
+              <span class="form-row__error" id="username-error" aria-live="polite">
+                <ng-container *ngIf="f['username'].touched && f['username'].invalid">Vui lòng nhập tên đăng nhập</ng-container>
+              </span>
+            </p>
+
+            <p class="form-row form-row--half">
+              <label class="form-row__label" for="phone">Số điện thoại <span class="ovic-mark" aria-hidden="true">*</span></label>
+              <input id="phone" class="form-row__input" type="tel" inputmode="tel" formControlName="phone" autocomplete="tel"
+                     [class.form-row__input--error]="f['phone'].touched && f['phone'].invalid"
+                     [attr.aria-invalid]="f['phone'].touched && f['phone'].invalid"
+                     aria-required="true"
+                     aria-describedby="phone-error" />
+              <span class="form-row__error" id="phone-error" aria-live="polite">
+                <ng-container *ngIf="f['phone'].touched && f['phone'].invalid">Số điện thoại không hợp lệ</ng-container>
+              </span>
+            </p>
+
+            <p class="form-row form-row--half">
+              <label class="form-row__label" for="email">Email <span class="ovic-mark" aria-hidden="true">*</span></label>
+              <input id="email" class="form-row__input" type="email" formControlName="email" autocomplete="email"
+                     [class.form-row__input--error]="f['email'].touched && f['email'].invalid"
+                     [attr.aria-invalid]="f['email'].touched && f['email'].invalid"
+                     aria-required="true"
+                     aria-describedby="email-error" />
+              <span class="form-row__error" id="email-error" aria-live="polite">
+                <ng-container *ngIf="f['email'].touched && f['email'].invalid">
+                  <ng-container *ngIf="f['email'].errors?.['required']">Vui lòng nhập email</ng-container>
+                  <ng-container *ngIf="f['email'].errors?.['email']">Email không hợp lệ</ng-container>
+                </ng-container>
+              </span>
+            </p>
+
+            <p class="form-row form-row--full">
+              <label class="form-row__label" for="password">Mật khẩu mới</label>
+              <input id="password" class="form-row__input" type="password" formControlName="password" autocomplete="new-password"
+                     [class.form-row__input--error]="f['password'].touched && f['password'].invalid"
+                     [attr.aria-invalid]="f['password'].touched && f['password'].invalid"
+                     aria-describedby="password-hint password-error" />
+              <span class="form-row__hint" id="password-hint">Để trống nếu không muốn thay đổi mật khẩu.</span>
+              <span class="form-row__error" id="password-error" aria-live="polite">
+                <ng-container *ngIf="f['password'].touched && f['password'].invalid && f['password'].errors?.['minlength']">Mật khẩu chưa đủ độ dài</ng-container>
+              </span>
+            </p>
+
+            <fieldset class="form-row form-row--half form-row__fieldset">
+              <legend class="form-row__label">Trạng thái tài khoản <span class="ovic-mark" aria-hidden="true">*</span></legend>
+              <span class="form-row__switch-buttons">
+                <input class="form-row__radio" id="status-active" type="radio" formControlName="status" [value]="1" />
+                <label class="form-row__btn-switch" for="status-active" [class.--btn-switch-active]="f['status'].value === 1">Kích hoạt</label>
+                <input class="form-row__radio" id="status-inactive" type="radio" formControlName="status" [value]="0" />
+                <label class="form-row__btn-switch" for="status-inactive" [class.--btn-switch-active]="f['status'].value === 0">Vô hiệu hóa</label>
+              </span>
+              <span class="form-row__error" id="status-error" aria-live="polite">
+                <ng-container *ngIf="f['status'].touched && f['status'].invalid">Vui lòng chọn trạng thái</ng-container>
+              </span>
+            </fieldset>
+
+            <fieldset class="form-row form-row--half form-row__fieldset">
+              <legend class="form-row__label">Xác nhận tài khoản</legend>
+              <span class="form-row__switch-buttons">
+                <input class="form-row__radio" id="verified-active" type="radio" formControlName="verified" [value]="1" />
+                <label class="form-row__btn-switch" for="verified-active" [class.--btn-switch-active]="f['verified'].value === 1">Đã xác nhận</label>
+                <input class="form-row__radio" id="verified-inactive" type="radio" formControlName="verified" [value]="0" />
+                <label class="form-row__btn-switch" for="verified-inactive" [class.--btn-switch-active]="f['verified'].value === 0">Chưa xác nhận</label>
+              </span>
+            </fieldset>
+          </div>
+
+          <div class="form-actions">
+            <button pButton pRipple type="button" label="Đặt lại" class="p-button-secondary" (click)="resetForm()" [disabled]="isSubmitting"></button>
+            <button pButton pRipple label="Cập nhật" type="submit" class="p-button-success" [disabled]="isSubmitting"></button>
+          </div>
+        </form> -->
+      </div>
+
+    
+  </ng-container>
+</ng-container>

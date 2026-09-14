@@ -142,8 +142,6 @@ export class OvicAvataTypeThptComponent implements OnInit {
     const newName = fileName.split('.')[0];
     const newType =typeFile.split('/')[1];
 
-    console.log(newName)
-    console.log(newType)
     return newName+ '.' + (newType == 'jpeg'? 'jpg':newType);
   }
 
@@ -200,7 +198,7 @@ export class OvicAvataTypeThptComponent implements OnInit {
       rotateShow:this.rotateShow
     };
     const avatar = await this.mediaService.callAvatarMakerV2(options);
-    console.log(avatar)
+    // console.log(avatar)
     if (avatar && !avatar.error && avatar.data) {
       const none = new Date().valueOf();
       const fileName = this.file_name+ '.jpg';

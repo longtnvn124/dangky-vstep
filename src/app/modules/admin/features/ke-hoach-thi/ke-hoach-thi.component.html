@@ -32,7 +32,7 @@
           <div class="d-block w-100" style="height: calc(100vh - 60px - 60px - 20px);">
             <p-splitter [style]="{'height': '100%'}" [panelSizes]="[25,75]">
               <ng-template pTemplate>
-                <div class="w-100 d-block ovic-scroll-style overflow-hidden overflow-y-auto">
+                <div class="w-100 d-block ovic-scroll-style overflow-hidden overflow-y-auto" >
                   <div class="row m-0">
                     <div class="col-12">
                       <p class="form-row">
@@ -87,6 +87,19 @@
                         <p-calendar placeholder="chọn..." class="w-100" dateFormat="dd/mm/yy"
                                     formControlName="ngayketthuc" [minDate]="f['ngaybatdau'].value"
                                     [showTime]="false" [showIcon]="true" [showSeconds]="false"></p-calendar>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row m-0">
+                    <div class="col-12" style="max-width: 100%;">
+                      <div class="form-row">
+                        <label>loại hình thi<span class="ovic-mark">*</span></label>
+                        <!--                        <input type="number" placeholder="Vd:2025 " formControlName="nam" autocomplete="off">-->
+
+                        <p-dropdown placeholder="Chọn..." class="w-100" [options]="listLoaihinh" optionLabel="title"
+                                    optionValue="id" [showClear]="true"  
+                                    formControlName="loaihinhthi"></p-dropdown>
+
                       </div>
                     </div>
                   </div>

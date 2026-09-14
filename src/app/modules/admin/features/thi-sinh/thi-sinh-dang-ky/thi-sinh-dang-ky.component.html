@@ -56,6 +56,18 @@
               <div class="head">
                 Thông tin đăng ký dự thi
               </div>
+
+              <div class="loaihinh_ctn">
+
+                <div class="title"> Chọn đối tượng dự thi</div>
+                <div class="loaihinh-list">
+
+                 <div class="loaihinh-item" *ngFor="let item of listLoaihinhthi"  (click)="selectLoaihinhthi(item)"
+                 [ngClass]="item.id == loaihinh_select?.id ? 'active' : ''" >
+                   <div >{{item.title}}</div>
+                 </div>
+              </div>
+              </div>
               <div class="ovic-vertical__inputs ovic-vertical__inputs--layout-2">
                 <form [formGroup]="formSave" autocomplete="off">
                   <div class="row ">
@@ -138,45 +150,70 @@
                 </div>
                 <ng-template #tableData>
                   <div class="p-datatable-header" style="border-bottom:1px solid #CCC;">
-                    <h3 class="tbl-title "> Danh sách đăng ký thi </h3>
+                    <h3 id="registration-table-title" class="tbl-title">Danh sách đăng ký thi</h3>
                   </div>
-                  <p-table [value]="dataOrders" [showCurrentPageReport]="false" [rowHover]="true"
-                           [tableStyle]="{ 'min-width': '100px' }">
+                  <div class="registration-table-region" role="region" aria-labelledby="registration-table-title"
+                       [attr.aria-busy]="isLoading">
+                    <p-table styleClass="registration-table" [value]="dataOrders"
+                             [showCurrentPageReport]="false" [rowHover]="true"
+                             [tableStyle]="{ 'width': '100%' }">
                     <ng-template pTemplate="header">
-                      <tr>
-                        <th class="ovic-w-50px text-center">TT</th>
-                        <th class="ovic-w-100px text-center">Mã đăng ký</th>
-                        <th class="text-left">Đợt thi</th>
-                        <th class=" text-left text-center">Điểm dự thi</th>
-                        <th class="ovic-w-180px text-center">Lệ phí thi</th>
-                        <th class="ovic-w-110px text-center">Trạng thái</th>
-                        <th class="ovic-w-180px text-center">Thao tác</th>
+                      <tr class="registration-table__header">
+                        <th scope="col" class="ovic-w-50px text-center">TT</th>
+                        <th scope="col" class="ovic-w-100px text-center">Mã đăng ký</th>
+                        <th scope="col" class="text-left">Đợt thi</th>
+                        <th scope="col" class="text-left">Loại hình thi</th>
+                        <th scope="col" class="text-center">Điểm dự thi</th>
+                        <th scope="col" class="ovic-w-180px text-center">Lệ phí thi</th>
+                        <th scope="col" class="ovic-w-110px text-center">Trạng thái</th>
+                        <th scope="col" class="ovic-w-180px text-center">Thao tác</th>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
-                      <tr>
-                        <td colspan="7">Không có dữ liệu</td>
+                      <tr class="registration-table__empty-row">
+                        <td class="registration-table__empty" colspan="7">
+                          <span role="status" aria-live="polite">Không có dữ liệu</span>
+                        </td>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-item>
-                      <tr>
-                        <td class="ovic-w-50px text-center" [innerHTML]="item['_indexTable']"></td>
-                        <td class="ovic-w-50px text-center">{{ item['id'] }}</td>
-                        <td>
-                          <div class="d-block --fs-14 font-weight-bold" [innerHTML]="item['__kehoach_thi']"></div>
+                      <tr class="registration-table__row">
+                        <td class="registration-table__cell registration-table__index ovic-w-50px text-center">
+                          <span class="registration-table__label" aria-hidden="true">TT</span>
+                          <span class="registration-table__value" [innerHTML]="item['_indexTable']"></span>
                         </td>
-                        <td class="ovic-w-260px">
-                          <div class="d-block --fs-14 " [innerHTML]="item['__diemduthi_covered']"></div>
-
+                        <td class="registration-table__cell registration-table__id ovic-w-100px text-center">
+                          <span class="registration-table__label" aria-hidden="true">Mã đăng ký</span>
+                          <span class="registration-table__value registration-table__id-value">{{ item['id'] }}</span>
                         </td>
-                        <td class="ovic-w-100px">
-                          <div class="d-block --fs-14 text-right"
+                        <td class="registration-table__cell registration-table__exam">
+                          <span class="registration-table__label" aria-hidden="true">Đợt thi</span>
+                          <div class="registration-table__value d-block --fs-14 font-weight-bold"
+                               [innerHTML]="item['__kehoach_thi']"></div>
+                        </td>
+                        <td class="registration-table__cell registration-table__exam">
+                          <span class="registration-table__label" aria-hidden="true">Loại hình thi</span>
+                          <div class="registration-table__value d-block --fs-14 font-weight-bold"
+                               [innerHTML]="item['__loaihinhthi']"></div>
+                        </td>
+                        <td class="registration-table__cell registration-table__location ovic-w-260px">
+                          <span class="registration-table__label" aria-hidden="true">Điểm dự thi</span>
+                          <div class="registration-table__value d-block --fs-14"
+                               [innerHTML]="item['__diemduthi_covered']"></div>
+                        </td>
+                        <td class="registration-table__cell registration-table__fee ovic-w-180px">
+                          <span class="registration-table__label" aria-hidden="true">Lệ phí thi</span>
+                          <div class="registration-table__value d-block --fs-14 text-right"
                                [innerHTML]="item['__lephithi_covered' ] |numberToVndCurrencuy"></div>
                         </td>
-                        <td class="ovic-w-150px">
-                          <div class="d-block --fs-14" [innerHTML]="item['__status_converted'] | htmlDecode"></div>
+                        <td class="registration-table__cell registration-table__status ovic-w-150px">
+                          <span class="registration-table__label" aria-hidden="true">Trạng thái</span>
+                          <div class="registration-table__value d-block --fs-14"
+                               [innerHTML]="item['__status_converted'] | htmlDecode"></div>
                         </td>
-                        <td class="ovic-w-180px text-center">
+                        <td class="registration-table__cell registration-table__actions ovic-w-180px text-center">
+                          <span class="registration-table__label" aria-hidden="true">Thao tác</span>
+                          <div class="registration-table__value registration-table__action-content">
 
 
                           <ng-container *ngIf="item['__have_parent'] else notParent">
@@ -200,13 +237,18 @@
                                 </div>
                                 <ng-template #notHuy>
                                   <button pRipple pButton class="p-button-success" icon="pi pi-file"
-                                          pTooltip="Phiếu đăng ký điện tử" (click)="viewPhieudangky(item)"></button>
+                                          pTooltip="Phiếu đăng ký điện tử"
+                                          [attr.aria-label]="'Phiếu đăng ký điện tử, mã đăng ký ' + item['id']"
+                                          (click)="viewPhieudangky(item)"></button>
                                   <!--                                  <button pRipple pButton class="p-button-secondary" icon="pi pi-tag" pTooltip="Phiếu dự thi" (click)="viewPhieuDuthi(item)"></button>-->
-                                  <!--                                  <button pRipple pButton class="" icon="pi pi-sync" pTooltip="Đổi đợt thi"-->
-                                  <!--                                          (click)="btnViewChange(item)"></button>-->
+
                                   <button pRipple pButton class="p-button-danger" icon="pi pi-calendar-times"
                                           pTooltip="Hủy dự thi"
+                                          [attr.aria-label]="'Hủy dự thi, mã đăng ký ' + item['id']"
                                           (click)="btnViewCancel(item)"></button>
+
+                                  <button pRipple pButton class="" icon="pi pi-sync" pTooltip="Đổi đợt thi"
+                                          (click)="btnViewChange(item)"></button>
                                 </ng-template>
 
                               </div>
@@ -215,6 +257,7 @@
                               <ng-container *ngIf="item.trangthai_thanhtoan == 1 ">
                                 <div class="d-flex justify-content-center" style=" gap:20px;">
                                   <button pRipple pButton icon="pi pi-file" pTooltip="Phiếu đăng ký điện tử"
+                                          [attr.aria-label]="'Phiếu đăng ký điện tử, mã đăng ký ' + item['id']"
                                           (click)="viewPhieudangky(item)"></button>
                                   <!--                                  <button pRipple pButton icon="pi pi-tag" pTooltip="Phiếu dự thi" (click)="viewPhieuDuthi(item)"></button>-->
                                 </div>
@@ -229,9 +272,11 @@
                                   <div class="d-flex flex-wrap justify-content-center" style=" gap: 10px;">
                                     <button pButton pRipple class="p-button-warning mx-1" [pTooltip]="'Thanh toán'"
                                             [tooltipPosition]="'top'" icon="pi pi-credit-card" [loading]="isLoading"
+                                            [attr.aria-label]="'Thanh toán, mã đăng ký ' + item['id']"
                                             (click)="getPayment(item)"></button>
                                     <button pButton pRipple class="p-button-danger mx-1"
                                             [pTooltip]="'Xoá'" [tooltipPosition]="'top'" icon="pi pi-trash"
+                                            [attr.aria-label]="'Xoá đăng ký, mã đăng ký ' + item['id']"
                                             (click)="deleteRow(item)"></button>
                                   </div>
                                 </ng-container>
@@ -249,13 +294,15 @@
                           </ng-template>
 
                           <!--              </div>-->
+                          </div>
                         </td>
                       </tr>
                     </ng-template>
-                  </p-table>
+                    </p-table>
 
-                  <p-paginator [rows]="limit" [totalRecords]="recordTotal"
-                               (onPageChange)="paginate($event)"></p-paginator>
+                    <p-paginator styleClass="registration-paginator" [rows]="limit" [totalRecords]="recordTotal"
+                                 (onPageChange)="paginate($event)"></p-paginator>
+                  </div>
                 </ng-template>
               </div>
             </div>
@@ -309,6 +356,7 @@
       <p>- Với nhưng đợt thi muốn đổi hệ thống sẽ kiểm tra số đã đăng ký, nếu đã đủ thí sinh thì dự thi thì không được
         phép đăng ký đợt thi đấy nữa .</p>
       <p>- Thí sinh chỉ được phép đổi đợt thi tối đa 3 lần.</p>
+      <p>- Với mỗi đối tượng dự thi sẽ chỉ được đổi những đợt thi theo đối tượng đấy.</p>
       <!--      <p>- Yêu cầu đổi của thí sinh sẽ xét duyệt,trường hợp thí sinh đổi đợt thi phải có lí do chính đáng nếu không sẽ-->
       <!--        không được xét duyệt.</p>-->
     </div>

@@ -58,7 +58,7 @@ export class KehoachthiVstepService {
 
   search(page: number, ten: string, limit: number ): Observable<{ recordsTotal: number, data: KeHoachThi[] }> {
     const conditions: OvicConditionParam[] = [];
-    const fromObject = {paged: page, limit: limit.toString(), orderby: 'id', order: 'ASC'};
+    const fromObject = {paged: page, limit: limit.toString(), orderby: 'id', order: 'DESC'};
     if (ten) {
       conditions.push({conditionName: 'tenmon', condition: OvicQueryCondition.like, value: `%${ten}%`, orWhere: 'and'});
     }

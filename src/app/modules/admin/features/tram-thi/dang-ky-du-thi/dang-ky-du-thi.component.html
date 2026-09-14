@@ -176,9 +176,9 @@
                   <td class="text-center">{{ item['gioitinh'] }}</td>
                   <td class="text-left">{{ item['dantoc'] }}</td>
                   <td class="text-left">{{ item['noisinh'] }}</td>
-                  <td class="text-center" [ngClass]="checkDuplicate(dataUpload,item,'cccd_so') ? 'tb-duplicate':''">{{ item['cccd_so'] }}</td>
-                  <td class="text-center" [ngClass]="checkDuplicate(dataUpload,item,'phone')  ?'tb-duplicate':'' ">{{ item['phone'] }}</td>
-                  <td class="text-left" [ngClass]="checkDuplicate(dataUpload,item,'email')  ?'tb-duplicate':'' ">{{ item['email'] }}</td>
+                  <td class="text-center" [ngClass]="checkDuplicate(dataUpload,item,'cccd_so') || !checkThongtin(item,'cccd_so') ? 'tb-duplicate':''">{{ item['cccd_so'] }}</td>
+                  <td class="text-center" [ngClass]="checkDuplicate(dataUpload,item,'phone') || !checkThongtin(item,'phone')  ?'tb-duplicate':'' ">{{ item['phone'] }}</td>
+                  <td class="text-left" [ngClass]="checkDuplicate(dataUpload,item,'email') || !checkThongtin(item,'email') ?'tb-duplicate':'' ">{{ item['email'] }}</td>
                   <td class="text-left" >{{ item['diachi_congtac'] }}</td>
 
                 </tr>
@@ -199,6 +199,9 @@
           <span *ngIf="countDuplicateValues(dataUpload,'cccd_so') > 0">{{countDuplicateValues(dataUpload,'cccd_so') + ' lượt đăng ký trùng số cccd'}}</span>
           <span *ngIf="countDuplicateValues(dataUpload,'phone') > 0">{{countDuplicateValues(dataUpload,'phone') + ' lượt đăng ký trùng số điện thoại' }}</span>
           <span *ngIf="countDuplicateValues(dataUpload,'email') > 0">{{countDuplicateValues(dataUpload,'email') + ' lượt đăng ký trùng email' }}</span>
+          <span *ngIf="countThongtinErrors(dataUpload,'cccd_so') > 0">{{countThongtinErrors(dataUpload,'cccd_so') + ' lượt đăng ký sai số CCCD' }}</span>
+          <span *ngIf="countThongtinErrors(dataUpload,'phone') > 0">{{countThongtinErrors(dataUpload,'phone') + ' lượt đăng ký số không hợp lệ' }}</span>
+          <span *ngIf="countThongtinErrors(dataUpload,'email') > 0">{{countThongtinErrors(dataUpload,'email') + ' lượt đăng ký có email không hợp lệ' }}</span>
 
         </div>
       </div>

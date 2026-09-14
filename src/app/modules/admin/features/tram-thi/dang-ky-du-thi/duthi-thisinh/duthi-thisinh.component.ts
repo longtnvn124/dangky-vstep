@@ -163,7 +163,7 @@ export class DuthiThisinhComponent implements OnInit {
           return m
         }): [];
 
-        console.log(this.listChild);
+        // console.log(this.listChild);
         this.notifi.isProcessing(false)
         this.loading = false;
 
