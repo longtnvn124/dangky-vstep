@@ -108,7 +108,7 @@
       </div>
       <div class="dk-bottom">
         <div></div>
-        <div><p-paginator [totalRecords]="recordTotal" [rows]="limit" [showCurrentPageReport]="true"></p-paginator></div>
+        <div><p-paginator [totalRecords]="recordTotal" [rows]="limit" [showCurrentPageReport]="true" (onPageChange)="changepage($event)"></p-paginator></div>
       </div>
     </div>
 

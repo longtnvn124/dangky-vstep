@@ -37,4 +37,8 @@ export class RegisterAccountService {
     const url = text ? ''.concat(getRoute('verification/'), text) : this.api;
     return this.http.get<Dto>(url).pipe(map(res => res.data));
   }
+
+  verifiCationAccountByUser(id: number, data: any): Observable<any> {
+    return this.http.post<Dto>(''.concat(getRoute('verification-user/'), id.toString(10)), data);
+  }
 }

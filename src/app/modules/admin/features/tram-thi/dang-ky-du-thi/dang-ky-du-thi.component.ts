@@ -82,6 +82,7 @@ export class DangKyDuThiComponent implements OnInit {
   ) {
      const observerOnResize = this.notifi.observeScreenSize.subscribe(size => this.sizeFullWidth = size.width)
      this.subscription.add(observerOnResize);
+
    }
 
   ngOnInit(): void {
@@ -89,6 +90,7 @@ export class DangKyDuThiComponent implements OnInit {
   }
 
   loadInit(){
+    this.page = 1;
     this.modalAddOrder = false;
 
     const conditionKehoach: ConditionOption= {
@@ -129,6 +131,12 @@ export class DangKyDuThiComponent implements OnInit {
 
   }
 
+  changepage(event){
+    // console.log(event);
+    this.page = event.page +1;
+    this.getOrders();
+  }
+
   getOrders(){
     this.modalAddOrder = false;
     this.ngView = 0;
@@ -156,6 +164,9 @@ export class DangKyDuThiComponent implements OnInit {
          },
          {
            label:'order', value:'DESC'
+         },
+         {
+           label:'orderby', value:'id'
          }
        ]
      }
@@ -755,7 +766,7 @@ export class DangKyDuThiComponent implements OnInit {
         hoten: item['hodem'] + ' ' + item['ten'],
         ten: item['ten'].trim(),
         ngaysinh: this.replaceBirth(item['ngaysinh']),
-        gioitinh: item.gioitinh ? (item.gioitinh.trim().toLowerCase().to == 'nam' ? 'nam' : 'nu' ) : '',
+        gioitinh: item.gioitinh ? (item.gioitinh.trim().toLowerCase() == 'nam' ? 'nam' : 'nu' ) : '',
         noisinh:item['noisinh'],
         dantoc:item['dantoc'],
         cccd_so: item['cccd_so'].replace(/'/g,""),

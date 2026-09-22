@@ -157,8 +157,12 @@
               pTooltip="Thông tin thí sinh" class="p-button-success"
                       (click)="btnViewInfo(item)"></button>
               <button pButton pRipple icon="pi pi-user-edit" pTooltip="Cập nhật tài khoản"
-                tooltipPosition="left" class="p-button-warning ml-2"  
+                tooltipPosition="left" class="p-button-warning ml-2"
                       (click)="btnViewaccout(item)"></button>
+              <button pRipple pButton icon="pi pi-send" pTooltip="Gửi email xác nhận " tooltipPosition="left" class="p-button-secondary ml-2"
+
+                      (click)="sendEmailActive(item)"
+              ></button>
 
             </td>
 

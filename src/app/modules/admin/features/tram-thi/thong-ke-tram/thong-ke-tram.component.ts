@@ -31,6 +31,8 @@ import {
   ThisinhInfoComponent
 } from "@modules/admin/features/quan-ly-tai-khoan/tai-khoa-thi-sinh/thisinh-info/thisinh-info.component";
 import { FormUpdateUserComponent } from "./form-update-user/form-update-user.component";
+import {Router} from "@angular/router";
+import {RegisterAccountService} from "@shared/services/register-account.service";
 
 
 @Component({
@@ -88,7 +90,9 @@ export class ThongKeTramComponent implements OnInit {
     private donViService: DonViService,
     private orderService: VstepOrdersService,
     private auth: AuthService,
-    private kehoachthiDiemthiVstepService: KehoachthiDiemthiVstepService
+    private kehoachthiDiemthiVstepService: KehoachthiDiemthiVstepService,
+    private router : Router,
+    private registerAccountService : RegisterAccountService
 
   ) {
     this.formSave = this.fb.group({
@@ -361,6 +365,30 @@ export class ThongKeTramComponent implements OnInit {
   closeForm() {
     this.notifi.closeSideNavigationMenu();
     this.onSelectKehoachThi(this.dotthi_select.id);
+  }
+
+
+    sendEmailActive(item:OrdersVstep){
+      // console.log(item.user_id)
+      // return ;
+      const dataParram: {} = {
+        url: `${location.origin}${this.router.serializeUrl(this.router.createUrlTree(['verification/']))}`
+        // url: `https://hsk.tnu.edu.vn/verification`
+      }
+      this.notifi.isProcessing(true);
+
+      this.registerAccountService.verifiCationAccountByUser(item.user_id,dataParram).subscribe({
+      // this.registerAccountService.verifiCationAccountByUser(3,dataParram).subscribe({
+        next:()=>{
+          this.notifi.toastSuccess('Gửi Email thành công');
+          this.notifi.isProcessing(false);
+        },
+        error:()=>{
+          this.notifi.toastError('Gửi Email không thành công');
+          this.notifi.isProcessing(false);
+        }
+      })
+
   }
 
 }
