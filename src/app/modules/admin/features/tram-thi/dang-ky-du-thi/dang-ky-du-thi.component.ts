@@ -331,11 +331,88 @@ export class DangKyDuThiComponent implements OnInit {
     return ['xlsx', 'xls'].includes(ext || '');
   }
 
-  convertDateByXlsx(excelDate:number):string{
-    const date = XLSX.SSF.parse_date_code(excelDate);
-    return date.y + '-'+ (date.m<10 ? '0' + date.m : date.m) +'-' + (date.d<10 ? '0' + date.d : date.d)
-      ;
+  // convertDateByXlsx(excelDate:number):string{
+  //   const date = XLSX.SSF.parse_date_code(excelDate);
+  //   return date.y + '-'+ (date.m<10 ? '0' + date.m : date.m) +'-' + (date.d<10 ? '0' + date.d : date.d)
+  //     ;
+  // }
+
+  convertDateByXlsx(
+    value: number | Date | string | null | undefined
+  ): string {
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
+
+    // ExcelJS trả về Date
+    if (value instanceof Date) {
+      if (isNaN(value.getTime())) {
+        return '';
+      }
+
+      return this.formatDate(
+        value.getFullYear(),
+        value.getMonth() + 1,
+        value.getDate()
+      );
+    }
+
+    // Excel trả về Excel Serial Number
+    if (typeof value === 'number') {
+      const date = XLSX.SSF.parse_date_code(value);
+
+      if (!date) {
+        return '';
+      }
+
+      return this.formatDate(date.y, date.m, date.d);
+    }
+
+    // Excel trả về string
+    if (typeof value === 'string') {
+      // Loại bỏ khoảng trắng đầu/cuối
+      let text = value.trim();
+
+      // Loại bỏ các ký tự đặc biệt,
+      // chỉ giữ chữ, số và các ký tự phân cách ngày cơ bản
+      text = text.replace(/[^\p{L}\p{N}\/\-\.]/gu, '');
+
+      // dd/mm/yyyy
+      let match = text.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+
+      if (match) {
+        const [, d, m, y] = match;
+
+        return this.formatDate(
+          Number(y),
+          Number(m),
+          Number(d)
+        );
+      }
+
+      // yyyy/mm/dd hoặc yyyy-mm-dd
+      match = text.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
+
+      if (match) {
+        const [, y, m, d] = match;
+
+        return this.formatDate(
+          Number(y),
+          Number(m),
+          Number(d)
+        );
+      }
+
+      return '';
+    }
+
+    return '';
   }
+
+  private formatDate(y: number, m: number, d: number): string {
+    return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  }
+
 
   getCapthi( str: string): string{
       if (!str?.trim()) {
